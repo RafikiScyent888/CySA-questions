@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode Quiz — Authentication, Authorization, Firewalls & IDS</title>
+  <style>
+    :root{
+      --bg:#071427;
+      --panel:#0b1f3b;
+      --panel2:#0a1a33;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#2f7dff;
+      --good:#2fd48f;
+      --bad:#ff5c7a;
+      --warn:#ffd166;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 28px 18px 54px; }
+    header{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; }
+    .titlebox{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+      flex:1;
+    }
+    h1{ margin:0 0 6px; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:0; color:var(--muted); font-size: 13px; }
+    .stats{
+      min-width: 260px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+    }
+    .statrow{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size: 13px; color: var(--muted);
+      padding: 6px 2px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+    }
+    .statrow:last-child{border-bottom:0}
+    .statrow b{color:var(--text); font-weight:650}
+
+    .barwrap{
+      margin: 14px 0 18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55));
+      transition: width .35s ease;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .qmeta{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:12px; margin-bottom: 10px;
+      color: var(--muted); font-size: 13px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px; background: rgba(0,0,0,.15);
+      color: var(--muted); font-size: 12px; user-select:none;
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(47,125,255,.95);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.15);
+    }
+
+    .qtext{ font-size: 16px; margin: 6px 0 14px; white-space: pre-wrap; }
+
+    .answers{ display:grid; grid-template-columns: 1fr; gap: 10px; margin: 10px 0 14px; }
+    .opt{
+      display:flex; gap:12px; align-items:flex-start;
+      padding: 12px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.35); }
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{
+      flex:0 0 auto; width: 28px; height: 28px; border-radius: 10px;
+      display:grid; place-items:center; font-weight: 800;
+      background: rgba(47,125,255,.16);
+      border:1px solid rgba(47,125,255,.28);
+      color: var(--text);
+    }
+    .opttext{ color: var(--text); font-size: 14px; line-height: 1.35; padding-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; white-space: pre-wrap; }
+
+    .opt.correct{ border-color: rgba(47,212,143,.55); background: rgba(47,212,143,.10); }
+    .opt.correct .letter{ background: rgba(47,212,143,.18); border-color: rgba(47,212,143,.55); }
+    .opt.wrong{ border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10); }
+    .opt.wrong .letter{ background: rgba(255,92,122,.18); border-color: rgba(255,92,122,.55); }
+
+    .feedback{
+      margin-top: 8px; font-size: 13px; color: var(--muted);
+      display:flex; gap:10px; align-items:center; min-height: 22px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      font-size: 12px; color: var(--muted);
+    }
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95); }
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95); }
+
+    details{
+      margin-top: 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    summary{ cursor:pointer; color: var(--muted); font-size: 13px; user-select:none; }
+    .explain{ margin-top: 10px; color: var(--text); font-size: 13px; white-space: pre-wrap; }
+
+    .controls{
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 12px; margin-top: 14px; flex-wrap: wrap;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.40); }
+    button:active{ transform: translateY(0px); }
+    button.primary{ background: rgba(47,125,255,.22); border-color: rgba(47,125,255,.45); }
+    button[disabled]{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .footer{ margin-top: 16px; color: var(--muted); font-size: 12px; text-align:center; }
+
+    .end{ margin-top: 18px; display:none; }
+    .end h2{ margin: 0 0 8px; font-size: 18px; }
+    .end p{ margin: 0; color: var(--muted); }
+    .tiny{ font-size: 12px; color: var(--muted); }
+
+    .toggleRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .toggle{
+      display:flex; gap:10px; align-items:center;
+      padding: 10px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      color: var(--muted); font-size: 12px;
+      user-select:none;
+    }
+    .toggle input{ transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — Authentication, Authorization, Firewalls & IDS</h1>
+        <p class="subtitle">30 scenario-heavy questions • per-load answer shuffling • NBSP equal-length options • next-button flow • collapsible explanations</p>
+        <div class="toggleRow">
+          <label class="toggle" title="Shows feedback immediately after you choose an option.">
+            <input id="instantFeedback" type="checkbox" checked />
+            Instant feedback
+          </label>
+          <label class="toggle" title="Auto-opens the explanation after you answer.">
+            <input id="autoExplain" type="checkbox" />
+            Auto-open explanations
+          </label>
+          <label class="toggle" title="Resets question order and reshuffles answer positions by reloading.">
+            <span>Tip: Reload to reshuffle.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 30</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+
+    <div class="barwrap" aria-label="Progress bar">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: AuthN / AuthZ / Firewalls / IDS</span></span>
+        <span class="pill" id="difficultyPill">Difficulty: Hard (word-salad)</span>
+      </div>
+
+      <div class="qtext" id="questionText">Loading…</div>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+
+      <div class="controls">
+        <button id="resetBtn" title="Restart quiz (keeps this page load’s shuffle)">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" title="Show the correct answer for this question (counts as answered)" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+        <p class="tiny" style="margin-top:10px;">If you want an answer key export or PBQ-style labs (ACL reads, rule tuning, log triage), tell me.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built for CySA+ practice. Focus: credential abuse paths, access control decisions, and detection/containment through network controls.
+    </div>
+  </div>
+
+<script>
+/**
+ * Saved template behaviors:
+ * - A/B/C/D labels
+ * - Per-load correct answer shuffles between A/B/C/D (options shuffled while keeping letters A-D)
+ * - Next button flow
+ * - Collapsible explanations
+ * - Progress bar + score
+ * - "Hard / word-salad" style + equal-length option formatting
+ */
+
+const RAW_QUESTIONS = [
+  // 1
+  {
+    domain: "Authentication (MFA / Push Fatigue)",
+    q: `SOC alerting shows multiple MFA push approvals occurring within seconds for a single user, followed by a successful VPN login from a new ASN. The user claims they “kept hitting deny” until it stopped. Which control MOST directly reduces the likelihood of this attack succeeding again?`,
+    options: [
+      { t: "Require number-matching or phishing-resistant MFA (FIDO2/WebAuthn) instead of simple push approvals for access flows.", c: true },
+      { t: "Require administrator review for repeated approval prompts before restoring remote-access sign-in capability to the account.", c: false },
+      { t: "Restrict remote-access sign-in to managed devices while keeping the existing push-based approval method for users.", c: false },
+      { t: "Lower the MFA prompt lifetime so expired approvals cannot be accepted after the user changes network location.", c: false }
+    ],
+    exp: `Push fatigue targets “approve” behavior. Number-matching and especially phishing-resistant MFA (FIDO2/WebAuthn) reduces approval abuse and MITM risk.`
+  },
+  // 2
+  {
+    domain: "Authentication (Kerberos / Golden Ticket)",
+    q: `An internal investigation finds abnormal Kerberos TGT lifetimes and service ticket issuance after hours. The domain controller logs show unusual use of the KRBTGT account. Which compromise technique is MOST consistent with this evidence?`,
+    options: [
+      { t: "Golden Ticket creation using a stolen KRBTGT key to forge TGTs and extend access across services in the domain.", c: true },
+      { t: "Pass-the-Hash using NTLM hashes to authenticate directly to services without requesting Kerberos tickets.", c: false },
+      { t: "Kerberoasting by requesting service tickets and cracking them offline to recover service account passwords.", c: false },
+      { t: "DCShadow by registering rogue domain controllers and replicating objects without triggering standard logging.", c: false }
+    ],
+    exp: `Golden Tickets involve forging TGTs with the KRBTGT secret, leading to abnormal TGT properties and after-hours ticket patterns.`
+  },
+  // 3
+  {
+    domain: "Authorization (RBAC / Least Privilege)",
+    q: `A developer can access a production database even though they are not in the production group. The IAM audit shows a policy allowing “db:*” attached to a role that multiple teams can assume. Which remediation BEST aligns with least privilege and blast radius reduction?`,
+    options: [
+      { t: "Narrow the role policy to specific actions/resources and add conditions (tags/session context) limiting who can assume it.", c: true },
+      { t: "Move production access into a separate break-glass role with approval while leaving the broad shared role unchanged.", c: false },
+      { t: "Add just-in-time approval for privileged sessions without narrowing the role permissions or trust relationships.", c: false },
+      { t: "Require stronger password complexity for the shared role while preserving the current wildcard action scope.", c: false }
+    ],
+    exp: `Fix the authorization path: overly broad shared role + permissions. Restrict assume-role conditions and scope actions/resources.`
+  },
+  // 4
+  {
+    domain: "Authentication (Password Spraying)",
+    q: `A SIEM rule triggers on repeated login failures across many accounts using the same password, spread across hours to avoid lockouts. Which detection signal MOST strongly indicates password spraying rather than brute force against one user?`,
+    options: [
+      { t: "A low-and-slow pattern: one or few passwords attempted across many distinct usernames from the same source context.", c: true },
+      { t: "Repeated authentication failures tied to a small set of privileged accounts from rotating residential exit nodes.", c: false },
+      { t: "A single successful login followed by immediate privilege escalation via a local exploit on the endpoint host.", c: false },
+      { t: "A cluster of login failures tied to legacy protocols from a subset of stale mobile clients after a certificate rollover.", c: false }
+    ],
+    exp: `Spraying uses a small password set across many users to avoid lockouts, unlike brute force focused on one account.`
+  },
+  // 5
+  {
+    domain: "Firewalls (Stateful vs Stateless)",
+    q: `A network engineer claims inbound rules alone are sufficient to allow a web app to respond to clients. A troubleshooting capture shows SYN packets reach the server, but responses are dropped at the perimeter device. Which explanation is MOST likely?`,
+    options: [
+      { t: "A stateless ACL/firewall requires explicit outbound/return-path rules; stateful devices track sessions automatically.", c: true },
+      { t: "An asymmetric routing path causes the returning flow to miss the device that evaluated the original session state.", c: false },
+      { t: "The web tier is replying from a different source address than the perimeter policy expects for the service object.", c: false },
+      { t: "A destination translation rule sends traffic to a listener that is not bound to the expected service on the backend.", c: false }
+    ],
+    exp: `Stateless filtering needs return rules for ephemeral ports. Stateful firewalls automatically permit return traffic for established sessions.`
+  },
+  // 6
+  {
+    domain: "IDS/IPS (False Positives / Tuning)",
+    q: `An IDS generates repeated alerts for “SQL injection” on a JSON API endpoint. Application logs show the traffic is a legitimate search query with encoded characters. Which change BEST reduces false positives without losing coverage?`,
+    options: [
+      { t: "Tune signatures using context (URI/path, content-type) and add exceptions narrowly for the endpoint while keeping broad rules.", c: true },
+      { t: "Raise the alert threshold for that signature family globally so the API traffic is no longer surfaced to analysts.", c: false },
+      { t: "Convert the IDS rule to a full block action for that endpoint path before validating application behavior in logs.", c: false },
+      { t: "Exclude all requests with encoded characters from inspection so the search feature continues to accept special syntax.", c: false }
+    ],
+    exp: `Use precise tuning: path-aware exclusions, content-type checks, and thresholding, not disabling broad categories.`
+  },
+  // 7
+  {
+    domain: "Authorization (ABAC / Tags)",
+    q: `A cloud platform uses ABAC with resource tags. A user can access resources outside their business unit after assuming a role through a CI pipeline. What is the MOST likely misconfiguration?`,
+    options: [
+      { t: "Session tags or role conditions are missing, allowing assumed roles to bypass tag-based constraints at evaluation time.", c: true },
+      { t: "The trust policy allows the pipeline role to assume a broader identity than intended, independent of resource ownership tags.", c: false },
+      { t: "A permissions boundary permits broader actions than the resource-tag policy expects once the workload identity is assumed.", c: false },
+      { t: "The role session inherits default attributes that do not match the project tag model used by the protected resources.", c: false }
+    ],
+    exp: `ABAC needs consistent tag/condition enforcement during role assumption. Missing conditions/session tags can let roles act broadly.`
+  },
+  // 8
+  {
+    domain: "Authentication (OAuth/OIDC Token Abuse)",
+    q: `A web app uses OAuth/OIDC. A user reports being logged in from a different device without a password prompt. Logs show a valid refresh token used from a new IP. Which action MOST directly limits this abuse scenario?`,
+    options: [
+      { t: "Bind refresh tokens to device/session context and implement refresh token rotation with reuse detection and revocation.", c: true },
+      { t: "Require reauthentication for high-risk sign-ins while leaving long-lived refresh tokens usable across any device context.", c: false },
+      { t: "Shorten access-token lifetime without changing refresh-token reuse detection or device-aware session controls.", c: false },
+      { t: "Restrict token issuance to browser-based clients while keeping the same refresh-token handling and revocation model.", c: false }
+    ],
+    exp: `Refresh tokens are high value. Rotation + reuse detection + device/session binding reduces theft impact and replay.`
+  },
+  // 9
+  {
+    domain: "Firewalls (Egress Filtering)",
+    q: `IR discovers multiple hosts beaconing to random subdomains on uncommon ports. The environment has strong inbound filtering but minimal outbound controls. Which control MOST directly reduces command-and-control success?`,
+    options: [
+      { t: "Implement egress filtering with allow-lists and DNS/proxy inspection to restrict outbound destinations and protocols.", c: true },
+      { t: "Block newly registered external domains at the resolver while leaving direct outbound IP access broadly available.", c: false },
+      { t: "Deploy stricter web filtering categories but keep unrestricted outbound transport on high-risk destination ports.", c: false },
+      { t: "Mirror edge traffic to an additional sensor for visibility while preserving the same permissive outbound policy set.", c: false }
+    ],
+    exp: `C2 often relies on outbound access. Egress filtering + DNS/proxy controls disrupt beaconing and data exfil paths.`
+  },
+  // 10
+  {
+    domain: "IDS (Network vs Host Telemetry)",
+    q: `An attacker uses encrypted channels for lateral movement. Network IDS alerts drop sharply, but endpoints show suspicious process activity. Which telemetry source is MOST reliable for detection in this situation?`,
+    options: [
+      { t: "Host-based telemetry (EDR/sysmon-like) focusing on process creation, script engines, and credential access behaviors.", c: true },
+      { t: "Network metadata enriched with identity context, because it improves triage even when endpoint process evidence is absent.", c: false },
+      { t: "Decrypted proxy telemetry at the egress point, because it captures internet traffic even when east-west movement stays internal.", c: false },
+      { t: "Authentication logs alone, because they show who accessed a system even if the launching process remains unknown.", c: false }
+    ],
+    exp: `Encryption reduces payload visibility. Endpoint telemetry captures behaviors (process, command-line, credential access) reliably.`
+  },
+  // 11
+  {
+    domain: "Authentication (SAML Misuse / Assertion)",
+    q: `A SaaS app trusts SAML assertions from an IdP. A tester demonstrates they can replay a captured assertion to log in again. Which control MOST directly prevents this replay?`,
+    options: [
+      { t: "Enforce assertion audience/recipient checks plus tight NotBefore/NotOnOrAfter windows and one-time use identifiers.", c: true },
+      { t: "Require signed assertions while leaving broad assertion validity windows and replayable identifiers unchanged.", c: false },
+      { t: "Restrict the service-provider ACS endpoint to a smaller IP range while keeping the same assertion replay behavior.", c: false },
+      { t: "Shorten the session cookie lifetime while leaving assertion uniqueness and audience validation unchanged at login.", c: false }
+    ],
+    exp: `Prevent replay using strict time windows, audience/recipient validation, and one-time IDs (and TLS everywhere).`
+  },
+  // 12
+  {
+    domain: "Authorization (Privilege Escalation / Mis-scoped Rights)",
+    q: `A helpdesk role can reset passwords for executives due to inherited permissions. Which access control failure is MOST apparent?`,
+    options: [
+      { t: "Overly broad role assignment / inheritance violating separation of duties and least privilege in the directory model.", c: true },
+      { t: "Weak hashing algorithm selection causing password resets to compute faster during directory replication cycles.", c: false },
+      { t: "Insufficient network segmentation allowing helpdesk endpoints to reach the domain controller management ports.", c: false },
+      { t: "Lack of endpoint encryption allowing attackers to read executive passwords from disk after reset completion.", c: false }
+    ],
+    exp: `This is an authorization design issue: role inheritance and privilege scope are too broad for the helpdesk role.`
+  },
+  // 13
+  {
+    domain: "Firewalls (Rule Shadowing)",
+    q: `A firewall rulebase includes an allow rule for “Any to WebServers 443” above a deny rule for a known-bad IP range. Traffic from the bad range is still allowed. Why?`,
+    options: [
+      { t: "Rule ordering causes shadowing; the broader allow rule matches first, preventing the later deny from applying.", c: true },
+      { t: "Stateful inspection disables all deny rules once a single session has been permitted by any rule previously.", c: false },
+      { t: "The bad IP range is using IPv6, and IPv6 always bypasses firewall evaluation unless NAT66 is enabled.", c: false },
+      { t: "The deny rule is applied only to outbound traffic, and inbound rules cannot block traffic by source IP range.", c: false }
+    ],
+    exp: `First-match processing means earlier broad allow rules can shadow later denies; fix by moving deny above allow or tightening match criteria.`
+  },
+  // 14
+  {
+    domain: "IDS/IPS (Inline Blocking Decisions)",
+    q: `Security proposes switching from IDS to IPS for an internet-facing service. Operations is concerned about availability. Which deployment MOST reduces risk of unintended blocking while gaining protection?`,
+    options: [
+      { t: "Start in detect-only, tune to baseline, then enable selective blocking for high-confidence signatures with monitoring.", c: true },
+      { t: "Enable full blocking immediately for all signatures and disable logging to prevent storage growth during peak traffic.", c: false },
+      { t: "Move the IPS behind the servers so it blocks only responses, which prevents false positives from impacting clients.", c: false },
+      { t: "Disable TLS and decrypt all traffic on the backend to simplify IPS inspection and maximize rule matching coverage.", c: false }
+    ],
+    exp: `Progressive rollout: detect-only, tuning, then selective blocking for high-confidence detections reduces outage risk.`
+  },
+  // 15
+  {
+    domain: "Authentication (Credential Stuffing)",
+    q: `A public login portal shows successful logins across many accounts from a small set of IPs, followed by immediate account setting changes. Passwords are not being guessed repeatedly. Which attack is MOST likely?`,
+    options: [
+      { t: "Credential stuffing using previously leaked username/password pairs, validated quickly and then monetized by changes.", c: true },
+      { t: "Password spraying using one password across many users, attempting to avoid account lockout thresholds.", c: false },
+      { t: "Offline cracking of salted hashes from the live directory database, performed in real time during logins.", c: false },
+      { t: "Kerberoasting performed against the public portal, which uses Kerberos tickets to authenticate internet users.", c: false }
+    ],
+    exp: `Credential stuffing uses known leaked pairs, often producing many successes with few failures and rapid takeover actions.`
+  },
+  // 16
+  {
+    domain: "Authorization (Policy Evaluation / Explicit Deny)",
+    q: `A user’s role includes “Allow s3:GetObject on *” but access to a specific bucket fails with AccessDenied. The user insists the allow is broad. What is the MOST likely cause?`,
+    options: [
+      { t: "A resource policy or SCP applies an explicit deny or condition that overrides identity-based allow for that bucket.", c: true },
+      { t: "The object is too large, and size limits cause authorization systems to deny reads for performance reasons.", c: false },
+      { t: "S3 access requires MFA for all operations by default, and MFA cannot be used with role-based access flows.", c: false },
+      { t: "The bucket’s encryption at rest prevents authorization checks until decryption occurs, causing denials to appear.", c: false }
+    ],
+    exp: `In many policy engines, explicit deny overrides allow. Resource policies, SCPs, and conditions can block even broad allows.`
+  },
+  // 17
+  {
+    domain: "Firewalls (NAT / Attribution)",
+    q: `The SOC needs to map a suspicious outbound connection to the internal host that initiated it. The perimeter firewall performs PAT for thousands of clients. Which log data is MOST necessary?`,
+    options: [
+      { t: "NAT translation logs including timestamps, internal IP/port, external IP/port, and mapped public port tuples.", c: true },
+      { t: "Only the destination IP reputation category because it identifies which internal host is most likely infected.", c: false },
+      { t: "DHCP scope configuration because it shows address pools, which uniquely identifies each endpoint permanently.", c: false },
+      { t: "Switch port MAC address tables because they retain historical mapping for weeks without needing timestamps.", c: false }
+    ],
+    exp: `With PAT, you need NAT translation tuples and timestamps to map public connections back to internal source IP/port.`
+  },
+  // 18
+  {
+    domain: "IDS (Evasion / Fragmentation)",
+    q: `A red team evades an IDS by fragmenting packets and using overlapping TCP segments. Which countermeasure MOST directly addresses this evasion?`,
+    options: [
+      { t: "Enable traffic normalization and stream reassembly on the IDS/IPS so inspection occurs on reconstructed flows.", c: true },
+      { t: "Disable TCP entirely for the protected service and require UDP-based transports so fragmentation cannot occur.", c: false },
+      { t: "Block all small packets because fragmentation always results in smaller packet sizes on the monitored interface.", c: false },
+      { t: "Increase the IDS alert threshold so fragmented packets generate fewer alerts and reduce analyst workload today.", c: false }
+    ],
+    exp: `Normalization and reassembly defeat fragmentation/overlap evasion by ensuring the IDS inspects canonical reconstructed streams.`
+  },
+  // 19
+  {
+    domain: "Authentication (RADIUS/TACACS+ Use Case)",
+    q: `Network devices authenticate administrators through a central service with command authorization. The security team wants per-command accounting. Which protocol BEST fits?`,
+    options: [
+      { t: "TACACS+ for centralized admin auth, granular command authorization, and detailed accounting for device management.", c: true },
+      { t: "RADIUS because it encrypts the entire payload end-to-end and provides per-command authorization by default.", c: false },
+      { t: "LDAP because it natively supports device command control and logs each CLI command without additional tooling.", c: false },
+      { t: "Kerberos because it is designed for AAA on routers and switches with per-command logs built into the KDC.", c: false }
+    ],
+    exp: `TACACS+ is commonly used for network device admin with command authorization and accounting granularity.`
+  },
+  // 20
+  {
+    domain: "Authorization (Time-based / Conditional Access)",
+    q: `A user can access a finance app only during business hours and only from compliant devices. This is enforced by the identity platform. What control category BEST describes this?`,
+    options: [
+      { t: "Conditional access enforcing context-based authorization decisions using time, device posture, and identity signals.", c: true },
+      { t: "Mandatory access control enforcing static labels that never change based on time or device conditions.", c: false },
+      { t: "Discretionary access control allowing users to share finance data by granting access to other users freely.", c: false },
+      { t: "Role-based access control alone because roles inherently represent time windows and device compliance states.", c: false }
+    ],
+    exp: `This is conditional/context-based access (ABAC-like decisions) rather than static RBAC or label-based MAC.`
+  },
+  // 21
+  {
+    domain: "Firewalls (Application Layer / L7)",
+    q: `A firewall allows TCP 443 to an internal server. An attacker tunnels non-HTTPS traffic over 443. Which firewall capability MOST directly detects and blocks this?`,
+    options: [
+      { t: "Layer 7 application identification/inspection that validates protocol behavior, not just port numbers, for enforcement.", c: true },
+      { t: "Static NAT translation so the server uses a dedicated public IP and traffic is not mixed with other services.", c: false },
+      { t: "Packet filtering with a destination port allow rule because port 443 is reserved exclusively for HTTPS by standards.", c: false },
+      { t: "MAC address filtering so only approved devices can send 443 traffic and tunneling becomes infeasible in practice.", c: false }
+    ],
+    exp: `Port-based rules can be bypassed. L7 inspection/app-ID verifies protocol and blocks tunneling masquerading on 443.`
+  },
+  // 22
+  {
+    domain: "IDS (Alert Context / Prioritization)",
+    q: `An IDS generates “ET POLICY Possible External IP Check” alerts from multiple endpoints. The analyst needs to triage quickly. Which enrichment MOST increases decision quality?`,
+    options: [
+      { t: "Process/endpoint context from EDR (parent process, command line) correlated to the destination and user identity.", c: true },
+      { t: "The IDS sensor CPU utilization because higher utilization indicates higher confidence in the alert output results.", c: false },
+      { t: "The number of VLANs in the environment because more VLANs generally reduce false positives universally today.", c: false },
+      { t: "The physical rack location of the IDS because proximity to the core switch improves signature accuracy overall.", c: false }
+    ],
+    exp: `Network alerts become actionable with endpoint context: what process initiated it, which user, and what command-line behavior.`
+  },
+  // 23
+  {
+    domain: "Authentication (Account Lockout Strategy)",
+    q: `A company wants to reduce brute force but avoid easy denial-of-service by lockouts. Which approach BEST balances both?`,
+    options: [
+      { t: "Use risk-based throttling and progressive delays with MFA challenges rather than hard lockouts on low-confidence events.", c: true },
+      { t: "Lock accounts permanently after five failures and require helpdesk calls for every unlock to increase security.", c: false },
+      { t: "Disable password policies and rely only on IP allow-listing because IP addresses are stable identifiers for users.", c: false },
+      { t: "Allow unlimited attempts but log them, because logging alone prevents brute force from succeeding over time.", c: false }
+    ],
+    exp: `Progressive throttling + risk signals + MFA reduces brute force while mitigating lockout DoS potential.`
+  },
+  // 24
+  {
+    domain: "Authorization (Privilege Creep)",
+    q: `A user has accumulated access over years across multiple projects. They can now approve invoices and also modify vendor bank details. Which governance practice MOST directly addresses this risk?`,
+    options: [
+      { t: "Perform periodic access reviews/recertification with separation-of-duties checks and remove unnecessary entitlements.", c: true },
+      { t: "Increase password length requirements so invoice approval actions require stronger authentication on every click.", c: false },
+      { t: "Disable firewall logging to reduce noise so the finance application has better performance under peak loads.", c: false },
+      { t: "Move vendor data to a different subnet so privilege creep cannot cross network boundaries by policy definition.", c: false }
+    ],
+    exp: `Privilege creep is mitigated by access recertification and SoD reviews to remove excess entitlements and conflicting duties.`
+  },
+  // 25
+  {
+    domain: "Firewalls (Micro-segmentation)",
+    q: `A data center breach shows lateral movement between application tiers. Leadership wants to limit east-west traffic to only required flows without redesigning IP addressing. Which control BEST supports this?`,
+    options: [
+      { t: "Micro-segmentation using host-based or distributed firewall policies that permit only explicit service-to-service flows.", c: true },
+      { t: "Expand the flat network to simplify routing and reduce the number of ACLs, which lowers misconfiguration risk.", c: false },
+      { t: "Disable IDS signatures for lateral movement so analysts focus on perimeter detections and external attack vectors.", c: false },
+      { t: "Allow all internal traffic and rely on endpoint antivirus, because internal traffic is trusted by design standards.", c: false }
+    ],
+    exp: `Micro-segmentation restricts east-west communications at workload level without IP redesign; it’s a direct lateral-movement control.`
+  },
+  // 26
+  {
+    domain: "IDS/IPS (Detection Coverage Gaps)",
+    q: `A network IDS is placed only at the internet edge. An insider threat exfiltrates data to an internal file server. Why might the IDS miss this activity?`,
+    options: [
+      { t: "Placement limits visibility; east-west/internal traffic may not traverse the edge sensor, creating a blind spot.", c: true },
+      { t: "IDS signatures work only for inbound traffic and cannot trigger on outbound or internal sessions by design rules.", c: false },
+      { t: "Internal servers use SMB, and IDS engines do not support inspection for SMB traffic under any circumstances.", c: false },
+      { t: "The IDS is stateful, so it ignores all traffic after the first packet and cannot detect file transfers at all.", c: false }
+    ],
+    exp: `Sensor placement matters. If internal flows never cross the monitored choke point, the IDS won’t see them.`
+  },
+  // 27
+  {
+    domain: "Authentication (Certificate-based / mTLS)",
+    q: `A service mesh uses mTLS between services. After a compromise, the team wants to quickly revoke a service identity to prevent access. Which mechanism MOST directly supports this?`,
+    options: [
+      { t: "Short-lived certificates with automated rotation and a centralized revocation/deny capability in the mesh control plane.", c: true },
+      { t: "Long-lived shared certificates stored in a repository so all services remain consistent and easier to manage daily.", c: false },
+      { t: "Disable TLS temporarily so troubleshooting is easier while the team investigates revocation issues in parallel.", c: false },
+      { t: "Use self-signed certs per pod without a CA so compromise cannot affect other services in the mesh architecture.", c: false }
+    ],
+    exp: `mTLS identity is certificate-based. Short lifetimes + rotation reduce blast radius; centralized revoke/deny enforces quickly.`
+  },
+  // 28
+  {
+    domain: "Authorization (Token Scopes / Least Privilege)",
+    q: `An API token is issued with scopes allowing read/write across all projects. A developer workstation is compromised. Which change MOST reduces potential impact?`,
+    options: [
+      { t: "Issue scoped tokens with least-privilege project-specific permissions and short lifetimes, plus rotation and auditing.", c: true },
+      { t: "Store the token in a hidden file on the workstation so malware cannot find it easily during typical scans.", c: false },
+      { t: "Allow the token only from the workstation IP so it remains usable, because workstation IPs are stable identities.", c: false },
+      { t: "Disable logging for token use to prevent attackers from learning detection patterns and evasion techniques.", c: false }
+    ],
+    exp: `Reduce scope and lifetime. Least-privilege, short-lived tokens + auditing/rotation minimize damage from token theft.`
+  },
+  // 29
+  {
+    domain: "Firewalls + IDS (DMZ Design)",
+    q: `A public web server in a DMZ is compromised. You want to minimize the attacker’s ability to pivot into the internal network while maintaining required application dependencies. Which design is BEST?`,
+    options: [
+      { t: "Restrict DMZ-to-internal flows to explicit required ports/services, monitor with IDS, and avoid shared credentials/routes.", c: true },
+      { t: "Allow DMZ hosts full internal access so they can reach dependencies easily, then rely on antivirus for containment.", c: false },
+      { t: "Place the DMZ and internal network on the same VLAN so routing is simpler and firewall complexity is reduced.", c: false },
+      { t: "Disable internal firewall logging so attackers cannot discover ports, and increase DMZ bandwidth for stability.", c: false }
+    ],
+    exp: `Explicit allow-only DMZ-to-internal rules + monitoring and no shared trust paths reduce pivoting while preserving necessities.`
+  },
+  // 30
+  {
+    domain: "IDS (Incident Response Workflow)",
+    q: `An IDS alert indicates suspicious outbound connections from a finance workstation. You need to confirm whether it’s true compromise and contain quickly. Which sequence is MOST appropriate?`,
+    options: [
+      { t: "Correlate IDS with endpoint telemetry, confirm process/user context, isolate host if suspicious, then preserve evidence.", c: true },
+      { t: "Disable the IDS signature immediately to reduce noise, then wait for more alerts to determine if compromise exists.", c: false },
+      { t: "Reimage the workstation immediately without collecting volatile artifacts, then close the incident as resolved.", c: false },
+      { t: "Block the entire finance subnet at the firewall permanently, then ask users to submit tickets for exceptions.", c: false }
+    ],
+    exp: `Best practice: validate with multiple sources, confirm context, contain (isolate), then collect/preserve evidence for RCA and scoping.`
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+
+let questions = [];
+let idx = 0;
+let score = 0;
+let correct = 0;
+let incorrect = 0;
+let answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function normalizeOptionText(optionText){
+  let t = optionText.replace(/\s+/g, " ").trim();
+  t = t.replace(/[\u00A0\u2007\u202F]+$/g, "");
+  if(!/[.!?]$/.test(t)) t += ".";
+  return t;
+}
+
+function padWithNbspToLongest(options){
+  const normalized = options.map(o => ({...o, t: normalizeOptionText(o.t)}));
+  const maxLen = Math.max(...normalized.map(o => o.t.length));
+  return normalized.map(o => ({
+    ...o,
+    display: o.t + "\u00A0".repeat(maxLen - o.t.length)
+  }));
+}
+
+function prepQuestions(){
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const shuffledOpts = shuffle(q.options.map(o => ({...o}))); // per-load correct answer moves between A/B/C/D
+    return {...q, options: padWithNbspToLongest(shuffledOpts)};
+  });
+}
+
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  const pct = (idx / questions.length) * 100;
+  barEl.style.width = `${pct}%`;
+}
+
+function lockOptions(lock=true){
+  const nodes = answersEl.querySelectorAll(".opt");
+  nodes.forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt";
+    div.role = "button";
+    div.tabIndex = 0;
+    div.setAttribute("aria-disabled","false");
+
+    const letter = document.createElement("div");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+
+    const text = document.createElement("div");
+    text.className = "opttext";
+    text.textContent = opt.display || opt.t;
+
+    div.appendChild(letter);
+    div.appendChild(text);
+
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+
+    answersEl.appendChild(div);
+  });
+
+  explainText.textContent = item.exp;
+  setStats();
+}
+
+function choose(i){
+  if(answered) return;
+
+  const item = questions[idx];
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const picked = item.options[i];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(picked.c){
+    score += 1;
+    correct += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Good pick—this best matches the control or concept implied by the scenario.</span>`;
+    }
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>Look for the option that most directly satisfies the constraints and threat model.</span>`;
+    }
+  }
+
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  setStats();
+  nextBtn.disabled = false;
+}
+
+function reveal(){
+  if(answered) return;
+  const item = questions[idx];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  nodes[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked){
+    feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Correct option highlighted—use the explanation to lock in the reasoning.</span>`;
+  }
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  nextBtn.disabled = false;
+  setStats();
+}
+
+function next(){
+  if(!answered) return;
+  idx += 1;
+  if(idx >= questions.length){
+    finish();
+    return;
+  }
+  render();
+}
+
+function finish(){
+  barEl.style.width = `100%`;
+  answersEl.innerHTML = "";
+  feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed all 30 questions.";
+  domainEl.textContent = "Domain: Completed";
+  explainText.textContent = "";
+  explainBox.open = false;
+
+  nextBtn.disabled = true;
+  revealBtn.disabled = true;
+
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+
+function reset(){
+  idx = 0;
+  score = 0;
+  correct = 0;
+  incorrect = 0;
+  prepQuestions();
+  render();
+}
+
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+
+prepQuestions();
+render();
+</script>
+</body>
+</html>

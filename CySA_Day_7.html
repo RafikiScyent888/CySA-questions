@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode Quiz — Business Continuity Planning</title>
+  <style>
+    :root{
+      --bg:#071427;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#2f7dff;
+      --good:#2fd48f;
+      --bad:#ff5c7a;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 28px 18px 54px; }
+    header{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; }
+    .titlebox{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+      flex:1;
+    }
+    h1{ margin:0 0 6px; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:0; color:var(--muted); font-size: 13px; }
+    .stats{
+      min-width: 260px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+    }
+    .statrow{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size: 13px; color: var(--muted);
+      padding: 6px 2px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+    }
+    .statrow:last-child{border-bottom:0}
+    .statrow b{color:var(--text); font-weight:650}
+
+    .barwrap{
+      margin: 14px 0 18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55));
+      transition: width .35s ease;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .qmeta{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:12px; margin-bottom: 10px;
+      color: var(--muted); font-size: 13px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px; background: rgba(0,0,0,.15);
+      color: var(--muted); font-size: 12px; user-select:none;
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(47,125,255,.95);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.15);
+    }
+
+    .qtext{ font-size: 16px; margin: 6px 0 14px; white-space: pre-wrap; }
+
+    .answers{ display:grid; grid-template-columns: 1fr; gap: 10px; margin: 10px 0 14px; }
+    .opt{
+      display:flex; gap:12px; align-items:flex-start;
+      padding: 12px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.35); }
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{
+      flex:0 0 auto; width: 28px; height: 28px; border-radius: 10px;
+      display:grid; place-items:center; font-weight: 800;
+      background: rgba(47,125,255,.16);
+      border:1px solid rgba(47,125,255,.28);
+      color: var(--text);
+    }
+    .opttext{ color: var(--text); font-size: 14px; line-height: 1.35; padding-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; white-space: normal; }
+    .padghost{ opacity: 0; user-select: none; }
+
+    .opt.correct{ border-color: rgba(47,212,143,.55); background: rgba(47,212,143,.10); }
+    .opt.correct .letter{ background: rgba(47,212,143,.18); border-color: rgba(47,212,143,.55); }
+    .opt.wrong{ border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10); }
+    .opt.wrong .letter{ background: rgba(255,92,122,.18); border-color: rgba(255,92,122,.55); }
+
+    .feedback{
+      margin-top: 8px; font-size: 13px; color: var(--muted);
+      display:flex; gap:10px; align-items:center; min-height: 22px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      font-size: 12px; color: var(--muted);
+    }
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95); }
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95); }
+
+    details{
+      margin-top: 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    summary{ cursor:pointer; color: var(--muted); font-size: 13px; user-select:none; }
+    .explain{ margin-top: 10px; color: var(--text); font-size: 13px; white-space: pre-wrap; }
+
+    .controls{
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 12px; margin-top: 14px; flex-wrap: wrap;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.40); }
+    button:active{ transform: translateY(0px); }
+    button.primary{ background: rgba(47,125,255,.22); border-color: rgba(47,125,255,.45); }
+    button[disabled]{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .footer{ margin-top: 16px; color: var(--muted); font-size: 12px; text-align:center; }
+
+    .end{ margin-top: 18px; display:none; }
+    .end h2{ margin: 0 0 8px; font-size: 18px; }
+    .end p{ margin: 0; color: var(--muted); }
+    .tiny{ font-size: 12px; color: var(--muted); }
+
+    .toggleRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .toggle{
+      display:flex; gap:10px; align-items:center;
+      padding: 10px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      color: var(--muted); font-size: 12px;
+      user-select:none;
+    }
+    .toggle input{ transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — Business Continuity Planning</h1>
+        <p class="subtitle">30 scenario-heavy questions • per-load answer shuffling • equal-length options • next-button flow • collapsible explanations</p>
+        <div class="toggleRow">
+          <label class="toggle" title="Shows feedback immediately after you choose an option.">
+            <input id="instantFeedback" type="checkbox" checked />
+            Instant feedback
+          </label>
+          <label class="toggle" title="Auto-opens the explanation after you answer.">
+            <input id="autoExplain" type="checkbox" />
+            Auto-open explanations
+          </label>
+          <label class="toggle" title="Resets question order and reshuffles answer positions by reloading.">
+            <span>Tip: Reload to reshuffle.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 30</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+
+    <div class="barwrap" aria-label="Progress bar">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: BCP / DR / Resilience</span></span>
+        <span class="pill" id="difficultyPill">Difficulty: Hard (word-salad)</span>
+      </div>
+
+      <div class="qtext" id="questionText">Loading…</div>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+
+      <div class="controls">
+        <button id="resetBtn" title="Restart quiz (keeps this page load’s shuffle)">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" title="Show the correct answer for this question (counts as answered)" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+        <p class="tiny" style="margin-top:10px;">Want a PBQ-style BIA worksheet + DR table-top checklist? Tell me.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built for CySA+ practice. Focus: BIA, RTO/RPO, DR strategies, backups, exercises, communications, and resiliency controls.
+    </div>
+  </div>
+
+<script>
+/**
+ * Saved template behaviors:
+ * - A/B/C/D labels
+ * - Per-load correct answer shuffles between A/B/C/D (options shuffled while keeping letters A-D)
+ * - Next button flow
+ * - Collapsible explanations
+ * - Progress bar + score
+ * - "Hard / word-salad" style + equal-length option formatting
+ */
+
+const RAW_QUESTIONS = [
+  // 1
+  {
+    domain: "BCP Foundations (BIA)",
+    q: `A business continuity program is being launched. Leadership asks which systems must be restored first after an outage and what maximum downtime is acceptable. Which activity MOST directly produces this information?`,
+    options: [
+      { t: "Conduct a business impact analysis to rank critical processes, dependencies, and recovery targets.", c: true },
+      { t: "Review outage tickets to see which systems have generated the most historical downtime.", c: false },
+      { t: "Classify systems by data sensitivity so regulated assets automatically recover before others.", c: false },
+      { t: "Patch externally exposed hosts first so the least secure services become the first restored tier.", c: false }
+    ],
+    exp: `A BIA determines criticality, dependencies, and defines recovery requirements like RTO and RPO for business processes.`
+  },
+  // 2
+  {
+    domain: "BCP Metrics (RTO vs RPO)",
+    q: `A CFO asks why a database needs expensive replication. The business can tolerate losing up to 10 minutes of data but needs the service back within 2 hours. Which statement correctly maps these requirements?`,
+    options: [
+      { t: "RPO is 10 minutes for tolerable data loss, and RTO is 2 hours for service restoration.", c: true },
+      { t: "RTO is 10 minutes for allowable downtime, and RPO is 2 hours for restoring service data.", c: false },
+      { t: "RPO is 2 hours because it measures how long the application can remain unavailable after disruption.", c: false },
+      { t: "RTO is 2 hours and RPO is not applicable because replication eliminates the data-loss metric entirely.", c: false }
+    ],
+    exp: `RPO = maximum tolerable data loss; RTO = maximum tolerable downtime to restore service.`
+  },
+  // 3
+  {
+    domain: "DR Strategy (Backups)",
+    q: `A ransomware incident encrypts production data and attempts to delete online backups. Which approach BEST supports recoverability even if admin credentials are compromised?`,
+    options: [
+      { t: "Use immutable backups with a separate control plane and an offline recovery copy.", c: true },
+      { t: "Rely on frequent snapshots stored in the same tenant with the same administrator roles.", c: false },
+      { t: "Keep backup repositories mounted so recovery jobs can write directly to production storage.", c: false },
+      { t: "Centralize backup credentials in the domain vault so all restore operators use the same account.", c: false }
+    ],
+    exp: `Immutable + separated control plane + offline copies resist deletion/encryption by attackers with stolen creds.`
+  },
+  // 4
+  {
+    domain: "BCP Planning (Single Points of Failure)",
+    q: `A BIA reveals a payroll application depends on a single on-prem database server with no redundancy. Which remediation MOST directly reduces this single point of failure?`,
+    options: [
+      { t: "Implement database high availability with replication and automated failover for that dependency.", c: true },
+      { t: "Move the payroll application to a new subnet so a local host failure affects fewer users.", c: false },
+      { t: "Increase database monitoring frequency so administrators are warned sooner before a crash occurs.", c: false },
+      { t: "Schedule more frequent full backups so the single database server can be rebuilt after failure.", c: false }
+    ],
+    exp: `Redundancy and automated failover address availability risk from single points of failure directly.`
+  },
+  // 5
+  {
+    domain: "BCP Governance (Plan Ownership)",
+    q: `During an outage, teams are unsure who can authorize failing over to the secondary site. What BCP element is MOST clearly missing?`,
+    options: [
+      { t: "Document failover authority, escalation paths, and activation criteria in the continuity plan.", c: true },
+      { t: "Add quarterly vulnerability scans for the secondary site so technical risk is more visible.", c: false },
+      { t: "Enforce stronger admin passwords so only senior personnel can approve major recovery actions.", c: false },
+      { t: "Create stricter firewall rules so failover requests originate from an approved management network.", c: false }
+    ],
+    exp: `BCP/DR must define decision authority, roles, communications, and escalation paths for failover actions.`
+  },
+  // 6
+  {
+    domain: "DR Testing (Tabletop vs Functional)",
+    q: `An organization wants to validate its incident communications and decision-making steps without impacting production. Which exercise type BEST fits?`,
+    options: [
+      { t: "Run a tabletop exercise focused on roles, communications, and decision points.", c: true },
+      { t: "Perform a full interruption test that cuts production services to measure actual failover timing.", c: false },
+      { t: "Conduct a red team assessment to simulate adversary behavior during the outage scenario.", c: false },
+      { t: "Launch a phishing campaign to confirm employees know how to report continuity issues.", c: false }
+    ],
+    exp: `Tabletops validate procedures and communications with minimal risk; full interruption tests are highest risk.`
+  },
+  // 7
+  {
+    domain: "BCP Communications (Crisis Comms)",
+    q: `A regional outage impacts customer-facing services. Social media rumors spread quickly. Which BCP component MOST directly addresses consistent external messaging?`,
+    options: [
+      { t: "Use a crisis communication plan with approved spokespeople, channels, and prepared messages.", c: true },
+      { t: "Create a patching calendar for public web systems so rumors are less likely to spread.", c: false },
+      { t: "Route all executive communications through the SOC so incident updates remain centralized.", c: false },
+      { t: "Add social media monitoring alerts so external messaging can be developed after posts appear.", c: false }
+    ],
+    exp: `Crisis comms defines who speaks, what to say, how to notify customers/regulators, and keeps messaging consistent.`
+  },
+  // 8
+  {
+    domain: "BCP (Work Area Recovery)",
+    q: `A flood makes a headquarters building unusable for weeks. The organization needs to keep operations running with minimal delay. Which strategy BEST supports this?`,
+    options: [
+      { t: "Use work area recovery through remote operations and alternate facilities for essential staff.", c: true },
+      { t: "Increase endpoint malware scanning so the damaged building can reopen with fewer delays.", c: false },
+      { t: "Require staff to remain on-premises so coordination stays centralized during the disruption.", c: false },
+      { t: "Rotate workstation encryption keys before relocation so alternate offices inherit trusted devices.", c: false }
+    ],
+    exp: `Alternate sites and remote work enablement support continuity when facilities are unavailable.`
+  },
+  // 9
+  {
+    domain: "DR (Hot/Warm/Cold Sites)",
+    q: `A business requires near-immediate recovery with minimal data loss. Budget is high, and downtime must be minutes. Which site strategy BEST matches?`,
+    options: [
+      { t: "Deploy a hot site with current data and ready systems for rapid cutover.", c: true },
+      { t: "Maintain a cold site and ship hardware after the declaration so costs stay low.", c: false },
+      { t: "Use a warm site with baseline infrastructure but rebuild current data after activation.", c: false },
+      { t: "Rely on local backups only and rebuild in place because site redundancy is unnecessary.", c: false }
+    ],
+    exp: `Hot sites are fully equipped and support rapid recovery; warm is partial; cold is minimal and slowest.`
+  },
+  // 10
+  {
+    domain: "BIA Dependencies (Third Parties)",
+    q: `A critical application relies on a SaaS provider. The BIA shows this dependency is a major risk. What is the BEST next step?`,
+    options: [
+      { t: "Review the vendor’s resiliency commitments, recovery capabilities, and fallback procedures.", c: true },
+      { t: "Assume the provider’s multitenant design already satisfies every continuity requirement.", c: false },
+      { t: "Reduce application logging to minimize visible evidence when the provider has an outage.", c: false },
+      { t: "Hide the SaaS endpoint behind internal DNS so external dependency risk is reduced.", c: false }
+    ],
+    exp: `Third-party risk includes resiliency and recovery assurances; plan contingencies and validate SLA/DR capabilities.`
+  },
+  // 11
+  {
+    domain: "Backups (3-2-1)",
+    q: `A continuity plan calls for “3-2-1” backups. Which description BEST matches this rule?`,
+    options: [
+      { t: "Maintain three data copies on two media types with one copy kept offsite or offline.", c: true },
+      { t: "Store three backup sets in two cloud regions with one administrator assigned to both.", c: false },
+      { t: "Retain three years of archives on two servers with one set encrypted for compliance.", c: false },
+      { t: "Create three recovery teams on two shifts with one shared repository for restoration scripts.", c: false }
+    ],
+    exp: `3-2-1 is a backup resilience rule: multiple copies, different media, and offsite/offline storage.`
+  },
+  // 12
+  {
+    domain: "Resilience (Redundancy vs Diversity)",
+    q: `An organization has two data centers in the same city. A regional power event takes both offline. What design principle was MOST lacking?`,
+    options: [
+      { t: "Geographic diversity was missing, allowing a single regional event to affect both sites.", c: true },
+      { t: "Administrative diversity was missing, because shared privileged accounts caused the simultaneous outage.", c: false },
+      { t: "Patch diversity was missing, because identical software versions create region-wide power failures.", c: false },
+      { t: "Logging diversity was missing, because separate collectors would have prevented correlated downtime.", c: false }
+    ],
+    exp: `Sites in the same region share risk. Geographic diversity reduces correlated failures from regional disasters.`
+  },
+  // 13
+  {
+    domain: "BCP (Criticality Tiering)",
+    q: `A business has limited DR budget. It can’t provide the same recovery speed for all systems. What is the BEST approach?`,
+    options: [
+      { t: "Tier services by business impact and align recovery spend to the most critical functions.", c: true },
+      { t: "Apply identical recovery objectives to every system so each department receives equal treatment.", c: false },
+      { t: "Fund whichever systems handle the highest data volume because storage size defines continuity priority.", c: false },
+      { t: "Recover the least complex services first so the program can report quick technical wins.", c: false }
+    ],
+    exp: `BCP aligns recovery investment with business priorities and impact; tiering is common and practical.`
+  },
+  // 14
+  {
+    domain: "DR (Failover vs Failback)",
+    q: `After failing over to the secondary site, the team needs to return services to the primary site once it is restored. What is this process called?`,
+    options: [
+      { t: "Failback is the controlled return of operations from the alternate site to the primary site.", c: true },
+      { t: "Rollback is the decision to discard secondary-site processing after the disruption closes.", c: false },
+      { t: "Warm restoration is the process of restarting workloads on the rebuilt primary environment.", c: false },
+      { t: "Rotation is the handoff step where traffic is shifted between two synchronized production regions.", c: false }
+    ],
+    exp: `Failover moves operations to alternate; failback returns them to primary once stable.`
+  },
+  // 15
+  {
+    domain: "DR Documentation (Runbooks)",
+    q: `During an outage, a junior admin needs step-by-step recovery instructions for a critical application. What document BEST provides this?`,
+    options: [
+      { t: "Use a disaster recovery runbook with ordered steps, dependencies, contacts, and validation tasks.", c: true },
+      { t: "Review the acceptable use policy because it defines how employees handle systems during events.", c: false },
+      { t: "Open the latest vulnerability report because it lists the assets needing the fastest technical action.", c: false },
+      { t: "Reference the network diagram alone because topology views imply the correct recovery order.", c: false }
+    ],
+    exp: `Runbooks provide detailed procedures, sequencing, dependencies, and verification steps needed during recovery.`
+  },
+  // 16
+  {
+    domain: "BCP (Change Management)",
+    q: `A continuity test fails because a critical app dependency changed months ago, but the DR plan was not updated. What is the BEST long-term fix?`,
+    options: [
+      { t: "Tie BCP and DR updates to change management so dependencies stay accurate over time.", c: true },
+      { t: "Freeze changes to critical systems so documented recovery steps do not need further revision.", c: false },
+      { t: "Reduce exercise frequency so outdated dependencies are less likely to surface during testing.", c: false },
+      { t: "Restrict plan access to a smaller team so fewer people act on stale recovery documentation.", c: false }
+    ],
+    exp: `BCP/DR must be living documents, updated via change management and validated through regular exercises.`
+  },
+  // 17
+  {
+    domain: "Incident vs Disaster (Activation)",
+    q: `A minor outage affects one noncritical service for 15 minutes. The DR manager wants to activate full DR. What is the BEST response?`,
+    options: [
+      { t: "Use the documented activation thresholds and escalate proportionally before declaring full DR.", c: true },
+      { t: "Declare full disaster recovery for every outage so teams gain more operational practice.", c: false },
+      { t: "Reserve DR activation only for confirmed cyberattacks because availability events use separate plans.", c: false },
+      { t: "Wait for public reporting before escalation because media attention is the clearest severity trigger.", c: false }
+    ],
+    exp: `BCP/DR activation should follow criteria (impact, duration, scope) to avoid unnecessary disruption and cost.`
+  },
+  // 18
+  {
+    domain: "BCP (Manual Workarounds)",
+    q: `A key service cannot meet the required RTO due to legacy constraints. The business still needs continuity. What option BEST supports operations?`,
+    options: [
+      { t: "Document manual workarounds and alternate processing steps for the critical business function.", c: true },
+      { t: "Retire the service so the organization no longer has to meet the stated recovery target.", c: false },
+      { t: "Rely on end users to adapt informally because operational teams will improvise during the outage.", c: false },
+      { t: "Increase vulnerability scans against the legacy platform to improve availability during disruptions.", c: false }
+    ],
+    exp: `Manual workarounds/alternate processes are legitimate BCP strategies when technical recovery can’t meet targets.`
+  },
+  // 19
+  {
+    domain: "Backups (Restore Testing)",
+    q: `Backups are taken nightly, but no restores have been tested. What is the MOST significant risk?`,
+    options: [
+      { t: "The backups may not restore cleanly, so recoverability remains unverified until tested.", c: true },
+      { t: "Nightly backups are sufficient evidence because successful jobs imply successful recovery.", c: false },
+      { t: "Restore testing weakens backup security because mounted recovery jobs expose encryption material.", c: false },
+      { t: "Testing restorations is optional when checksums are present because integrity proves usability.", c: false }
+    ],
+    exp: `Untested backups are a common failure point. Regular restore tests confirm integrity, completeness, and procedures.`
+  },
+  // 20
+  {
+    domain: "BCP (Data Prioritization)",
+    q: `A BIA identifies customer orders as the most critical data set. During a DR event, what should the recovery team prioritize first?`,
+    options: [
+      { t: "Restore the order-processing service stack and its dependencies before lower-priority workloads.", c: true },
+      { t: "Bring back the simplest applications first so the recovery team can clear tasks quickly.", c: false },
+      { t: "Restore systems according to user demand as business units raise complaints during the outage.", c: false },
+      { t: "Start every system simultaneously because parallel recovery always shortens the total outage window.", c: false }
+    ],
+    exp: `Prioritize business-critical processes and dependencies identified in the BIA to meet RTO/RPO for key operations.`
+  },
+  // 21
+  {
+    domain: "DR (Replication Modes)",
+    q: `A company uses asynchronous replication to a DR site. After a sudden failure, some transactions are missing at the DR site. Which concept explains this?`,
+    options: [
+      { t: "Asynchronous replication can leave a lag window, so recent transactions may be absent after failover.", c: true },
+      { t: "Asynchronous replication mirrors every write instantly, so missing data indicates the wrong site was used.", c: false },
+      { t: "Replication gaps occur only when malware tampers with journals, so compromise is the primary explanation.", c: false },
+      { t: "This is mainly a time-synchronization issue because clock drift discards writes during DR activation.", c: false }
+    ],
+    exp: `Async replication trades some potential data loss for performance and distance; missing transactions align with RPO risk.`
+  },
+  // 22
+  {
+    domain: "BCP (Supply Chain)",
+    q: `A critical supplier outage stops manufacturing even though IT systems are available. What BCP lesson is MOST relevant?`,
+    options: [
+      { t: "Continuity planning must cover supplier dependencies and alternate sourcing, not just internal IT.", c: true },
+      { t: "Cybersecurity controls alone are sufficient because vendor outages usually begin as security incidents.", c: false },
+      { t: "External suppliers sit outside the continuity program because the business cannot influence their operations.", c: false },
+      { t: "Improved monitoring solves the issue because early detection removes the need for sourcing contingencies.", c: false }
+    ],
+    exp: `Continuity includes business operations and supply chain dependencies; alternate sourcing and contractual resilience matter.`
+  },
+  // 23
+  {
+    domain: "BCP (Exercises Types)",
+    q: `The organization wants to validate technical recovery steps and actually bring services up in the DR site without shutting production down. What exercise BEST fits?`,
+    options: [
+      { t: "Run a functional exercise that executes recovery steps in the DR environment without taking production down.", c: true },
+      { t: "Perform a checklist review because documented procedures provide enough assurance without live validation.", c: false },
+      { t: "Use a full interruption test since lower-impact exercises do not prove any meaningful recovery capability.", c: false },
+      { t: "Launch a phishing simulation to confirm personnel can recognize continuity-related communications.", c: false }
+    ],
+    exp: `Functional exercises test technical recovery steps in a controlled way, without necessarily causing production interruption.`
+  },
+  // 24
+  {
+    domain: "BCP (Critical Records)",
+    q: `A natural disaster destroys on-site paper contracts and records needed for legal operations. Which control MOST reduces future impact?`,
+    options: [
+      { t: "Digitize essential records and maintain protected offsite copies with retention controls.", c: true },
+      { t: "Store the paper originals in more accessible cabinets so staff can evacuate them faster.", c: false },
+      { t: "Reduce record volume by disposing of older contracts whenever storage space becomes limited.", c: false },
+      { t: "Depend on institutional knowledge because key agreements can be reconstructed after the event.", c: false }
+    ],
+    exp: `Critical records protection includes digitization, offsite storage, access control, and retention management.`
+  },
+  // 25
+  {
+    domain: "DR (Order of Operations)",
+    q: `After a data center outage, teams restore application servers first, but the app still fails because the database and IAM are down. What continuity concept does this illustrate?`,
+    options: [
+      { t: "Recovery sequencing and dependency mapping were missing from the restoration order.", c: true },
+      { t: "The issue reflects patch prioritization, because unpatched systems should never be restored first.", c: false },
+      { t: "This is primarily a logging problem, since normalized telemetry allows applications to reconnect correctly.", c: false },
+      { t: "Certificate rotation should precede infrastructure recovery because trust services determine service availability.", c: false }
+    ],
+    exp: `Recovery must follow dependencies and sequence. Dependency mapping and runbooks prevent restoring components out of order.`
+  },
+  // 26
+  {
+    domain: "BCP (Alternate Communications)",
+    q: `During a major outage, corporate email and chat are unavailable. The team cannot coordinate response actions. What BCP control BEST prevents this failure?`,
+    options: [
+      { t: "Provide out-of-band communications and offline contact procedures for responders and leaders.", c: true },
+      { t: "Increase mailbox quotas so the primary email platform remains usable during large disruptions.", c: false },
+      { t: "Require everyone to work from headquarters so coordination depends on a single physical location.", c: false },
+      { t: "Use social messaging apps as the primary fallback because they are always available and appropriate.", c: false }
+    ],
+    exp: `BCP should include out-of-band comms and offline-accessible contact lists to coordinate when primary systems fail.`
+  },
+  // 27
+  {
+    domain: "BCP (Policy and Compliance)",
+    q: `A regulated organization must prove its continuity plans are current and effective. Which evidence BEST supports this claim?`,
+    options: [
+      { t: "Show current plans, revision history, exercise results, and tracked remediation from lessons learned.", c: true },
+      { t: "Provide an attestation that testing is planned because intent demonstrates program maturity.", c: false },
+      { t: "Capture screenshots of the DR login portal because visible access confirms operational readiness.", c: false },
+      { t: "Submit a recent vulnerability scan because security testing also proves continuity effectiveness.", c: false }
+    ],
+    exp: `Auditors want evidence: updated plans, tests/exercises, results, lessons learned, and corrective actions tracked to closure.`
+  },
+  // 28
+  {
+    domain: "BCP (Personnel Resilience)",
+    q: `A pandemic reduces staff availability for critical operations. What continuity planning element MOST directly addresses this risk?`,
+    options: [
+      { t: "Cross-train staff and maintain succession coverage for critical roles and minimum staffing needs.", c: true },
+      { t: "Add more physical security personnel so key workers can reach the office during disruptions.", c: false },
+      { t: "Suspend leave approvals for critical teams to preserve enough staffing during extended events.", c: false },
+      { t: "Rotate privileged credentials more often so essential responsibilities can be reassigned quickly.", c: false }
+    ],
+    exp: `Personnel continuity includes cross-training, succession, staffing models, and documented procedures for critical roles.`
+  },
+  // 29
+  {
+    domain: "BCP (Recovery Validation)",
+    q: `After restoring from backups, what is the BEST way to confirm the recovered system meets continuity requirements?`,
+    options: [
+      { t: "Validate service functionality, data integrity, and whether recovery objectives were actually met.", c: true },
+      { t: "Treat a successful boot as sufficient confirmation that the restored workload is production-ready.", c: false },
+      { t: "Close the event once systems respond so recovery metrics reflect a shorter outage duration.", c: false },
+      { t: "Silence monitoring temporarily because a quiet dashboard indicates stability after restoration.", c: false }
+    ],
+    exp: `Recovery validation requires testing function + integrity, plus verifying RTO/RPO targets were achieved.`
+  },
+  // 30
+  {
+    domain: "DR Strategy (Active-Active vs Active-Passive)",
+    q: `A global application needs high availability and can tolerate near-zero downtime. The organization deploys two regions serving traffic simultaneously. Which architecture is this?`,
+    options: [
+      { t: "This is an active-active design with multiple regions serving production traffic at the same time.", c: true },
+      { t: "This is active-passive because one region will assume full load only after the other fails.", c: false },
+      { t: "This is a warm-site arrangement because both regions are available but not fully synchronized.", c: false },
+      { t: "This is a cold-site strategy because failover capacity exists only when traffic must be rerouted.", c: false }
+    ],
+    exp: `Active-active serves traffic from multiple sites simultaneously; it offers strong availability but increases complexity.`
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+
+let questions = [];
+let idx = 0;
+let score = 0;
+let correct = 0;
+let incorrect = 0;
+let answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function normalizeOptionText(optionText){
+  let t = optionText.replace(/\s+/g, " ").trim();
+  if(!t.endsWith(".")) t += ".";
+  return t;
+}
+
+function padVisualEqual(optionText, targetLen){
+  let t = normalizeOptionText(optionText);
+  const core = t.slice(0, -1).trimEnd();
+  const deficit = Math.max(0, targetLen - core.length);
+  return {
+    display: core + ".",
+    pad: "\u00A0".repeat(deficit)
+  };
+}
+
+function prepQuestions(){
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const normalized = q.options.map(o => ({...o, t: normalizeOptionText(o.t)}));
+    const longest = Math.max(...normalized.map(o => o.t.slice(0, -1).trimEnd().length));
+    const opts = normalized.map(o => ({...o, t: padVisualEqual(o.t, longest)}));
+    const shuffledOpts = shuffle(opts); // per-load correct answer moves
+    return {...q, options: shuffledOpts};
+  });
+}
+
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  const pct = (idx / questions.length) * 100;
+  barEl.style.width = `${pct}%`;
+}
+
+function lockOptions(lock=true){
+  const nodes = answersEl.querySelectorAll(".opt");
+  nodes.forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt";
+    div.role = "button";
+    div.tabIndex = 0;
+    div.setAttribute("aria-disabled","false");
+
+    const letter = document.createElement("div");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+
+    const text = document.createElement("div");
+    text.className = "opttext";
+    text.textContent = opt.t.display;
+    if(opt.t.pad){
+      const ghost = document.createElement("span");
+      ghost.className = "padghost";
+      ghost.setAttribute("aria-hidden", "true");
+      ghost.textContent = opt.t.pad;
+      text.appendChild(ghost);
+    }
+
+    div.appendChild(letter);
+    div.appendChild(text);
+
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+
+    answersEl.appendChild(div);
+  });
+
+  explainText.textContent = item.exp;
+  setStats();
+}
+
+function choose(i){
+  if(answered) return;
+
+  const item = questions[idx];
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const picked = item.options[i];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(picked.c){
+    score += 1;
+    correct += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Nice—this best matches BIA/BCP/DR logic and continuity tradeoffs.</span>`;
+    }
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>Look for the option that best meets RTO/RPO, dependencies, and governance constraints.</span>`;
+    }
+  }
+
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  setStats();
+  nextBtn.disabled = false;
+}
+
+function reveal(){
+  if(answered) return;
+  const item = questions[idx];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  nodes[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked){
+    feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Correct option highlighted—use the explanation to anchor the concept.</span>`;
+  }
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  nextBtn.disabled = false;
+  setStats();
+}
+
+function next(){
+  if(!answered) return;
+  idx += 1;
+  if(idx >= questions.length){
+    finish();
+    return;
+  }
+  render();
+}
+
+function finish(){
+  barEl.style.width = `100%`;
+  answersEl.innerHTML = "";
+  feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed all 30 questions.";
+  domainEl.textContent = "Domain: Completed";
+  explainText.textContent = "";
+  explainBox.open = false;
+
+  nextBtn.disabled = true;
+  revealBtn.disabled = true;
+
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+
+function reset(){
+  idx = 0;
+  score = 0;
+  correct = 0;
+  incorrect = 0;
+  prepQuestions();
+  render();
+}
+
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+
+prepQuestions();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode Quiz — Vulnerability & Penetration Testing</title>
+  <style>
+    :root{
+      --bg:#071427;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#2f7dff;
+      --good:#2fd48f;
+      --bad:#ff5c7a;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 28px 18px 54px; }
+    header{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; }
+    .titlebox{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+      flex:1;
+    }
+    h1{ margin:0 0 6px; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:0; color:var(--muted); font-size: 13px; }
+    .stats{
+      min-width: 260px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+    }
+    .statrow{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size: 13px; color: var(--muted);
+      padding: 6px 2px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+    }
+    .statrow:last-child{border-bottom:0}
+    .statrow b{color:var(--text); font-weight:650}
+
+    .barwrap{
+      margin: 14px 0 18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55));
+      transition: width .35s ease;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .qmeta{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:12px; margin-bottom: 10px;
+      color: var(--muted); font-size: 13px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px; background: rgba(0,0,0,.15);
+      color: var(--muted); font-size: 12px; user-select:none;
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(47,125,255,.95);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.15);
+    }
+
+    .qtext{ font-size: 16px; margin: 6px 0 14px; white-space: pre-wrap; }
+
+    .answers{ display:grid; grid-template-columns: 1fr; gap: 10px; margin: 10px 0 14px; }
+    .opt{
+      display:flex; gap:12px; align-items:flex-start;
+      padding: 12px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.35); }
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{
+      flex:0 0 auto; width: 28px; height: 28px; border-radius: 10px;
+      display:grid; place-items:center; font-weight: 800;
+      background: rgba(47,125,255,.16);
+      border:1px solid rgba(47,125,255,.28);
+      color: var(--text);
+    }
+    .opttext{ color: var(--text); font-size: 14px; line-height: 1.35; padding-top: 2px;  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;  white-space: pre-wrap; }
+
+    .opt.correct{ border-color: rgba(47,212,143,.55); background: rgba(47,212,143,.10); }
+    .opt.correct .letter{ background: rgba(47,212,143,.18); border-color: rgba(47,212,143,.55); }
+    .opt.wrong{ border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10); }
+    .opt.wrong .letter{ background: rgba(255,92,122,.18); border-color: rgba(255,92,122,.55); }
+
+    .feedback{
+      margin-top: 8px; font-size: 13px; color: var(--muted);
+      display:flex; gap:10px; align-items:center; min-height: 22px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      font-size: 12px; color: var(--muted);
+    }
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95); }
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95); }
+
+    details{
+      margin-top: 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    summary{ cursor:pointer; color: var(--muted); font-size: 13px; user-select:none; }
+    .explain{ margin-top: 10px; color: var(--text); font-size: 13px; white-space: pre-wrap; }
+
+    .controls{
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 12px; margin-top: 14px; flex-wrap: wrap;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.40); }
+    button:active{ transform: translateY(0px); }
+    button.primary{ background: rgba(47,125,255,.22); border-color: rgba(47,125,255,.45); }
+    button[disabled]{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .footer{ margin-top: 16px; color: var(--muted); font-size: 12px; text-align:center; }
+
+    .end{ margin-top: 18px; display:none; }
+    .end h2{ margin: 0 0 8px; font-size: 18px; }
+    .end p{ margin: 0; color: var(--muted); }
+    .tiny{ font-size: 12px; color: var(--muted); }
+
+    .toggleRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .toggle{
+      display:flex; gap:10px; align-items:center;
+      padding: 10px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      color: var(--muted); font-size: 12px;
+      user-select:none;
+    }
+    .toggle input{ transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — Vulnerability & Penetration Testing</h1>
+        <p class="subtitle">30 scenario-heavy questions • per-load answer shuffling • equal-length options • next-button flow • collapsible explanations</p>
+        <div class="toggleRow">
+          <label class="toggle" title="Shows feedback immediately after you choose an option.">
+            <input id="instantFeedback" type="checkbox" checked />
+            Instant feedback
+          </label>
+          <label class="toggle" title="Auto-opens the explanation after you answer.">
+            <input id="autoExplain" type="checkbox" />
+            Auto-open explanations
+          </label>
+          <label class="toggle" title="Resets question order and reshuffles answer positions by reloading.">
+            <span>Tip: Reload to reshuffle.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 30</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+
+    <div class="barwrap" aria-label="Progress bar">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: Vuln Mgmt / Testing / Validation</span></span>
+        <span class="pill" id="difficultyPill">Difficulty: Hard (word-salad)</span>
+      </div>
+
+      <div class="qtext" id="questionText">Loading…</div>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+
+      <div class="controls">
+        <button id="resetBtn" title="Restart quiz (keeps this page load’s shuffle)">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" title="Show the correct answer for this question (counts as answered)" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+        <p class="tiny" style="margin-top:10px;">Want a PBQ-style “scan → validate → prioritize → ticket” workflow set? Tell me.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built for CySA+ practice. Focus: scan scope, credentialed scans, validation, rules of engagement, risk, and reporting.
+    </div>
+  </div>
+
+<script>
+/**
+ * Saved template behaviors:
+ * - A/B/C/D labels
+ * - Per-load correct answer shuffles between A/B/C/D (options shuffled while keeping letters A-D)
+ * - Next button flow
+ * - Collapsible explanations
+ * - Progress bar + score
+ * - "Hard / word-salad" style + equal-length option formatting
+ */
+
+const RAW_QUESTIONS = [
+  // 1
+  {
+    domain: "Vuln Scanning (Credentialed vs Non)",
+    q: `A vulnerability scan shows few findings on Windows servers, but patch levels are unknown and local configurations are not assessed. Which change MOST improves accuracy?`,
+    options: [
+      { t: "Run credentialed scans to validate patch status and configuration posture with authenticated host checks.", c: true },
+      { t: "Enable authenticated patch auditing using a management agent and compare results against the scan output.", c: false },
+      { t: "Validate missing patches by checking installed KBs and registry evidence on a sample of affected hosts.", c: false },
+      { t: "Augment results with configuration benchmarks and local policy checks using a trusted hardening baseline.", c: false }
+    ],
+    exp: `Credentialed scans can check installed patches, registry/config settings, local services, and missing updates more reliably.`
+  },
+  // 2
+  {
+    domain: "Pen Testing (Rules of Engagement)",
+    q: `Before beginning a penetration test, the client requires clarity on allowed attack methods, scope, and how to handle sensitive data if found. What document BEST defines this?`,
+    options: [
+      { t: "Rules of Engagement (RoE) and scope statement defining targets, methods, timing, and handling requirements.", c: true },
+      { t: "Statement of Work outlining deliverables, milestones, staffing, and reporting expectations for the engagement.", c: false },
+      { t: "Master service agreement covering commercial terms, liability, and general legal conditions across services.", c: false },
+      { t: "Change request documenting windows, approvers, and communications for the activity being scheduled.", c: false }
+    ],
+    exp: `RoE/scope documents define what is authorized, what is out of scope, and the boundaries for testing and data handling.`
+  },
+  // 3
+  {
+    domain: "Vuln Mgmt (Prioritization)",
+    q: `A scanner reports 30 high CVSS findings, but only 5 affect internet-facing critical systems with known exploitation in the wild. What is the BEST prioritization approach?`,
+    options: [
+      { t: "Prioritize based on asset criticality, exposure, exploitability, and threat intelligence, not CVSS alone.", c: true },
+      { t: "Rank by base severity first, then work down the list uniformly across all affected systems.", c: false },
+      { t: "Prioritize by platform standardization so the same remediation can be applied broadly with minimal effort.", c: false },
+      { t: "Focus on issues with the lowest remediation effort to improve backlog metrics before deeper risk review.", c: false }
+    ],
+    exp: `Risk-based prioritization considers business criticality, internet exposure, exploit availability, and active threat context.`
+  },
+  // 4
+  {
+    domain: "Pen Testing (Authorization)",
+    q: `A tester discovers a new subnet during reconnaissance that was not listed in the engagement scope. What should the tester do NEXT?`,
+    options: [
+      { t: "Stop and request written authorization/scope update before testing the newly discovered subnet.", c: true },
+      { t: "Capture the route and limited host details for the subnet, then fold it into the engagement notes for later approval.", c: false },
+      { t: "Treat the subnet as tentatively related infrastructure and continue with low-noise validation while awaiting guidance.", c: false },
+      { t: "Perform only light-touch enumeration on the subnet so the client can decide later whether to include it.", c: false }
+    ],
+    exp: `Testing outside authorized scope is not permitted. The correct action is to pause and obtain explicit authorization.`
+  },
+  // 5
+  {
+    domain: "Vuln Scanning (False Positives)",
+    q: `A vulnerability scanner flags a critical RCE on a server, but the service banner suggests an older version while package updates are backported. What is the BEST next step?`,
+    options: [
+      { t: "Validate the finding using authenticated checks, vendor advisories, and targeted verification rather than trusting banners alone.", c: true },
+      { t: "Keep the finding at high priority while awaiting host-side package evidence from the system owner.", c: false },
+      { t: "Mark the result as tentative and compare scanner logic with distribution-specific package versioning details.", c: false },
+      { t: "Run a second unauthenticated scan from another vantage point to see whether the banner mismatch persists.", c: false }
+    ],
+    exp: `Banner/version checks can mislead due to backports. Confirm via authenticated evidence (packages/patches) and vendor guidance.`
+  },
+  // 6
+  {
+    domain: "Pen Testing (Safe Testing)",
+    q: `A client’s production system is fragile, and the team wants to avoid outages while still assessing security. What testing approach BEST reduces risk?`,
+    options: [
+      { t: "Use non-destructive validation and exploit-proof-of-concept in a staging environment when possible, with careful RoE constraints.", c: true },
+      { t: "Limit testing in production to tightly scoped validation during a maintenance window with rollback contacts ready.", c: false },
+      { t: "Use authenticated review and configuration inspection in production, deferring invasive validation until later.", c: false },
+      { t: "Schedule broader validation for a low-usage period in production and rely on change controls to manage risk.", c: false }
+    ],
+    exp: `Reduce risk using staging, non-destructive checks, controlled testing, and careful scheduling/limits defined in RoE.`
+  },
+  // 7
+  {
+    domain: "Vuln Mgmt (Remediation Validation)",
+    q: `A team claims a critical vulnerability is remediated, but leadership wants proof. What is the BEST verification?`,
+    options: [
+      { t: "Rescan or retest the specific finding with authenticated evidence and confirm the vulnerable condition no longer exists.", c: true },
+      { t: "Review change records and closure evidence from the platform team before determining whether retesting is necessary.", c: false },
+      { t: "Obtain owner attestation plus implementation notes, then sample a subset of systems for spot-check confirmation.", c: false },
+      { t: "Validate at the next scheduled scan cycle and compare results against the original affected asset list.", c: false }
+    ],
+    exp: `Verification requires evidence: rescans, authenticated checks, and confirming the condition is truly mitigated.`
+  },
+  // 8
+  {
+    domain: "Pen Testing (Reporting)",
+    q: `A penetration test report should be actionable for both executives and technical teams. Which structure BEST supports this?`,
+    options: [
+      { t: "Executive summary + risk narrative, followed by technical details, reproduction steps, evidence, and prioritized remediation.", c: true },
+      { t: "Lead with detailed technical findings and append a short summary section for leadership at the end of the report.", c: false },
+      { t: "Produce a high-level risk summary with impact statements and keep technical validation in a separate appendix only.", c: false },
+      { t: "Organize findings by asset group and service owner, leaving prioritization to remediation teams after review.", c: false }
+    ],
+    exp: `Good reports include an executive view and deep technical guidance (steps, evidence, impact, and prioritized fixes).`
+  },
+  // 9
+  {
+    domain: "Vuln Scanning (Scope & Asset Inventory)",
+    q: `A quarterly scan misses several critical servers because they were not in the scanner’s target list. What program gap does this MOST indicate?`,
+    options: [
+      { t: "Incomplete asset inventory and scope management; integrate discovery/CMDB and continuous inventory updates.", c: true },
+      { t: "Increase scan cadence and add recurring discovery jobs so newly active systems are noticed more quickly.", c: false },
+      { t: "Rely more heavily on external attack-surface scanning to identify systems before updating internal targets.", c: false },
+      { t: "Expand network ranges broadly to reduce misses, then refine the target set after reviewing the results.", c: false }
+    ],
+    exp: `If systems are missing from scope, the core issue is asset inventory and scope governance, not scan frequency.`
+  },
+  // 10
+  {
+    domain: "Pen Testing (Black/Gray/White Box)",
+    q: `A client wants testers to simulate an external attacker with no internal knowledge, but still remain within defined targets. What test type BEST matches?`,
+    options: [
+      { t: "Black-box (or external) testing with limited knowledge, constrained by an explicit scope and RoE.", c: true },
+      { t: "Gray-box testing using a minimal target list and externally observable information supplied by the client.", c: false },
+      { t: "External assessment with sanitized architecture context so testers can avoid nonessential reconnaissance steps.", c: false },
+      { t: "Adversary simulation with strict objectives and time limits designed to evaluate layered detection and response.", c: false }
+    ],
+    exp: `Black-box simulates an outsider with minimal knowledge. Gray/white box includes more internal knowledge/access.`
+  },
+  // 11
+  {
+    domain: "Vuln Mgmt (CVSS Limits)",
+    q: `Why is CVSS alone insufficient for enterprise remediation prioritization?`,
+    options: [
+      { t: "CVSS lacks business context such as asset criticality, compensating controls, exposure, and active exploitation conditions.", c: true },
+      { t: "CVSS is useful for technical severity, but it does not directly rank business disruption across different assets.", c: false },
+      { t: "CVSS normalizes vulnerability characteristics, while exposure and environmental context still require local interpretation.", c: false },
+      { t: "CVSS should be one input among several because different teams may weigh operational constraints differently.", c: false }
+    ],
+    exp: `Risk-based decisions require more than severity: exposure, exploitability, asset value, and compensating controls matter.`
+  },
+  // 12
+  {
+    domain: "Pen Testing (Social Engineering)",
+    q: `The scope includes phishing simulations, but the client wants to avoid collecting real user passwords. What is the BEST approach?`,
+    options: [
+      { t: "Use controlled landing pages that record clicks and MFA prompts without capturing credentials, as defined in RoE.", c: true },
+      { t: "Use a full credential capture workflow against a small pilot group and immediately reset any submitted passwords.", c: false },
+      { t: "Provide a mock sign-in experience that records username entry only so user susceptibility can still be measured.", c: false },
+      { t: "Capture submissions into a segmented test environment with automatic purge controls after the exercise window closes.", c: false }
+    ],
+    exp: `Phishing can measure susceptibility without collecting sensitive credentials. Use safe telemetry (clicks, submissions without storage).`
+  },
+  // 13
+  {
+    domain: "Vuln Scanning (Authenticated Evidence)",
+    q: `A scanner reports “SMB signing not required” on servers. What is the BEST way to validate and document this finding?`,
+    options: [
+      { t: "Confirm via authenticated configuration checks (GPO/registry) and capture evidence showing the effective SMB signing setting.", c: true },
+      { t: "Confirm through packet-level negotiation behavior and compare the result with a second scanner plugin.", c: false },
+      { t: "Use the scanner evidence plus host-owner screenshots from local security policy to support the write-up.", c: false },
+      { t: "Request an administrator-provided export of the effective setting and reconcile it with scan results.", c: false }
+    ],
+    exp: `Configuration findings are best validated with authenticated checks and evidence of effective settings (GPO/registry/policy).`
+  },
+  // 14
+  {
+    domain: "Pen Testing (Exploitation Ethics)",
+    q: `A tester identifies an RCE vulnerability on a critical production server. The RoE prohibits exploitation that could impact availability. What is the BEST action?`,
+    options: [
+      { t: "Document the vulnerability with evidence and use non-destructive validation or safe PoC in staging if approved.", c: true },
+      { t: "Use the least invasive validation available on production to demonstrate exploitability while minimizing execution risk.", c: false },
+      { t: "Attempt controlled exploitation during an approved change window with rollback support standing by if needed.", c: false },
+      { t: "Shift validation to a lower-usage period and coordinate with contacts so any instability can be handled promptly.", c: false }
+    ],
+    exp: `Follow RoE. Provide strong evidence and safe validation rather than risky exploitation that could cause outages.`
+  },
+  // 15
+  {
+    domain: "Vuln Mgmt (Compensating Controls)",
+    q: `A critical vulnerability cannot be patched for 60 days due to vendor constraints. What is the BEST interim risk reduction strategy?`,
+    options: [
+      { t: "Apply compensating controls: segmentation, WAF/IPS rules, hardening, access restrictions, and monitoring until patched.", c: true },
+      { t: "Document the exception, raise monitoring coverage, and wait for the patch release before making network changes.", c: false },
+      { t: "Increase validation frequency and threat monitoring so any attempted exploitation is detected while awaiting the fix.", c: false },
+      { t: "Reduce exposure through tighter access governance and operational restrictions until the permanent remediation is available.", c: false }
+    ],
+    exp: `When patching is delayed, implement compensating controls and increase monitoring to reduce exploitability.`
+  },
+  // 16
+  {
+    domain: "Pen Testing (Pivoting Scope)",
+    q: `During an internal test, you compromise a workstation and can reach a database subnet not listed in scope. The client’s contact is unavailable. What should you do?`,
+    options: [
+      { t: "Stop further actions against out-of-scope assets and document access potential, then seek formal approval to proceed.", c: true },
+      { t: "Map reachable assets from the compromised host and document the path, but defer direct interaction pending clarification.", c: false },
+      { t: "Perform limited service enumeration only, then pause before any deeper validation against the database segment.", c: false },
+      { t: "Validate connectivity and authentication potential without touching records, then seek retrospective authorization.", c: false }
+    ],
+    exp: `Even if reachable, out-of-scope assets require explicit authorization. Document and request approval per RoE.`
+  },
+  // 17
+  {
+    domain: "Vuln Scanning (Scanner Safety)",
+    q: `A legacy OT device crashes during scans. How should vulnerability assessment be performed going forward?`,
+    options: [
+      { t: "Use passive discovery, vendor-approved methods, maintenance windows, and a separate OT-safe assessment plan in scope.", c: true },
+      { t: "Use vendor-tuned scan profiles and very limited maintenance-window testing for only the most critical checks.", c: false },
+      { t: "Rely on architecture review and asset owner interviews for most systems, reserving active validation for exceptions.", c: false },
+      { t: "Substitute manual protocol verification and firmware review for broad scanner coverage wherever feasible.", c: false }
+    ],
+    exp: `OT systems may be fragile. Use passive methods and vendor guidance with controlled testing windows and specialized procedures.`
+  },
+  // 18
+  {
+    domain: "Pen Testing (Tool Output Interpretation)",
+    q: `A web scan flags potential SQL injection, but exploitation is not confirmed. What is the BEST next step?`,
+    options: [
+      { t: "Manually validate with safe, minimal test inputs and confirm backend behavior, logging, and parameter handling.", c: true },
+      { t: "Raise the confidence level and corroborate the result with additional request/response testing before final rating.", c: false },
+      { t: "Attempt broader payload variation to determine exploit depth before deciding whether manual confirmation is needed.", c: false },
+      { t: "Keep it as unconfirmed until developer logs or targeted retesting can clarify whether the parameter is injectable.", c: false }
+    ],
+    exp: `Scanner findings require validation. Use controlled testing to confirm actual injection behavior without causing harm.`
+  },
+  // 19
+  {
+    domain: "Vuln Mgmt (Remediation Ownership)",
+    q: `Findings repeatedly linger because no one owns remediation and exceptions are undocumented. What is the BEST program improvement?`,
+    options: [
+      { t: "Implement a formal workflow: assign owners, set SLAs, track exceptions with approvals, and verify closure with evidence.", c: true },
+      { t: "Tie findings to named service owners and review overdue items in a recurring governance process.", c: false },
+      { t: "Route all findings through a centralized security operations queue so one team can track status across platforms.", c: false },
+      { t: "Reduce noise by publishing only validated findings and let product teams pull remaining items from dashboards as needed.", c: false }
+    ],
+    exp: `Governance: ownership, SLAs, documented exceptions, and verification are required for effective vulnerability management.`
+  },
+  // 20
+  {
+    domain: "Pen Testing (Data Handling)",
+    q: `During a test, you access a file share containing PII. The RoE states testers should minimize exposure and store no sensitive data. What is the BEST action?`,
+    options: [
+      { t: "Capture minimal evidence (metadata/screenshots redacted) to prove access, then stop and report per RoE.", c: true },
+      { t: "Capture a very small sample under controlled handling procedures so impact can be documented more concretely.", c: false },
+      { t: "Collect several representative files into an encrypted evidence container to preserve a stronger audit trail.", c: false },
+      { t: "Enumerate folder structure and classifications further so the client receives a fuller picture of data exposure.", c: false }
+    ],
+    exp: `Minimize sensitive data handling. Provide proof of access with redaction, and follow RoE for disclosure and storage.`
+  },
+  // 21
+  {
+    domain: "Vuln Scanning (Configuration Drift)",
+    q: `A system passes a scan after remediation, but the same vulnerability reappears next month due to configuration drift. What is the BEST long-term fix?`,
+    options: [
+      { t: "Use configuration management baselines (IaC/GPO) with continuous compliance checks and change control enforcement.", c: true },
+      { t: "Increase compliance scanning frequency and trigger checks after administrative changes to shorten drift windows.", c: false },
+      { t: "Simplify approval paths for security changes so hardened settings are less likely to be rolled back operationally.", c: false },
+      { t: "Maintain host-level remediation scripts and rerun them whenever future scans detect the same deviation.", c: false }
+    ],
+    exp: `Prevent recurrence by enforcing baselines via config management and continuous compliance monitoring, not repeated manual fixes.`
+  },
+  // 22
+  {
+    domain: "Pen Testing (Password Attacks)",
+    q: `An internal assessment includes validating password hygiene without disrupting accounts. What technique BEST balances safety and insight?`,
+    options: [
+      { t: "Use password auditing with approved hashes (offline) and controlled spray tests with lockout-aware pacing per RoE.", c: true },
+      { t: "Perform a narrowly targeted online guessing exercise with carefully tuned thresholds and close lockout monitoring.", c: false },
+      { t: "Use forced resets for selected high-risk groups and compare post-reset outcomes with policy requirements.", c: false },
+      { t: "Run one coordinated spray across the directory using a common seasonal pattern to measure resilience under load.", c: false }
+    ],
+    exp: `Safe testing uses offline hash auditing (where authorized) and careful, lockout-aware online validation with strict constraints.`
+  },
+  // 23
+  {
+    domain: "Vuln Mgmt (Scanning Frequency)",
+    q: `A company scans monthly, but high-change internet-facing apps are updated weekly. What is the BEST adjustment?`,
+    options: [
+      { t: "Increase scanning cadence or implement continuous scanning for high-risk assets and integrate scans into CI/CD for apps.", c: true },
+      { t: "Keep the monthly cadence and supplement it with targeted scans after each major application release.", c: false },
+      { t: "Shift effort toward manual testing during release windows while preserving the existing infrastructure scan cycle.", c: false },
+      { t: "Trigger additional scans for incident-related systems only, leaving routine cadence unchanged for normal operations.", c: false }
+    ],
+    exp: `Scan frequency should match risk and change rate. High-change internet-exposed assets benefit from continuous/CI-integrated checks.`
+  },
+  // 24
+  {
+    domain: "Pen Testing (Recon)",
+    q: `During external reconnaissance, you discover multiple subdomains and open services. What is the MOST important reason to document them carefully?`,
+    options: [
+      { t: "They define the attack surface and scope evidence, supporting risk analysis, reproducibility, and remediation guidance.", c: true },
+      { t: "Record service exposure first and summarize discovered subdomains only where they map to distinct business functions.", c: false },
+      { t: "Emphasize reachable hosts and defer lower-confidence DNS findings until later validation confirms their importance.", c: false },
+      { t: "Capture enough detail for analyst handoff, then refine the external inventory later as results stabilize.", c: false }
+    ],
+    exp: `Accurate attack surface documentation supports repeatability, scoping, and actionable remediation planning.`
+  },
+  // 25
+  {
+    domain: "Vuln Mgmt (Patch Exceptions)",
+    q: `A team requests a patch exception for a critical vulnerability on a customer-facing server. What is the BEST process?`,
+    options: [
+      { t: "Perform a risk acceptance with documented justification, compensating controls, approval, expiration date, and monitoring plan.", c: true },
+      { t: "Approve a temporary exception with periodic review while the team documents why standard remediation is delayed.", c: false },
+      { t: "Move the item into a tracked exception backlog and revisit it during the next formal risk review cycle.", c: false },
+      { t: "Report the issue separately from operational dashboards while the business owner evaluates the exception request.", c: false }
+    ],
+    exp: `Exceptions must be governed: documented risk acceptance, compensating controls, time-bounded approvals, and monitoring.`
+  },
+  // 26
+  {
+    domain: "Pen Testing (Post-Exploitation Boundaries)",
+    q: `After gaining access to a server, you can dump credentials and pivot to other systems. The RoE allows proof of access but prohibits credential harvesting. What should you do?`,
+    options: [
+      { t: "Stop at proof-of-access, document the potential for escalation, and request explicit approval before any credential actions.", c: true },
+      { t: "Capture hashes into a secured evidence workflow and hold them unused until approval is obtained.", c: false },
+      { t: "Collect noninteractive account material only and document why service accounts present a distinct risk path.", c: false },
+      { t: "Demonstrate reachable lateral paths through token or session context only, without extracting reusable secrets.", c: false }
+    ],
+    exp: `Always follow RoE. If credential harvesting is prohibited, document the risk and seek authorization for any additional actions.`
+  },
+  // 27
+  {
+    domain: "Vuln Scanning (Web App Testing)",
+    q: `A scanner reports “missing security headers” on a web app. The app team argues it is low risk. What is the BEST response?`,
+    options: [
+      { t: "Explain impact and context: headers reduce exploitation likelihood (XSS/clickjacking), then prioritize based on exposure and app risk.", c: true },
+      { t: "Treat the issue as lower priority unless the application threat model shows realistic browser-side abuse paths.", c: false },
+      { t: "Track the issue alongside other hardening gaps and elevate it only where exposure and exploit chains justify it.", c: false },
+      { t: "Map the header findings to the application’s browser threat surface before assigning a final remediation tier.", c: false }
+    ],
+    exp: `Security headers are hardening measures. They may be lower priority than RCE, but still valuable depending on exposure and threat model.`
+  },
+  // 28
+  {
+    domain: "Pen Testing (Chain of Evidence)",
+    q: `A client wants evidence that is defensible for audits. Which practice MOST strengthens test evidence quality?`,
+    options: [
+      { t: "Maintain detailed notes, timestamps, reproducible steps, screenshots/redactions, and proper evidence handling controls.", c: true },
+      { t: "Standardize on exported tool reports and attach analyst notes only where the workflow requires clarification.", c: false },
+      { t: "Retain primary artifacts in a restricted evidence repository and redact copies used in the final report.", c: false },
+      { t: "Use recorded debriefs and screen sharing to supplement the written record for client and audit stakeholders.", c: false }
+    ],
+    exp: `Strong evidence includes detailed, timestamped, reproducible steps with proper handling and redaction where needed.`
+  },
+  // 29
+  {
+    domain: "Vuln Mgmt (Scanning Credentials Security)",
+    q: `Credentialed scans require storing privileged credentials. What is the BEST way to reduce associated risk?`,
+    options: [
+      { t: "Use a secrets vault, least-privilege scan accounts, rotation, and auditing; avoid domain admin where possible.", c: true },
+      { t: "Use highly privileged service accounts to maximize coverage, then compensate with tighter scanner access controls.", c: false },
+      { t: "Standardize on one reusable scan credential per platform tier so authentication failures are easier to troubleshoot.", c: false },
+      { t: "Minimize credential changes during scan windows and review usage periodically to reduce operational interruptions.", c: false }
+    ],
+    exp: `Secure credentialed scanning with vaulting, least privilege, rotation, and auditing reduces risk while preserving assessment accuracy.`
+  },
+  // 30
+  {
+    domain: "Pen Testing (Retest / Closure)",
+    q: `After remediation, the client asks how to confirm the pentest issues are resolved. What is the BEST next step?`,
+    options: [
+      { t: "Perform a focused retest of remediated findings, validating the exploit path is closed and documenting residual risk.", c: true },
+      { t: "Review client-reported remediation artifacts and compare them with the original exploit path before scheduling a retest.", c: false },
+      { t: "Run the same broad assessment used during the initial engagement so all controls can be measured consistently.", c: false },
+      { t: "Wait for the next routine vulnerability cycle and verify whether the original issue no longer appears in reporting.", c: false }
+    ],
+    exp: `A retest confirms fixes. Focus on previously identified issues and confirm exploitability is removed or mitigated with evidence.`
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+
+let questions = [];
+let idx = 0;
+let score = 0;
+let correct = 0;
+let incorrect = 0;
+let answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+
+
+
+function padNBSP(optionText, targetLength){
+  let t = (optionText || "").trim();
+  if(!t.endsWith(".")) t += ".";
+  while(t.length < targetLength){
+    t += "\u00A0";
+  }
+  return t;
+}
+
+function prepQuestions(){
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const base = q.options.map(o => {
+      let s = (o.t || "").trim();
+      if(!s.endsWith(".")) s += ".";
+      return {...o, t: s};
+    });
+    const targetLen = Math.max(...base.map(o => o.t.length));
+    const padded = base.map(o => ({...o, t: padNBSP(o.t, targetLen)}));
+    const shuffledOpts = shuffle(padded); // per-load correct answer moves
+    return {...q, options: shuffledOpts};
+  });
+}
+
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  const pct = (idx / questions.length) * 100;
+  barEl.style.width = `${pct}%`;
+}
+
+function lockOptions(lock=true){
+  const nodes = answersEl.querySelectorAll(".opt");
+  nodes.forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt";
+    div.role = "button";
+    div.tabIndex = 0;
+    div.setAttribute("aria-disabled","false");
+
+    const letter = document.createElement("div");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+
+    const text = document.createElement("div");
+    text.className = "opttext";
+    text.textContent = opt.t;
+
+    div.appendChild(letter);
+    div.appendChild(text);
+
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+
+    answersEl.appendChild(div);
+  });
+
+  explainText.textContent = item.exp;
+  setStats();
+}
+
+function choose(i){
+  if(answered) return;
+
+  const item = questions[idx];
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const picked = item.options[i];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(picked.c){
+    score += 1;
+    correct += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Nice—this matches safe testing, RoE governance, and risk-based vuln management.</span>`;
+    }
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>Look for scope/authorization, validation, and risk-based prioritization under constraints.</span>`;
+    }
+  }
+
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  setStats();
+  nextBtn.disabled = false;
+}
+
+function reveal(){
+  if(answered) return;
+  const item = questions[idx];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  nodes[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked){
+    feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Correct option highlighted—review the explanation for the decision logic.</span>`;
+  }
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  nextBtn.disabled = false;
+  setStats();
+}
+
+function next(){
+  if(!answered) return;
+  idx += 1;
+  if(idx >= questions.length){
+    finish();
+    return;
+  }
+  render();
+}
+
+function finish(){
+  barEl.style.width = `100%`;
+  answersEl.innerHTML = "";
+  feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed all 30 questions.";
+  domainEl.textContent = "Domain: Completed";
+  explainText.textContent = "";
+  explainBox.open = false;
+
+  nextBtn.disabled = true;
+  revealBtn.disabled = true;
+
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+
+function reset(){
+  idx = 0;
+  score = 0;
+  correct = 0;
+  incorrect = 0;
+  prepQuestions();
+  render();
+}
+
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+
+prepQuestions();
+render();
+</script>
+</body>
+</html>

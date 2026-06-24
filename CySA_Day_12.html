@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode Quiz — Hardening Techniques, Secure Coding, Digital Forensics</title>
+  <style>
+    :root{
+      --bg:#071427;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#2f7dff;
+      --good:#2fd48f;
+      --bad:#ff5c7a;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 28px 18px 54px; }
+    header{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; }
+    .titlebox{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+      flex:1;
+    }
+    h1{ margin:0 0 6px; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:0; color:var(--muted); font-size: 13px; }
+    .stats{
+      min-width: 260px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+    }
+    .statrow{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size: 13px; color: var(--muted);
+      padding: 6px 2px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+    }
+    .statrow:last-child{border-bottom:0}
+    .statrow b{color:var(--text); font-weight:650}
+
+    .barwrap{
+      margin: 14px 0 18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55));
+      transition: width .35s ease;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .qmeta{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:12px; margin-bottom: 10px;
+      color: var(--muted); font-size: 13px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px; background: rgba(0,0,0,.15);
+      color: var(--muted); font-size: 12px; user-select:none;
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(47,125,255,.95);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.15);
+    }
+
+    .qtext{ font-size: 16px; margin: 6px 0 14px; white-space: pre-wrap; }
+
+    .answers{ display:grid; grid-template-columns: 1fr; gap: 10px; margin: 10px 0 14px; }
+    .opt{
+      display:flex; gap:12px; align-items: stretch;
+      padding: 12px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+     min-width: 0; }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.35); }
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{
+      flex:0 0 auto; width: 28px; height: 28px; border-radius: 10px;
+      display:grid; place-items:center; font-weight: 800;
+      background: rgba(47,125,255,.16);
+      border:1px solid rgba(47,125,255,.28);
+      color: var(--text);
+    }
+    .opttext{ color: var(--text); font-size: 14px; line-height: 1.35; padding-top: 2px;  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;  white-space: pre-wrap;  overflow-wrap: anywhere; word-break: break-word; box-sizing: border-box;  display: block;  width: 100%;  min-width: 0; }
+
+    .opt.correct{ border-color: rgba(47,212,143,.55); background: rgba(47,212,143,.10); }
+    .opt.correct .letter{ background: rgba(47,212,143,.18); border-color: rgba(47,212,143,.55); }
+    .opt.wrong{ border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10); }
+    .opt.wrong .letter{ background: rgba(255,92,122,.18); border-color: rgba(255,92,122,.55); }
+
+    .feedback{
+      margin-top: 8px; font-size: 13px; color: var(--muted);
+      display:flex; gap:10px; align-items:center; min-height: 22px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      font-size: 12px; color: var(--muted);
+    }
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95); }
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95); }
+
+    details{
+      margin-top: 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    summary{ cursor:pointer; color: var(--muted); font-size: 13px; user-select:none; }
+    .explain{ margin-top: 10px; color: var(--text); font-size: 13px; white-space: pre-wrap; }
+
+    .controls{
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 12px; margin-top: 14px; flex-wrap: wrap;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.40); }
+    button:active{ transform: translateY(0px); }
+    button.primary{ background: rgba(47,125,255,.22); border-color: rgba(47,125,255,.45); }
+    button[disabled]{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .footer{ margin-top: 16px; color: var(--muted); font-size: 12px; text-align:center; }
+
+    .end{ margin-top: 18px; display:none; }
+    .end h2{ margin: 0 0 8px; font-size: 18px; }
+    .end p{ margin: 0; color: var(--muted); }
+    .tiny{ font-size: 12px; color: var(--muted); }
+
+    .toggleRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .toggle{
+      display:flex; gap:10px; align-items:center;
+      padding: 10px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      color: var(--muted); font-size: 12px;
+      user-select:none;
+    }
+    .toggle input{ transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — Hardening, Secure Coding, Digital Forensics</h1>
+        <p class="subtitle">30 scenario-heavy questions • per-load answer shuffling • equal-length options • next-button flow • collapsible explanations</p>
+        <div class="toggleRow">
+          <label class="toggle" title="Shows feedback immediately after you choose an option.">
+            <input id="instantFeedback" type="checkbox" checked />
+            Instant feedback
+          </label>
+          <label class="toggle" title="Auto-opens the explanation after you answer.">
+            <input id="autoExplain" type="checkbox" />
+            Auto-open explanations
+          </label>
+          <label class="toggle" title="Resets question order and reshuffles answer positions by reloading.">
+            <span>Tip: Reload to reshuffle.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 30</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+
+    <div class="barwrap" aria-label="Progress bar">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: Hardening / AppSec / Forensics</span></span>
+        <span class="pill" id="difficultyPill">Difficulty: Hard (word-salad)</span>
+      </div>
+
+      <div class="qtext" id="questionText">Loading…</div>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+
+      <div class="controls">
+        <button id="resetBtn" title="Restart quiz (keeps this page load’s shuffle)">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" title="Show the correct answer for this question (counts as answered)" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+        <p class="tiny" style="margin-top:10px;">Want a PBQ set (hardening checklist + code review snippet + forensic decision tree)? Tell me.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built for CySA+ practice. Focus: least privilege, secure defaults, validation/encoding, evidence integrity, and forensic workflow.
+    </div>
+  </div>
+
+<script>
+/**
+ * Saved template behaviors:
+ * - A/B/C/D labels
+ * - Per-load correct answer shuffles between A/B/C/D (options shuffled while keeping letters A-D)
+ * - Next button flow
+ * - Collapsible explanations
+ * - Progress bar + score
+ * - "Hard / word-salad" style + equal-length option formatting
+ */
+
+const RAW_QUESTIONS = [
+  {
+    "domain": "Hardening (Baseline & CIS)",
+    "q": "After repeated incidents, leadership wants a repeatable way to reduce attack surface on new servers. Which approach BEST supports consistent hardening at scale?",
+    "options": [
+      {
+        "t": "Standardize approved builds as code, enforce the state automatically, and flag deviations continuously across the fleet",
+        "c": true
+      },
+      {
+        "t": "Publish a server build standard, require peer review for changes, and verify adherence during scheduled platform audits",
+        "c": false
+      },
+      {
+        "t": "Refresh golden images each quarter, rebuild systems during maintenance windows, and document approved exception handling",
+        "c": false
+      },
+      {
+        "t": "Use startup scripts to apply common settings, then investigate configuration drift only after scanners report material findings",
+        "c": false
+      }
+    ],
+    "exp": "Standard baselines + automation + continuous compliance prevent drift and scale hardening across fleets consistently."
+  },
+  {
+    "domain": "Secure Coding (Input Validation)",
+    "q": "A web API concatenates untrusted input directly into a SQL query string. Which coding practice MOST directly prevents injection?",
+    "options": [
+      {
+        "t": "Separate user-supplied values from query logic through bound parameters and narrowly scoped database permissions",
+        "c": true
+      },
+      {
+        "t": "Constrain accepted characters and formats before constructing server-side statements from approved request fields",
+        "c": false
+      },
+      {
+        "t": "Move data access into predefined routines and rely on audit records to identify abusive statement patterns",
+        "c": false
+      },
+      {
+        "t": "Filter suspicious payloads at the edge and normalize requests before they reach the application database tier",
+        "c": false
+      }
+    ],
+    "exp": "Parameterized queries prevent user input from being interpreted as SQL code, and validation/least privilege reduces impact."
+  },
+  {
+    "domain": "Digital Forensics (Order of Volatility)",
+    "q": "You arrive at a live system suspected of memory-resident malware. What evidence should be collected FIRST for best forensic value?",
+    "options": [
+      {
+        "t": "Preserve ephemeral system state before shutdown by prioritizing resident process and connection artifacts over static media",
+        "c": true
+      },
+      {
+        "t": "Disconnect the host immediately to halt remote control, then gather live artifacts once the communication path is severed",
+        "c": false
+      },
+      {
+        "t": "Start with a full storage acquisition so the primary evidence set is secured before collecting transient operating state",
+        "c": false
+      },
+      {
+        "t": "Export endpoint telemetry first because centrally retained records are less likely to be challenged than host acquisitions",
+        "c": false
+      }
+    ],
+    "exp": "Order of volatility: collect memory and other volatile artifacts before they are lost due to shutdown/reboot."
+  },
+  {
+    "domain": "Hardening (Least Privilege)",
+    "q": "A service account is configured as domain admin “for convenience.” A compromise of the service host leads to domain takeover. What control MOST reduces future impact?",
+    "options": [
+      {
+        "t": "Narrow the account to only required actions, constrain where it can authenticate, and isolate privileged material from the host",
+        "c": true
+      },
+      {
+        "t": "Keep the role assignment unchanged but prevent interactive use and rotate the credential on a tighter administrative cadence",
+        "c": false
+      },
+      {
+        "t": "Move the workload onto a more isolated server tier and reduce inbound exposure to limit opportunities for host compromise",
+        "c": false
+      },
+      {
+        "t": "Require stronger administrator sign-in controls and alert on unusual directory changes initiated by service identities",
+        "c": false
+      }
+    ],
+    "exp": "Over-privileged accounts create catastrophic blast radius. Least privilege, constrained usage, and monitoring reduce takeover risk."
+  },
+  {
+    "domain": "Secure Coding (XSS Prevention)",
+    "q": "A web page reflects user-supplied input back into HTML without encoding. Which remediation BEST prevents reflected XSS?",
+    "options": [
+      {
+        "t": "Transform untrusted output for its exact browser context and reinforce the page with execution-limiting browser controls",
+        "c": true
+      },
+      {
+        "t": "Allow only expected input patterns at submission time and rely on browser policy reporting to surface bad payload attempts",
+        "c": false
+      },
+      {
+        "t": "Centralize sanitization through one reusable routine so every response path receives identical treatment regardless of sink",
+        "c": false
+      },
+      {
+        "t": "Return the reflected value inside structured data responses and trust the client renderer to handle unsafe characters safely",
+        "c": false
+      }
+    ],
+    "exp": "Encode output for the specific context (HTML, attributes, JS) and add CSP defense-in-depth."
+  },
+  {
+    "domain": "Forensics (Chain of Custody)",
+    "q": "Evidence may be used in legal proceedings. What practice MOST supports admissibility and integrity?",
+    "options": [
+      {
+        "t": "Maintain a documented custody trail with integrity verification and controlled handling at every transfer point",
+        "c": true
+      },
+      {
+        "t": "Verify the collection set at intake and again at case closure while relying on storage access logs between those events",
+        "c": false
+      },
+      {
+        "t": "Place all media in restricted evidence lockers and use change tickets to reconstruct who interacted with each item",
+        "c": false
+      },
+      {
+        "t": "Prioritize tamper-evident packaging and signed handoff forms, treating technical validation as secondary to physical control",
+        "c": false
+      }
+    ],
+    "exp": "Chain of custody + hashing + controlled handling establishes integrity and accountability over evidence lifecycle."
+  },
+  {
+    "domain": "Hardening (Patch vs Config)",
+    "q": "A system is fully patched, but still vulnerable due to weak configurations and enabled legacy protocols. What is the BEST next step?",
+    "options": [
+      {
+        "t": "Remove unnecessary exposure by tightening settings and retiring obsolete communication methods that expand reachable surface",
+        "c": true
+      },
+      {
+        "t": "Reduce network reachability to the legacy services first, then retire them after the next maintenance cycle completes",
+        "c": false
+      },
+      {
+        "t": "Increase scanning frequency so insecure settings are reported sooner while larger platform changes are evaluated separately",
+        "c": false
+      },
+      {
+        "t": "Leave the configuration unchanged and depend on monitoring to identify misuse of the remaining backward-compatible features",
+        "c": false
+      }
+    ],
+    "exp": "Hardening complements patching: reduce attack surface, remove insecure protocols, and enforce secure baselines."
+  },
+  {
+    "domain": "Secure Coding (Secrets Management)",
+    "q": "Developers store API keys in source code repositories to simplify deployments. What is the BEST remediation?",
+    "options": [
+      {
+        "t": "Move credentials to a managed secret source, rotate what was exposed, and prevent recurrence with pipeline and commit checks",
+        "c": true
+      },
+      {
+        "t": "Encrypt configuration files in the repository, limit who can decrypt them, and review usage patterns for abnormal access",
+        "c": false
+      },
+      {
+        "t": "Replace long-lived values with shorter-lived ones but continue storing them with the application for deployment convenience",
+        "c": false
+      },
+      {
+        "t": "Keep sensitive values on build infrastructure only and trust the delivery system to inject them safely during releases",
+        "c": false
+      }
+    ],
+    "exp": "Secrets should be stored in vaults, rotated, minimized, and monitored; code repos are not appropriate for sensitive credentials."
+  },
+  {
+    "domain": "Forensics (Disk Imaging)",
+    "q": "You need to acquire a forensic image of a suspect drive. What is the BEST practice to avoid altering evidence?",
+    "options": [
+      {
+        "t": "Interpose read-protection during acquisition, capture the entire medium faithfully, and confirm integrity before examination",
+        "c": true
+      },
+      {
+        "t": "Perform a read-only logical collection first so urgent artifacts are preserved before deciding whether full capture is necessary",
+        "c": false
+      },
+      {
+        "t": "Prioritize active case directories and verify those results, accepting that low-value space can be revisited if needed later",
+        "c": false
+      },
+      {
+        "t": "Acquire directly from the device with minimal interaction and depend on post-collection digests to show nothing changed materially",
+        "c": false
+      }
+    ],
+    "exp": "Write blockers prevent modifications. Bit-level imaging + hashing ensures integrity and completeness."
+  },
+  {
+    "domain": "Hardening (Network Segmentation)",
+    "q": "A malware outbreak spreads via SMB/RDP across multiple VLANs. Which control MOST reduces future lateral movement?",
+    "options": [
+      {
+        "t": "Constrain east-west administration paths so remote management is limited to tightly governed access channels between tiers",
+        "c": true
+      },
+      {
+        "t": "Harden remote administration hosts and require stronger sign-in steps while preserving most existing network trust relationships",
+        "c": false
+      },
+      {
+        "t": "Retire older file-sharing versions and improve host firewalling so workstation controls shoulder most containment duties",
+        "c": false
+      },
+      {
+        "t": "Monitor interactive sign-ins more closely and increase review of privileged access events that precede remote administration",
+        "c": false
+      }
+    ],
+    "exp": "Segmentation and controlling admin pathways reduce lateral movement and credential reuse impact."
+  },
+  {
+    "domain": "Secure Coding (CSRF)",
+    "q": "A web app performs state-changing actions based only on a user’s session cookie. Attackers can trick users into triggering actions. What control BEST mitigates this?",
+    "options": [
+      {
+        "t": "Require each sensitive request to carry proof it originated from the intended workflow rather than ambient browser state alone",
+        "c": true
+      },
+      {
+        "t": "Prompt users to verify identity again for important actions and reject requests from unexpected navigation paths",
+        "c": false
+      },
+      {
+        "t": "Insert a human-verification step on sensitive pages so automated cross-site submissions are less likely to succeed silently",
+        "c": false
+      },
+      {
+        "t": "Shorten session lifetime and rotate browser tokens more aggressively to reduce the window for unwanted action submission",
+        "c": false
+      }
+    ],
+    "exp": "CSRF defenses include per-request tokens, same-site cookies, and origin validation to ensure requests are intentional."
+  },
+  {
+    "domain": "Forensics (Timeline Building)",
+    "q": "Local event logs appear cleared on a host. What is the BEST way to reconstruct a timeline?",
+    "options": [
+      {
+        "t": "Rebuild activity from independent retained telemetry sources that observed the host from outside the affected log store",
+        "c": true
+      },
+      {
+        "t": "Rely on endpoint telemetry plus perimeter records and accept reduced fidelity where application and name-resolution data are absent",
+        "c": false
+      },
+      {
+        "t": "Infer the sequence primarily from offline host artifacts because central observability may lag or omit short-lived events",
+        "c": false
+      },
+      {
+        "t": "Treat the gap as a collection failure first and attempt pipeline backfill before concluding the local record was deliberately removed",
+        "c": false
+      }
+    ],
+    "exp": "Attackers may clear local logs; centralized logging and other data sources can rebuild timelines and scope."
+  },
+  {
+    "domain": "Hardening (Application Allowlisting)",
+    "q": "A company wants to reduce malware execution from user directories and temporary folders. What control BEST supports this goal?",
+    "options": [
+      {
+        "t": "Permit only approved code paths and prevent launch from user-controlled storage locations that commonly host initial payloads",
+        "c": true
+      },
+      {
+        "t": "Block common user-write locations and tighten script policy while leaving broader binary execution decisions to local controls",
+        "c": false
+      },
+      {
+        "t": "Remove unnecessary administrative rights so code started from temporary paths has fewer privileges when it does execute",
+        "c": false
+      },
+      {
+        "t": "Harden email and browsing controls further because most malicious binaries reach endpoints through content delivery channels",
+        "c": false
+      }
+    ],
+    "exp": "Allowlisting and blocking execution from user-writable paths reduce common malware execution vectors."
+  },
+  {
+    "domain": "Secure Coding (Error Handling)",
+    "q": "An API returns detailed stack traces and database errors to clients. What is the BEST secure coding improvement?",
+    "options": [
+      {
+        "t": "Expose only minimal failure details to callers while preserving rich diagnostics in protected server-side observability paths",
+        "c": true
+      },
+      {
+        "t": "Standardize externally visible error codes and reduce internal logging to avoid leaking implementation details through operations data",
+        "c": false
+      },
+      {
+        "t": "Allow privileged operators to view verbose failures directly from the production interface when authenticated for support activity",
+        "c": false
+      },
+      {
+        "t": "Keep detailed responses in nonproduction and production alike but strip the most sensitive backend identifiers from each message",
+        "c": false
+      }
+    ],
+    "exp": "Avoid leaking internals. Provide generic client errors and preserve detailed server logs protected by least privilege."
+  },
+  {
+    "domain": "Forensics (Memory Indicators)",
+    "q": "A host is suspected of fileless malware. What artifact is MOST likely to exist only in memory and not on disk?",
+    "options": [
+      {
+        "t": "Resident code pages loaded through in-memory execution techniques rather than artifacts created as ordinary filesystem objects",
+        "c": true
+      },
+      {
+        "t": "Legitimate signed modules mapped by the operating system that happen to support abused runtime behavior during execution",
+        "c": false
+      },
+      {
+        "t": "Short-lived driver activity associated with subsystem abuse that may persist only in hardware interaction records",
+        "c": false
+      },
+      {
+        "t": "Configuration changes recorded for startup extensibility points that reveal persistence even when binaries are absent from disk",
+        "c": false
+      }
+    ],
+    "exp": "Fileless attacks often rely on memory injection and reflective loading, leaving minimal disk artifacts."
+  },
+  {
+    "domain": "Hardening (MFA & Conditional Access)",
+    "q": "A company sees multiple account takeovers from phishing. Which control MOST directly reduces successful credential replay?",
+    "options": [
+      {
+        "t": "Require sign-in factors that cannot be replayed by a phished secret and evaluate contextual trust before granting access",
+        "c": true
+      },
+      {
+        "t": "Use app-based confirmation prompts for risky locations while reserving stronger authenticators for selected privileged groups",
+        "c": false
+      },
+      {
+        "t": "Increase secret complexity requirements and depend on anomaly detections to interrupt misuse after the compromise attempt begins",
+        "c": false
+      },
+      {
+        "t": "Retire older sign-in protocols and require compliant endpoints, assuming device posture most directly blocks stolen credential use",
+        "c": false
+      }
+    ],
+    "exp": "MFA (especially phishing-resistant) and conditional access reduce replay success and add contextual controls."
+  },
+  {
+    "domain": "Secure Coding (Authentication)",
+    "q": "A developer stores user passwords using unsalted MD5. What is the BEST fix?",
+    "options": [
+      {
+        "t": "Use a purpose-built password derivation method with unique per-user randomness and tunable cost against offline guessing",
+        "c": true
+      },
+      {
+        "t": "Protect the stored values with centralized encryption keys and rotate them regularly to limit exposure after compromise",
+        "c": false
+      },
+      {
+        "t": "Replace the digest with a modern general-purpose hash plus salts because stronger primitives make dedicated password schemes unnecessary",
+        "c": false
+      },
+      {
+        "t": "Keep the current storage approach but shorten reset windows and add more account recovery checks to reduce practical abuse",
+        "c": false
+      }
+    ],
+    "exp": "Passwords should be hashed (not encrypted) with strong, slow algorithms and unique salts to resist offline cracking."
+  },
+  {
+    "domain": "Forensics (Write Preservation)",
+    "q": "You must analyze a suspect machine but want to avoid altering its state. What is the BEST approach for analysis?",
+    "options": [
+      {
+        "t": "Preserve original evidence sources untouched and conduct examination against faithful duplicates within a controlled environment",
+        "c": true
+      },
+      {
+        "t": "Perform remote live triage first to minimize transport delays, then capture fuller evidence only from the most relevant systems",
+        "c": false
+      },
+      {
+        "t": "Rely on storage acquisition alone and use retained telemetry to stand in for transient operating context during analysis",
+        "c": false
+      },
+      {
+        "t": "Isolate the host and execute local collection routines carefully so the operational system changes as little as possible",
+        "c": false
+      }
+    ],
+    "exp": "Best practice is to capture images and analyze copies, preserving original evidence integrity and minimizing contamination."
+  },
+  {
+    "domain": "Hardening (Secure Boot / Measured Boot)",
+    "q": "An organization is concerned about bootkits and tampering with bootloaders. Which control MOST directly addresses this?",
+    "options": [
+      {
+        "t": "Establish hardware-rooted startup trust that blocks unauthorized early-stage code and records the launch chain for validation",
+        "c": true
+      },
+      {
+        "t": "Require firmware passwords and stronger physical safeguards because startup tampering usually depends on direct device access",
+        "c": false
+      },
+      {
+        "t": "Encrypt workstation storage and increase endpoint monitoring so changes to early startup components are more likely to be detected",
+        "c": false
+      },
+      {
+        "t": "Enable signed startup checks alone and depend on operating-system records to confirm what happened before the kernel initialized",
+        "c": false
+      }
+    ],
+    "exp": "Secure Boot and measured boot help prevent or detect tampering in the boot chain, reducing bootkit persistence."
+  },
+  {
+    "domain": "Secure Coding (SSRF)",
+    "q": "A web service fetches a user-supplied URL server-side to generate previews. Attackers can access internal metadata endpoints. What vulnerability is this and what is the BEST mitigation?",
+    "options": [
+      {
+        "t": "Server-side request abuse; constrain reachable destinations through strict target validation, resolution controls, and outbound policy",
+        "c": true
+      },
+      {
+        "t": "Server-side request abuse; block the best-known internal addresses and watch for suspicious fetch behavior that evades filters",
+        "c": false
+      },
+      {
+        "t": "Server-side request abuse; validate only hostnames because name-based approval is sufficient to prevent access to internal services",
+        "c": false
+      },
+      {
+        "t": "Server-side request abuse; require authentication before preview generation so only authorized users can invoke backend fetches",
+        "c": false
+      }
+    ],
+    "exp": "SSRF abuses server-side fetches to reach internal resources (metadata services). Use allowlisting, resolution controls, and egress restrictions."
+  },
+  {
+    "domain": "Forensics (Attribution vs Evidence)",
+    "q": "Leadership asks who “did it” during an incident. Forensics must remain defensible. What is the BEST response approach?",
+    "options": [
+      {
+        "t": "Frame conclusions around observed behavior, scope, and confidence while avoiding identity claims that exceed the evidence base",
+        "c": true
+      },
+      {
+        "t": "Offer the most likely operator set from infrastructure overlap and tactics mapping, emphasizing that certainty remains limited",
+        "c": false
+      },
+      {
+        "t": "Provide an executive narrative centered on impact and remediation while omitting most technical uncertainty from the discussion",
+        "c": false
+      },
+      {
+        "t": "Delay answering the question until containment is complete because attribution statements are inappropriate during active response",
+        "c": false
+      }
+    ],
+    "exp": "Defensible forensics emphasizes evidence and confidence levels; attribution requires strong corroboration and is often uncertain."
+  },
+  {
+    "domain": "Hardening (Logging & Audit)",
+    "q": "A company hardens systems but incidents still occur. They lack visibility into privileged changes and authentication anomalies. What is the BEST improvement?",
+    "options": [
+      {
+        "t": "Centralize trustworthy activity records for sensitive actions and identity events so they can be correlated beyond the affected host",
+        "c": true
+      },
+      {
+        "t": "Collect privileged activity from each endpoint daily and keep most records local to reduce central infrastructure cost and exposure",
+        "c": false
+      },
+      {
+        "t": "Expand audit settings for administrative actions but shorten retention because fast response matters more than historical depth",
+        "c": false
+      },
+      {
+        "t": "Prioritize unusual sign-in monitoring and review administrative changes through periodic compliance reports rather than event streams",
+        "c": false
+      }
+    ],
+    "exp": "Hardening needs monitoring. Centralized logging and auditing provide detection and investigation capabilities for privileged actions."
+  },
+  {
+    "domain": "Secure Coding (Secure Defaults)",
+    "q": "A new API endpoint is deployed with “debug mode” enabled, verbose logging, and permissive CORS. What secure coding principle is MOST violated?",
+    "options": [
+      {
+        "t": "Choose production-safe defaults so optional diagnostics and broad trust relationships are not present unless deliberately justified",
+        "c": true
+      },
+      {
+        "t": "Reduce exposed diagnostics first but keep cross-origin openness temporarily because partner integration needs are already known",
+        "c": false
+      },
+      {
+        "t": "Constrain who can reach the endpoint and leave deeper troubleshooting features available behind authenticated administrative access",
+        "c": false
+      },
+      {
+        "t": "Preserve the current launch configuration but strip only the most revealing backend details from operational and client responses",
+        "c": false
+      }
+    ],
+    "exp": "Secure defaults reduce accidental exposure. Debug and permissive CORS in production can leak data and expand attack surface."
+  },
+  {
+    "domain": "Forensics (Hashing Use)",
+    "q": "Why are cryptographic hashes computed during acquisition and analysis?",
+    "options": [
+      {
+        "t": "They provide repeatable proof that collected material remains unchanged as it moves through examination and handoff stages",
+        "c": true
+      },
+      {
+        "t": "They show the evidence set is complete, though transfer authenticity still depends mainly on signatures and custody documentation",
+        "c": false
+      },
+      {
+        "t": "They are needed only once after capture because later verification duplicates effort without improving evidentiary confidence",
+        "c": false
+      },
+      {
+        "t": "They confirm authenticity by themselves, so separate protection of recorded digest values is less important than media control",
+        "c": false
+      }
+    ],
+    "exp": "Hashes are integrity checks: same input produces the same hash, enabling validation that evidence is unaltered."
+  },
+  {
+    "domain": "Hardening (Endpoint Controls)",
+    "q": "An attacker repeatedly abuses PowerShell and LOLBins on endpoints. Which hardening change BEST reduces this risk without breaking all admin work?",
+    "options": [
+      {
+        "t": "Constrain high-risk native tooling through execution policy, trusted code paths, and selective operational allowances with visibility",
+        "c": true
+      },
+      {
+        "t": "Maximize script telemetry and content inspection, treating rapid detection as the primary safeguard against native tool misuse",
+        "c": false
+      },
+      {
+        "t": "Confine advanced shell access to management hosts while leaving similar built-in utilities broadly available on user systems",
+        "c": false
+      },
+      {
+        "t": "Disable only remote shell features because most living-off-the-land tradecraft depends on network-enabled interactive execution",
+        "c": false
+      }
+    ],
+    "exp": "Hardening scripting via policy (signing, constrained mode, allowlisting) and monitoring reduces abuse while permitting legitimate operations."
+  },
+  {
+    "domain": "Secure Coding (Dependency Risk)",
+    "q": "A critical vulnerability is disclosed in a widely used open-source library your app depends on. What is the BEST secure development response?",
+    "options": [
+      {
+        "t": "Determine exposure quickly, update the component on an informed timetable, and govern third-party risk continuously in the pipeline",
+        "c": true
+      },
+      {
+        "t": "Evaluate whether the vulnerable feature is reachable and rely on compensating controls until the next planned engineering cycle",
+        "c": false
+      },
+      {
+        "t": "Freeze the current version and watch for exploitation attempts while waiting for a more widely adopted downstream vendor release",
+        "c": false
+      },
+      {
+        "t": "Maintain an internal fork temporarily so behavior stays stable, accepting ongoing ownership of future security corrections",
+        "c": false
+      }
+    ],
+    "exp": "Supply chain risk requires inventory (SBOM), scanning, and timely patching with exposure assessment and validation."
+  },
+  {
+    "domain": "Forensics (EDR Containment vs Evidence)",
+    "q": "A host is actively beaconing to suspected C2. You need to stop exfiltration but preserve evidence. What is the BEST action?",
+    "options": [
+      {
+        "t": "Cut off external communication without discarding system state, then acquire short-lived artifacts before deeper examination begins",
+        "c": true
+      },
+      {
+        "t": "Block the observed destination upstream and continue watching the host so additional indicators can be gathered from behavior",
+        "c": false
+      },
+      {
+        "t": "Power the system down after immediate scoping so transmission stops quickly and the storage image can be captured safely later",
+        "c": false
+      },
+      {
+        "t": "Invalidate the associated user access immediately, relying on identity disruption to halt the malicious communication channel",
+        "c": false
+      }
+    ],
+    "exp": "Contain quickly to stop harm while preserving state. Network isolation maintains power so volatile evidence can be collected."
+  },
+  {
+    "domain": "Hardening (Egress Control)",
+    "q": "Attackers rotate domains quickly for C2. Blocking known domains is insufficient. What hardening control BEST reduces outbound abuse?",
+    "options": [
+      {
+        "t": "Constrain what destinations systems may reach and inspect outbound patterns so unknown infrastructure has fewer usable paths",
+        "c": true
+      },
+      {
+        "t": "Continuously import fresher reputation feeds at the proxy because fast domain churn is primarily a timeliness problem",
+        "c": false
+      },
+      {
+        "t": "Normalize outbound traffic through a single common port and analyze encrypted session metadata for suspicious communication",
+        "c": false
+      },
+      {
+        "t": "Apply strict outbound rules to server subnets first while leaving user networks flexible to avoid disrupting productivity",
+        "c": false
+      }
+    ],
+    "exp": "Egress controls (proxy + DNS security + allowlists where possible) reduce C2 success and provide detection telemetry."
+  },
+  {
+    "domain": "Secure Coding (Race Conditions / TOCTOU)",
+    "q": "A program checks file permissions and then opens the file later, allowing an attacker to swap a symlink in between. What vulnerability class is this?",
+    "options": [
+      {
+        "t": "A state-change race between verification and use, best addressed by operations that bind the decision to the final object",
+        "c": true
+      },
+      {
+        "t": "A state-change race between verification and use, best addressed by repeating the permission test immediately before opening",
+        "c": false
+      },
+      {
+        "t": "A state-change race between verification and use, best addressed by general file locking because timing windows vanish under locks",
+        "c": false
+      },
+      {
+        "t": "A state-change race between verification and use, best addressed by path normalization so alternate references resolve consistently",
+        "c": false
+      }
+    ],
+    "exp": "TOCTOU arises when state changes between check and use. Use atomic file operations and avoid unsafe path handling."
+  },
+  {
+    "domain": "Forensics (Reporting & Lessons Learned)",
+    "q": "After an investigation, leadership wants improvements that prevent recurrence. What is the BEST deliverable from a forensics perspective?",
+    "options": [
+      {
+        "t": "An evidence-grounded report that explains sequence, cause, impact boundaries, and prioritized changes to reduce recurrence",
+        "c": true
+      },
+      {
+        "t": "A concise executive report centered on business impact and remediation tasks, with technical findings kept in a separate annex",
+        "c": false
+      },
+      {
+        "t": "A timeline-focused package that documents what happened and where, leaving causal analysis to engineering owners afterward",
+        "c": false
+      },
+      {
+        "t": "A remediation tracker with attached supporting artifacts, minimizing uncertainty language so leadership receives a consistent message",
+        "c": false
+      }
+    ],
+    "exp": "Forensics should produce evidence-backed reporting: timeline, root cause, scope, and actionable improvements to prevent recurrence."
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+
+let questions = [];
+let idx = 0;
+let score = 0;
+let correct = 0;
+let incorrect = 0;
+let answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+
+
+
+function padNBSP(optionText, targetLength){
+  let t = (optionText || "").trim();
+  if(!t.endsWith(".")) t += ".";
+  while(t.length < targetLength){
+    t += "\u00A0";
+  }
+  return t;
+}
+
+function prepQuestions(){
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const base = q.options.map(o => {
+      let s = (o.t || "").trim();
+      if(!s.endsWith(".")) s += ".";
+      return {...o, t: s};
+    });
+    const targetLen = Math.max(...base.map(o => o.t.length));
+    const padded = base.map(o => ({...o, t: padNBSP(o.t, targetLen)}));
+    const shuffledOpts = shuffle(padded); // per-load correct answer moves
+    return {...q, options: shuffledOpts};
+  });
+}
+
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  const pct = (idx / questions.length) * 100;
+  barEl.style.width = `${pct}%`;
+}
+
+function lockOptions(lock=true){
+  const nodes = answersEl.querySelectorAll(".opt");
+  nodes.forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+
+
+function equalizeOptionHeights(){
+  // Normalize visible option heights without clipping: use min-height so text can expand safely.
+  const texts = Array.from(document.querySelectorAll("#answers .opt .opttext"));
+  if(texts.length === 0) return;
+
+  // Reset
+  texts.forEach(t => { t.style.minHeight = "0px"; });
+
+  // Measure after layout
+  const maxH = Math.max(...texts.map(t => t.getBoundingClientRect().height));
+  const h = Math.ceil(maxH) + "px";
+  texts.forEach(t => { t.style.minHeight = h; });
+}
+
+function scheduleEqualize(){
+  requestAnimationFrame(() => requestAnimationFrame(equalizeOptionHeights));
+}
+
+// Re-equalize after fonts load (prevents post-load reflow bleed) and on resize.
+if(document.fonts && document.fonts.ready){
+  document.fonts.ready.then(scheduleEqualize);
+}
+window.addEventListener("resize", scheduleEqualize);
+
+
+
+
+
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt";
+    div.role = "button";
+    div.tabIndex = 0;
+    div.setAttribute("aria-disabled","false");
+
+    const letter = document.createElement("div");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+
+    const text = document.createElement("div");
+    text.className = "opttext";
+    text.textContent = opt.t;
+
+    div.appendChild(letter);
+    div.appendChild(text);
+
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+
+    answersEl.appendChild(div);
+  });
+
+  explainText.textContent = item.exp;
+  setStats();
+  // Normalize visible option heights after render
+  scheduleEqualize();
+}
+
+function choose(i){
+  if(answered) return;
+
+  const item = questions[idx];
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const picked = item.options[i];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(picked.c){
+    score += 1;
+    correct += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Nice—this aligns with hardening, secure coding, and defensible forensic workflow.</span>`;
+    }
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>Choose the option that reduces attack surface, prevents common flaws, or preserves evidence integrity.</span>`;
+    }
+  }
+
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  setStats();
+  scheduleEqualize();
+nextBtn.disabled = false;
+}
+
+function reveal(){
+  if(answered) return;
+  const item = questions[idx];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  nodes[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked){
+    feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Correct option highlighted—review the explanation for the key principle.</span>`;
+  }
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  nextBtn.disabled = false;
+  setStats();
+  scheduleEqualize();
+}
+
+function next(){
+  if(!answered) return;
+  idx += 1;
+  if(idx >= questions.length){
+    finish();
+    return;
+  }
+  render();
+}
+
+function finish(){
+  barEl.style.width = `100%`;
+  answersEl.innerHTML = "";
+  feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed all 30 questions.";
+  domainEl.textContent = "Domain: Completed";
+  explainText.textContent = "";
+  explainBox.open = false;
+
+  nextBtn.disabled = true;
+  revealBtn.disabled = true;
+
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+
+function reset(){
+  idx = 0;
+  score = 0;
+  correct = 0;
+  incorrect = 0;
+  prepQuestions();
+  render();
+}
+
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+
+prepQuestions();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode Quiz — Security & Network Monitoring</title>
+  <style>
+    :root{
+      --bg:#071427; --text:#eaf2ff; --muted:#b7c7e6; --accent:#2f7dff; --good:#2fd48f; --bad:#ff5c7a;
+      --border:rgba(255,255,255,.10); --shadow: 0 14px 40px rgba(0,0,0,.35); --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text); line-height:1.35;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 28px 18px 54px; }
+    header{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; }
+    .titlebox,.stats,.card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .titlebox{padding: 18px 18px 14px; flex:1;}
+    h1{ margin:0 0 6px; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:0; color:var(--muted); font-size: 13px; }
+    .stats{ min-width: 260px; padding: 14px 14px 12px; }
+    .statrow{ display:flex; justify-content:space-between; gap:10px; font-size:13px; color:var(--muted); padding:6px 2px; border-bottom:1px dashed rgba(255,255,255,.10);}
+    .statrow:last-child{border-bottom:0}.statrow b{color:var(--text); font-weight:650}
+    .barwrap{ margin: 14px 0 18px; background: rgba(255,255,255,.06); border:1px solid var(--border); border-radius:999px; overflow:hidden; height:12px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);}
+    .bar{ height:100%; width:0%; background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55)); transition: width .35s ease;}
+    .card{padding:18px;}
+    .qmeta{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; color:var(--muted); font-size:13px;}
+    .pill,.badge,.toggle{display:inline-flex; align-items:center; gap:8px; border-radius:999px;}
+    .pill{padding:6px 10px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.15); color:var(--muted); font-size:12px; user-select:none;}
+    .pill .dot{width:8px;height:8px;border-radius:50%; background:rgba(47,125,255,.95); box-shadow: 0 0 0 4px rgba(47,125,255,.15);}
+    .qtext{ font-size:16px; margin:6px 0 14px; white-space: pre-wrap; }
+    .answers{ display:grid; grid-template-columns:1fr; gap:10px; margin:10px 0 14px; }
+    .opt{ display:flex; gap:12px; align-items:flex-start; padding:12px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.16); cursor:pointer; transition: transform .06s ease, border-color .2s ease, background .2s ease; user-select:none;}
+    .opt:hover{ transform:translateY(-1px); border-color:rgba(47,125,255,.35);}
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{flex:0 0 auto; width:28px; height:28px; border-radius:10px; display:grid; place-items:center; font-weight:800; background:rgba(47,125,255,.16); border:1px solid rgba(47,125,255,.28); color:var(--text);}
+    .opttext{ color:var(--text); font-size:14px; line-height:1.35; padding-top:2px; white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .opt.correct{ border-color: rgba(47,212,143,.55); background: rgba(47,212,143,.10);}
+    .opt.correct .letter{ background:rgba(47,212,143,.18); border-color:rgba(47,212,143,.55);}
+    .opt.wrong{ border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10);}
+    .opt.wrong .letter{ background:rgba(255,92,122,.18); border-color:rgba(255,92,122,.55);}
+    .feedback{ margin-top:8px; font-size:13px; color:var(--muted); display:flex; gap:10px; align-items:center; min-height:22px;}
+    .badge{padding:6px 10px; border:1px solid rgba(255,255,255,.14); background:rgba(0,0,0,.16); font-size:12px; color:var(--muted);}
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95);}
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95);}
+    details{ margin-top:10px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.14); border-radius:14px; padding:10px 12px;}
+    summary{ cursor:pointer; color:var(--muted); font-size:13px; user-select:none;}
+    .explain{ margin-top:10px; color:var(--text); font-size:13px; white-space:pre-wrap;}
+    .controls{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:14px; flex-wrap:wrap;}
+    button{ appearance:none; border:1px solid rgba(255,255,255,.14); background:rgba(0,0,0,.18); color:var(--text); border-radius:14px; padding:10px 14px; font-weight:700; cursor:pointer; transition: transform .06s ease, border-color .2s ease, background .2s ease;}
+    button:hover{ transform:translateY(-1px); border-color:rgba(47,125,255,.40);} button:active{transform:translateY(0px);}
+    button.primary{ background:rgba(47,125,255,.22); border-color:rgba(47,125,255,.45);} button[disabled]{opacity:.55; cursor:not-allowed; transform:none;}
+    .footer{ margin-top:16px; color:var(--muted); font-size:12px; text-align:center;}
+    .end{ margin-top:18px; display:none; } .end h2{margin:0 0 8px; font-size:18px;} .end p{margin:0; color:var(--muted);}
+    .tiny{ font-size:12px; color:var(--muted);}
+    .toggleRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+    .toggle{ gap:10px; padding:10px 12px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.14); color:var(--muted); font-size:12px; user-select:none;}
+    .toggle input{ transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — Security & Network Monitoring</h1>
+        <p class="subtitle">30 scenario-heavy questions • per-load answer shuffling • equal-length options • next-button flow • collapsible explanations</p>
+        <div class="toggleRow">
+          <label class="toggle"><input id="instantFeedback" type="checkbox" checked />Instant feedback</label>
+          <label class="toggle"><input id="autoExplain" type="checkbox" />Auto-open explanations</label>
+          <label class="toggle"><span>Tip: Reload to reshuffle.</span></label>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 30</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+    <div class="barwrap" aria-label="Progress bar"><div class="bar" id="bar"></div></div>
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: Monitoring / Detection / Triage</span></span>
+        <span class="pill" id="difficultyPill">Difficulty: Hard (word-salad)</span>
+      </div>
+      <div class="qtext" id="questionText">Loading…</div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+      <div class="controls">
+        <button id="resetBtn">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+        <p class="tiny" style="margin-top:10px;">Want a PBQ-style “triage dashboard” set (SIEM queries, PCAP clues, baselines)? Tell me.</p>
+      </div>
+    </div>
+    <div class="footer">Built for CySA+ practice. Focus: log sources, SIEM correlation, IDS/NDR, flow/PCAP triage, and monitoring architecture.</div>
+  </div>
+<script>
+const RAW_QUESTIONS = [{"domain": "Monitoring Architecture (Log Sources)", "q": "A SOC can see endpoint alerts but misses cloud control-plane abuse and suspicious admin actions. Leadership wants faster detection of account takeover. Which data source MOST directly closes this visibility gap?", "options": [{"t": "Aggregate cloud audit trails with identity, source IP, and API action context for correlation across admin activity.", "c": true}, {"t": "Collect additional endpoint application logs and correlate local process launches with software inventory changes.", "c": false}, {"t": "Expand wireless controller logging to capture roaming events and client authentication timing across office floors.", "c": false}, {"t": "Increase web proxy retention and categorize browsing destinations by risk score and content filtering decisions.", "c": false}], "exp": "Control-plane audit logs capture admin actions, principals, source IPs, and API activity, which directly support account-takeover detection in cloud environments."}, {"domain": "Baselining (Normal vs Anomalous)", "q": "A new anomaly rule flags “high DNS query volume” for multiple endpoints. Analysts are unsure if it is malware or a software update event. What is the BEST first step?", "options": [{"t": "Compare against historical baselines and change windows, then enrich with process and user context before escalating.", "c": true}, {"t": "Quarantine every endpoint that triggered because unusual resolver activity is sufficient evidence of active compromise.", "c": false}, {"t": "Raise the DNS threshold globally so only the largest spikes alert while analysts review the trend later.", "c": false}, {"t": "Pivot immediately to external threat feeds and block the queried domains before validating internal activity patterns.", "c": false}], "exp": "Baseline and change context help separate legitimate update behavior from suspicious activity. Then endpoint context can validate whether a process is behaving abnormally."}, {"domain": "NetFlow (Metadata vs Payload)", "q": "Network monitoring shows large data transfers to a single external IP, but TLS prevents payload inspection. Which telemetry is MOST useful to quantify and scope the suspected exfiltration?", "options": [{"t": "Use flow records with byte counts, duration, direction, endpoints, and host attribution to measure transfer scope.", "c": true}, {"t": "Review switch CAM tables and port-security counters to identify which access port last learned the source MAC.", "c": false}, {"t": "Capture wireless signal metrics over the time period to determine whether radio interference affected throughput.", "c": false}, {"t": "Audit password age and lockout settings to estimate which accounts could have initiated the transfer session.", "c": false}], "exp": "NetFlow/IPFIX is ideal for encrypted traffic because it shows volume, timing, direction, and endpoints even when payload inspection is unavailable."}, {"domain": "IDS/NDR (Placement)", "q": "An IDS sensor is only at the internet edge. The organization experiences lateral movement between internal subnets without alerts. Which change MOST improves detection?", "options": [{"t": "Deploy internal sensors or NDR at east-west chokepoints and critical segments to observe inter-subnet movement.", "c": true}, {"t": "Tune edge signatures more aggressively so they infer internal movement from internet-bound sessions and retries.", "c": false}, {"t": "Mirror only core-switch management traffic because configuration channels best represent user-to-user traversal paths.", "c": false}, {"t": "Increase firewall deny logging at the perimeter to approximate which internal VLANs are communicating laterally.", "c": false}], "exp": "Sensor placement determines visibility. East-west monitoring is needed to detect movement that never traverses the internet edge."}, {"domain": "SIEM Correlation (Identity)", "q": "A user successfully logs in to SaaS from the US, then two minutes later from Europe, both with valid MFA. What is the BEST correlation rule concept for this?", "options": [{"t": "Use geo-velocity correlation across identity events with time windows, IP enrichment, and session context.", "c": true}, {"t": "Alert on repeated MFA success events for the same account because valid prompts indicate persistent account misuse.", "c": false}, {"t": "Correlate the account to endpoint CPU spikes because unusual compute load typically follows identity compromise.", "c": false}, {"t": "Track certificate renewal events on the SaaS tenant because session region changes usually accompany trust updates.", "c": false}], "exp": "Impossible travel or rapid geo-velocity detection is the direct analytic for this pattern. MFA success does not eliminate token theft or session hijacking."}, {"domain": "PCAP Triage (TCP Flags)", "q": "A firewall log shows many outbound connections to random IPs with short-lived sessions. PCAP indicates repeated SYNs with no completed handshakes. What is the MOST likely interpretation?", "options": [{"t": "The host is likely probing or scanning for reachable services without completing full application sessions.", "c": true}, {"t": "The host is maintaining normal browser preconnect behavior across many destinations before loading content pages.", "c": false}, {"t": "The pattern suggests a throughput-optimized transfer where data leaves before acknowledgments are fully exchanged.", "c": false}, {"t": "The activity reflects standard name-resolution retries because recursive queries begin with repeated SYN packets.", "c": false}], "exp": "Repeated SYNs without completed handshakes commonly indicate recon, blocked traffic, or attempts to discover live services."}, {"domain": "Log Integrity (Time Sync)", "q": "An investigation is slowed because events from endpoints, firewalls, and SaaS logs appear out of order. Which control MOST directly fixes this?", "options": [{"t": "Standardize time synchronization and timestamp formats across all log sources to preserve reliable event sequencing.", "c": true}, {"t": "Increase collection frequency so the SIEM ingests records sooner and can sort them by receipt order instead.", "c": false}, {"t": "Raise log verbosity on every device so duplicate messages make cross-source ordering easier to infer manually.", "c": false}, {"t": "Shorten retention windows so analysts only review recent records that are less likely to have ordering drift.", "c": false}], "exp": "Centralized time sync and consistent timestamp standards are essential for correlation and incident timelines."}, {"domain": "UEBA (Behavioral Analytics)", "q": "Analysts suspect an insider is staging sensitive files before exfiltration. Traditional signatures are quiet. Which monitoring approach BEST detects this pattern?", "options": [{"t": "Apply behavior analytics to unusual file access, privilege use, and movement patterns for the specific user.", "c": true}, {"t": "Increase perimeter deny logging so outbound blocks become the primary signal for insider handling of data.", "c": false}, {"t": "Run authenticated vulnerability scans more often to reveal whether exploitable software enabled the staging phase.", "c": false}, {"t": "Focus on domain-generation detections because insiders usually rely on covert DNS channels during collection.", "c": false}], "exp": "UEBA is well suited for insider scenarios because it highlights deviations in access, staging, and privilege behavior against a normal baseline."}, {"domain": "EDR Telemetry (Process Context)", "q": "A detection shows powershell.exe spawning rundll32.exe with a long base64 command line. Which enrichment is MOST valuable to confirm malicious behavior?", "options": [{"t": "Review process lineage, command-line details, signer trust, and related network connections for that execution.", "c": true}, {"t": "Check disk health telemetry to see whether sustained read or write rates align with script-based execution.", "c": false}, {"t": "Compare the user’s display and idle-state history to determine whether the shell ran during active interaction.", "c": false}, {"t": "Inspect print service events to identify whether document rendering preceded the encoded command invocation.", "c": false}], "exp": "Process tree, command line, signer reputation, and network context are the most direct enrichments for validating scripting abuse and LOLBin behavior."}, {"domain": "Syslog (Normalization)", "q": "A SIEM receives syslog from multiple vendors, but fields are inconsistent and correlations fail. What is the BEST fix?", "options": [{"t": "Normalize records into a common schema and verify mappings for time, host, action, and severity fields.", "c": true}, {"t": "Store all messages as raw text and rely on keyword searches so vendor formats remain untouched in the index.", "c": false}, {"t": "Reduce ingestion to the noisiest devices first so parsing issues become easier to diagnose with fewer sources.", "c": false}, {"t": "Extend retention periods to increase cross-vendor history, which improves field consistency over longer timelines.", "c": false}], "exp": "Normalization and field mapping are what make multi-vendor correlations reliable. Without a common schema, analytics break down quickly."}, {"domain": "IDS Tuning (False Positives)", "q": "IDS repeatedly alerts on “SQL injection” for a legitimate JSON search endpoint. Which tuning reduces false positives while maintaining coverage?", "options": [{"t": "Add narrowly scoped exceptions using URI and content-type context while leaving broader injection coverage intact.", "c": true}, {"t": "Lower signature sensitivity on the entire sensor so structured API traffic produces fewer application-layer alerts.", "c": false}, {"t": "Move the application to a separate subnet and treat the segment as trusted for all injection-related detections.", "c": false}, {"t": "Suppress alerts only after analysts manually label each request pattern instead of refining the detection logic.", "c": false}], "exp": "Precision tuning is best here. Use context-aware exceptions around the endpoint rather than disabling broad coverage."}, {"domain": "Threat Hunting (Hypothesis)", "q": "A hunter suspects credential dumping is occurring. Which data is MOST directly useful to test the hypothesis quickly?", "options": [{"t": "Use endpoint and security logs showing LSASS access, suspicious handles, and related credential-tool artifacts.", "c": true}, {"t": "Review email click history to find whether the suspected user recently interacted with external newsletters.", "c": false}, {"t": "Inspect printer service activity to determine whether spooler interactions preceded the suspected account misuse.", "c": false}, {"t": "Query building-access events to compare badge swipes with the timing of the endpoint detections under review.", "c": false}], "exp": "Credential-dumping hunts should focus on LSASS access, handle opens, suspicious drivers, and endpoint evidence tied to memory access."}, {"domain": "DNS Monitoring (Tunneling)", "q": "You observe many long, random subdomain queries to a single domain with consistent intervals. Which detection best fits?", "options": [{"t": "Investigate for DNS tunneling by reviewing label entropy, query frequency, destination history, and response patterns.", "c": true}, {"t": "Classify it as content-delivery optimization because edge services often generate stable, high-entropy labels.", "c": false}, {"t": "Treat it as local name-resolution churn caused by clients failing over between internal recursive resolvers.", "c": false}, {"t": "Map it to routine patch orchestration because software updates commonly beacon through randomized subdomains.", "c": false}], "exp": "Long, high-entropy labels at regular intervals to a single destination strongly fit DNS tunneling or data-smuggling behavior."}, {"domain": "Monitoring Controls (Alert Fatigue)", "q": "Analysts are overwhelmed by thousands of low-value alerts daily. Detection quality is dropping. What is the BEST first improvement?", "options": [{"t": "Tune noisy rules, add enrichment, and prioritize workflows so analysts work higher-signal alerts first.", "c": true}, {"t": "Enable the remaining unused detections so analysts see fuller coverage before deciding which alerts matter.", "c": false}, {"t": "Shift all review to weekly batches so the queue is larger but handled in a more predictable reporting cycle.", "c": false}, {"t": "Require manual validation of every raw log source before an alert can be closed or triaged by the team.", "c": false}], "exp": "Reducing noise and increasing context is the right first move. Alert fatigue is best addressed through tuning, enrichment, and prioritization."}, {"domain": "Firewall Logs (NAT Attribution)", "q": "The SOC needs to map a suspicious public connection to the internal host behind PAT. Which log detail is MOST necessary?", "options": [{"t": "Use timestamped NAT translation tuples that map inside IP and port pairs to the public session values.", "c": true}, {"t": "Review the destination’s reputation category so the external service can be matched back to the initiating asset.", "c": false}, {"t": "Correlate wireless SSID assignments to determine which user segment owned the translated internet connection.", "c": false}, {"t": "Check lifecycle inventory data to see which device class was most likely to use the observed ephemeral port.", "c": false}], "exp": "PAT attribution depends on NAT translation logs that tie internal IP:port pairs to public IP:port mappings at a specific time."}, {"domain": "Cloud Monitoring (Resource Abuse)", "q": "Billing spikes show unusual compute consumption overnight. Logs reveal many new instances launched with the same API key. What is the MOST likely incident?", "options": [{"t": "Compromised cloud credentials are being used for automated resource abuse such as cryptomining workloads.", "c": true}, {"t": "A scheduled autoscaling policy is overreacting to traffic forecasts associated with the same service principal.", "c": false}, {"t": "The environment is recycling failed instances because service discovery cannot resolve backend dependencies.", "c": false}, {"t": "A security group change is triggering replacement of compute nodes across the account for policy alignment.", "c": false}], "exp": "Unexpected instance creation tied to one API key and billing spikes strongly indicates stolen credentials being used for cloud resource abuse."}, {"domain": "Email Monitoring (Phish Triage)", "q": "Multiple users report a suspicious email with a link to a newly registered domain. Which action best supports rapid triage?", "options": [{"t": "Enrich the URL with reputation, domain age, sandbox results, and correlate clicks with authentication activity.", "c": true}, {"t": "Purge the messages first, then investigate only if additional login anomalies appear for one of the recipients.", "c": false}, {"t": "Block all external links at the gateway until analysts finish comparing the campaign against known reporting trends.", "c": false}, {"t": "Forward copies to an external mailbox used for detonation so internal analysis systems stay separated from risk.", "c": false}], "exp": "Rapid triage comes from enrichment and correlation: reputation, WHOIS/domain age, sandboxing, and evidence of user interaction."}, {"domain": "Packet Analysis (Beaconing)", "q": "Network telemetry shows periodic HTTPS connections every 60 seconds to a rare domain, always with small outbound bytes and larger inbound bytes. Which interpretation is MOST plausible?", "options": [{"t": "This is consistent with command-and-control beaconing and should be validated with endpoint and DNS context.", "c": true}, {"t": "The host is likely streaming media in segmented bursts that align naturally to fixed one-minute intervals.", "c": false}, {"t": "It reflects a scheduled backup negotiation in which remote storage polls the host before each transfer block.", "c": false}, {"t": "The system is renewing infrastructure leases through encrypted service checks that happen once per minute.", "c": false}], "exp": "Regular intervals and consistent small-outbound/larger-inbound patterns are classic beaconing indicators. Correlate with endpoint process and domain reputation."}, {"domain": "SIEM Queries (Scoping)", "q": "A ransomware alert triggers on one endpoint. What is the BEST next SIEM query to scope potential spread?", "options": [{"t": "Search across hosts for matching artifacts, related process activity, lateral auth events, and SMB or RDP use.", "c": true}, {"t": "Query enterprise-wide CPU spikes during the day because encryption activity should dominate processor trends.", "c": false}, {"t": "Pull every login event for the past year so long-term user behavior can reveal the earliest compromise path.", "c": false}, {"t": "Limit the query to antivirus quarantine actions because spread should only occur where prevention already fired.", "c": false}], "exp": "The best scoping query looks for the same indicators plus lateral movement evidence across other hosts."}, {"domain": "Sysmon/Security Logs (Windows)", "q": "A Windows host shows repeated event IDs for new service installation and scheduled task creation. Why is this suspicious?", "options": [{"t": "These are common persistence mechanisms, so correlate creator accounts, binaries, and timing for abuse.", "c": true}, {"t": "The pattern mainly indicates ordinary software lifecycle activity unless it appears alongside disk health issues.", "c": false}, {"t": "It most directly suggests outbound collection of data because automation objects are preferred for transfer jobs.", "c": false}, {"t": "The events are primarily valuable as evidence of patch rollback rather than long-term foothold establishment.", "c": false}], "exp": "Services and scheduled tasks are popular persistence mechanisms. Who created them and what binaries they reference are key questions."}, {"domain": "Monitoring Coverage (Gaps)", "q": "A SOC realizes it has no visibility into privileged activity on network devices. Which monitoring control MOST directly addresses this?", "options": [{"t": "Enable AAA accounting, centralize device logs, and correlate administrative commands with configuration changes.", "c": true}, {"t": "Increase endpoint privileged-access monitoring so workstation telemetry can stand in for network device activity.", "c": false}, {"t": "Rely on quarterly configuration exports and compare checksums to identify whether privileged use likely occurred.", "c": false}, {"t": "Collect only interface utilization metrics because privileged misuse usually manifests as performance anomalies first.", "c": false}], "exp": "AAA accounting and centralized network-device logging directly show who performed which actions and when."}, {"domain": "SOAR (Automation)", "q": "Analysts spend hours enriching alerts with IP reputation, WHOIS, and sandbox lookups. Which improvement BEST reduces time-to-triage?", "options": [{"t": "Build SOAR playbooks that automate enrichment and standardize triage steps with approvals where needed.", "c": true}, {"t": "Remove the enrichment steps and let analysts decide case priority from the raw detection text alone.", "c": false}, {"t": "Increase the number of analytic rules so more context is embedded in the alert stream by default.", "c": false}, {"t": "Move the SIEM searches to a slower review cycle so fewer alerts appear ready for enrichment each hour.", "c": false}], "exp": "SOAR is the natural solution for repetitive enrichment and consistent triage workflows."}, {"domain": "Honeypots/Honeytokens (Detection)", "q": "Security plants a fake admin credential in a monitored location. Any use should be suspicious. What is this technique called?", "options": [{"t": "A honeytoken, which is a decoy artifact that should trigger high-confidence alerts if it is touched or used.", "c": true}, {"t": "Tokenization, which substitutes reference values for sensitive data while preserving application workflows.", "c": false}, {"t": "Kerberoasting, which abuses service tickets to support offline password recovery against domain accounts.", "c": false}, {"t": "Sharding, which distributes records across partitions so a compromise cannot affect every data set at once.", "c": false}], "exp": "A honeytoken is a decoy artifact such as a credential or file used to generate high-confidence detections."}, {"domain": "TLS Monitoring (JA3/FP)", "q": "Encrypted traffic is hard to inspect, but analysts want to cluster suspicious clients by TLS behavior. Which technique helps?", "options": [{"t": "Use TLS fingerprinting to group clients by handshake traits and highlight anomalous encrypted sessions.", "c": true}, {"t": "Rely on MAC filtering data because hardware addresses remain stable indicators across internet destinations.", "c": false}, {"t": "Compare DNS TTL values to determine which encrypted clients belong to the same malware family cluster.", "c": false}, {"t": "Track port-based allow lists only, since modern encrypted tooling tends to reuse a narrow service profile.", "c": false}], "exp": "TLS fingerprinting such as JA3/JA4-style techniques helps cluster encrypted traffic without decrypting the payload."}, {"domain": "Vulnerability vs Monitoring (Complementary)", "q": "A team argues vulnerability scanning eliminates the need for continuous monitoring. What is the BEST response?", "options": [{"t": "Scanning finds known weaknesses periodically, while monitoring detects active abuse and emerging behavior continuously.", "c": true}, {"t": "Continuous monitoring mainly duplicates patch-status reporting, so its value depends on external audit schedules.", "c": false}, {"t": "If scan coverage is broad enough, active misuse is usually captured through severity trends and asset exposure.", "c": false}, {"t": "Monitoring becomes optional once remediation SLAs are mature because exploitation should decline with patch cadence.", "c": false}], "exp": "Scanning and monitoring solve different problems. One finds known weaknesses periodically; the other detects active misuse and novel behavior."}, {"domain": "DLP Monitoring (Data Movement)", "q": "An analyst suspects sensitive data is being uploaded to personal cloud storage. Which monitoring control MOST directly helps confirm and stop it?", "options": [{"t": "Use DLP at the endpoint or web gateway with content classification and SIEM logging for attempted uploads.", "c": true}, {"t": "Review firewall egress categories and block unsanctioned destinations while relying on user reports for validation.", "c": false}, {"t": "Capture more packet data from remote users so analysts can manually determine whether uploads contain restricted files.", "c": false}, {"t": "Expand disk quotas and local sync controls to slow transfers long enough for analysts to investigate user activity.", "c": false}], "exp": "DLP is the most direct control because it can both identify sensitive content and block attempted uploads while logging the event."}, {"domain": "Authentication Monitoring (Brute Force vs Spray)", "q": "The SIEM sees many failed logins across many accounts with the same password, spaced out to avoid lockouts. Which attack pattern is this?", "options": [{"t": "Password spraying, where a small password set is tried broadly across many users over time.", "c": true}, {"t": "Brute forcing, where one account is tested with a long sequence of password guesses until it yields.", "c": false}, {"t": "Kerberoasting, where service tickets are requested for offline cracking against service-account secrets.", "c": false}, {"t": "Golden-ticket abuse, where forged Kerberos tickets are used to bypass repeated password validation attempts.", "c": false}], "exp": "Password spraying is low-and-slow across many users with one or a few passwords, unlike brute force against a single account."}, {"domain": "Monitoring Response (Containment)", "q": "An endpoint alert indicates possible C2. What is the BEST immediate containment action while preserving evidence?", "options": [{"t": "Isolate the host through EDR network containment while leaving it powered for volatile evidence collection.", "c": true}, {"t": "Reset the user’s credentials first so any malicious process loses access before host-level action is taken.", "c": false}, {"t": "Force an enterprise firewall block on the suspect domain while keeping the host fully connected for monitoring.", "c": false}, {"t": "Start remote remediation scripts immediately so suspicious binaries are removed before they can disappear.", "c": false}], "exp": "EDR network isolation contains the host quickly while preserving volatile evidence and limiting further command-and-control activity."}, {"domain": "NDR + EDR Correlation (Confidence)", "q": "NDR detects beaconing from a host, but EDR shows no malware alerts. What is the BEST next step?", "options": [{"t": "Correlate the destination to process-level network telemetry and investigate proxying, tunneling, or LOLBin use.", "c": true}, {"t": "Reduce confidence in the network alert until the endpoint tool produces a matching prevention or malware verdict.", "c": false}, {"t": "Treat the traffic as benign background application behavior unless the domain appears in multiple threat feeds.", "c": false}, {"t": "Close the case after documenting the discrepancy because duplicate coverage should have produced identical outcomes.", "c": false}], "exp": "EDR may miss suspicious tools or not alert on them. The right move is to correlate the network indicator to process and persistence evidence on the host."}, {"domain": "Monitoring Program (KPIs)", "q": "Leadership wants to measure SOC performance improvements after new tooling. Which metric BEST reflects operational detection effectiveness?", "options": [{"t": "Track mean time to detect and mean time to respond using consistent incident definitions over comparable periods.", "c": true}, {"t": "Track total alerts generated per day because broader visibility should naturally increase case volume over time.", "c": false}, {"t": "Track total log volume stored because larger telemetry sets usually indicate stronger detection maturity across teams.", "c": false}, {"t": "Track firewall rule count because more policy objects generally reflect deeper operational monitoring investment.", "c": false}], "exp": "MTTD and MTTR are strong operational metrics for detection and response effectiveness when measured consistently."}];
+const LETTERS = ["A","B","C","D"];
+let questions = [], idx = 0, score = 0, correct = 0, incorrect = 0, answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function rstripNbsp(str){ return str.replace(/(?:\u00A0)+$/u, ""); }
+function ensurePeriod(str){
+  const s = rstripNbsp(String(str).trim());
+  return /[.!?]$/.test(s) ? s : s + ".";
+}
+function padOptionsVisual(options){
+  const clean = options.map(o => ({...o, t: ensurePeriod(o.t)}));
+  const maxLen = Math.max(...clean.map(o => o.t.length));
+  return clean.map(o => ({...o, display: o.t + "\u00A0".repeat(maxLen - o.t.length)}));
+}
+function prepQuestions(){
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const opts = padOptionsVisual(q.options);
+    return {...q, options: shuffle(opts)};
+  });
+}
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  barEl.style.width = `${(idx / questions.length) * 100}%`;
+}
+function lockOptions(lock=true){
+  answersEl.querySelectorAll(".opt").forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt"; div.role = "button"; div.tabIndex = 0; div.setAttribute("aria-disabled","false");
+    const letter = document.createElement("div"); letter.className = "letter"; letter.textContent = LETTERS[i];
+    const text = document.createElement("div"); text.className = "opttext"; text.textContent = opt.display;
+    div.appendChild(letter); div.appendChild(text);
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+    answersEl.appendChild(div);
+  });
+  explainText.textContent = item.exp;
+  setStats();
+}
+function choose(i){
+  if(answered) return;
+  const item = questions[idx];
+  answered = true; lockOptions(true); revealBtn.disabled = true;
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const correctIndex = item.options.findIndex(o => o.c === true);
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(item.options[i].c){
+    score += 1; correct += 1;
+    if(instantFeedbackToggle.checked) feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Nice—this is the most direct monitoring or detection move for the scenario.</span>`;
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked) feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>Pick the option that improves visibility, correlation, or containment with the fewest extra assumptions.</span>`;
+  }
+  if(autoExplainToggle.checked) explainBox.open = true;
+  setStats(); nextBtn.disabled = false;
+}
+function reveal(){
+  if(answered) return;
+  const item = questions[idx]; const correctIndex = item.options.findIndex(o => o.c === true);
+  answered = true; lockOptions(true); revealBtn.disabled = true;
+  Array.from(answersEl.querySelectorAll(".opt"))[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked) feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Correct option highlighted—use the explanation to lock the logic in.</span>`;
+  if(autoExplainToggle.checked) explainBox.open = true;
+  nextBtn.disabled = false; setStats();
+}
+function next(){ if(!answered) return; idx += 1; if(idx >= questions.length){ finish(); return; } render(); }
+function finish(){
+  barEl.style.width = `100%`; answersEl.innerHTML = ""; feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed all 30 questions."; domainEl.textContent = "Domain: Completed";
+  explainText.textContent = ""; explainBox.open = false; nextBtn.disabled = true; revealBtn.disabled = true;
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+function reset(){ idx = 0; score = 0; correct = 0; incorrect = 0; prepQuestions(); render(); }
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+prepQuestions(); render();
+</script>
+</body>
+</html>

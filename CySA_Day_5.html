@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode Quiz — Data Security Standards & Vulnerability Scanning/Analysis</title>
+  <style>
+    :root{
+      --bg:#071427;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#2f7dff;
+      --good:#2fd48f;
+      --bad:#ff5c7a;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 28px 18px 54px; }
+    header{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; }
+    .titlebox{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+      flex:1;
+    }
+    h1{ margin:0 0 6px; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:0; color:var(--muted); font-size: 13px; }
+    .stats{
+      min-width: 260px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+    }
+    .statrow{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size: 13px; color: var(--muted);
+      padding: 6px 2px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+    }
+    .statrow:last-child{border-bottom:0}
+    .statrow b{color:var(--text); font-weight:650}
+
+    .barwrap{
+      margin: 14px 0 18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55));
+      transition: width .35s ease;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .qmeta{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:12px; margin-bottom: 10px;
+      color: var(--muted); font-size: 13px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px; background: rgba(0,0,0,.15);
+      color: var(--muted); font-size: 12px; user-select:none;
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(47,125,255,.95);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.15);
+    }
+
+    .qtext{ font-size: 16px; margin: 6px 0 14px; white-space: pre-wrap; }
+
+    .answers{ display:grid; grid-template-columns: 1fr; gap: 10px; margin: 10px 0 14px; }
+    .opt{
+      display:flex; gap:12px; align-items:flex-start;
+      padding: 12px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.35); }
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{
+      flex:0 0 auto; width: 28px; height: 28px; border-radius: 10px;
+      display:grid; place-items:center; font-weight: 800;
+      background: rgba(47,125,255,.16);
+      border:1px solid rgba(47,125,255,.28);
+      color: var(--text);
+    }
+    .opttext{ color: var(--text); font-size: 14px; line-height: 1.35; padding-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; white-space: pre-wrap; word-break: break-word; }
+
+    .opt.correct{ border-color: rgba(47,212,143,.55); background: rgba(47,212,143,.10); }
+    .opt.correct .letter{ background: rgba(47,212,143,.18); border-color: rgba(47,212,143,.55); }
+    .opt.wrong{ border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10); }
+    .opt.wrong .letter{ background: rgba(255,92,122,.18); border-color: rgba(255,92,122,.55); }
+
+    .feedback{
+      margin-top: 8px; font-size: 13px; color: var(--muted);
+      display:flex; gap:10px; align-items:center; min-height: 22px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      font-size: 12px; color: var(--muted);
+    }
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95); }
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95); }
+
+    details{
+      margin-top: 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    summary{ cursor:pointer; color: var(--muted); font-size: 13px; user-select:none; }
+    .explain{ margin-top: 10px; color: var(--text); font-size: 13px; white-space: pre-wrap; }
+
+    .controls{
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 12px; margin-top: 14px; flex-wrap: wrap;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.40); }
+    button:active{ transform: translateY(0px); }
+    button.primary{ background: rgba(47,125,255,.22); border-color: rgba(47,125,255,.45); }
+    button[disabled]{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .footer{ margin-top: 16px; color: var(--muted); font-size: 12px; text-align:center; }
+
+    .end{ margin-top: 18px; display:none; }
+    .end h2{ margin: 0 0 8px; font-size: 18px; }
+    .end p{ margin: 0; color: var(--muted); }
+    .tiny{ font-size: 12px; color: var(--muted); }
+
+    .toggleRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .toggle{
+      display:flex; gap:10px; align-items:center;
+      padding: 10px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      color: var(--muted); font-size: 12px;
+      user-select:none;
+    }
+    .toggle input{ transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — Data Security Standards & Vulnerability Scanning/Analysis</h1>
+        <p class="subtitle">30 scenario-heavy questions • per-load answer shuffling • equal-length options • next-button flow • collapsible explanations</p>
+        <div class="toggleRow">
+          <label class="toggle" title="Shows feedback immediately after you choose an option.">
+            <input id="instantFeedback" type="checkbox" checked />
+            Instant feedback
+          </label>
+          <label class="toggle" title="Auto-opens the explanation after you answer.">
+            <input id="autoExplain" type="checkbox" />
+            Auto-open explanations
+          </label>
+          <label class="toggle" title="Resets question order and reshuffles answer positions by reloading.">
+            <span>Tip: Reload to reshuffle.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 30</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+
+    <div class="barwrap" aria-label="Progress bar">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: Standards / Scanning / Analysis</span></span>
+        <span class="pill" id="difficultyPill">Difficulty: Hard (word-salad)</span>
+      </div>
+
+      <div class="qtext" id="questionText">Loading…</div>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+
+      <div class="controls">
+        <button id="resetBtn" title="Restart quiz (keeps this page load’s shuffle)">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" title="Show the correct answer for this question (counts as answered)" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+        <p class="tiny" style="margin-top:10px;">If you want a printable report template (scan scope, exceptions, risk, remediation, retest), tell me.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built for CySA+ practice. Focus: standards-driven data controls and practical vuln scanning + analysis workflows.
+    </div>
+  </div>
+
+<script>
+/**
+ * Saved template behaviors:
+ * - A/B/C/D labels
+ * - Per-load correct answer shuffles between A/B/C/D (options shuffled while keeping letters A-D)
+ * - Next button flow
+ * - Collapsible explanations
+ * - Progress bar + score
+ * - "Hard / word-salad" style + equal-length option formatting
+ */
+
+const RAW_QUESTIONS = [
+  // 1
+  {
+    domain: "Data Standards (PCI DSS)",
+    q: `A retailer is preparing for an assessment. The environment stores cardholder data and uses a third-party payment gateway for transactions. Which requirement is MOST directly associated with protecting stored cardholder data and limiting exposure?`,
+    options: [
+      { t: "Encrypt stored cardholder data and implement strong key management controls for storage systems.", c: true },
+      { t: "Segment the cardholder data environment and tighten ingress and egress paths to reduce unnecessary connectivity exposure.", c: false },
+      { t: "Apply quarterly external and internal scans to the environment while leaving stored data protection to separate control requirements.", c: false },
+      { t: "Mask primary account numbers when displayed and require role separation for administrators handling payment systems.", c: false }
+    ],
+    exp: `PCI DSS focuses strongly on protecting stored cardholder data using encryption and key management. Network egress and shared admin accounts are not the core requirement here.`
+  },
+  // 2
+  {
+    domain: "Data Standards (HIPAA / Privacy)",
+    q: `A healthcare organization is designing controls for ePHI access. The team needs auditability and least privilege aligned to regulatory expectations. Which control set BEST supports this goal?`,
+    options: [
+      { t: "Role-based access controls with unique user IDs, audit logging of access to ePHI, and regular access reviews in scope.", c: true },
+      { t: "Group-based access with department-wide privileges and periodic manager attestation for users handling patient records.", c: false },
+      { t: "Centralized session logging for EHR access with break-glass review procedures and after-hours activity monitoring.", c: false },
+      { t: "Field-level encryption for selected records plus multifactor authentication for remote administrative access to clinical systems.", c: false }
+    ],
+    exp: `HIPAA expects access controls, unique user identification, audit controls, and integrity/confidentiality safeguards for ePHI.`
+  },
+  // 3
+  {
+    domain: "Data Standards (GDPR / Data Minimization)",
+    q: `A company collects customer telemetry and retains it indefinitely “just in case.” The legal team warns this increases regulatory risk. Which principle MOST directly applies?`,
+    options: [
+      { t: "Data minimization and storage limitation: collect what is necessary and retain it only for defined purposes.", c: true },
+      { t: "Purpose limitation: define approved analytics uses and restrict secondary processing that is unrelated to those purposes.", c: false },
+      { t: "Pseudonymization: replace direct identifiers where possible while continuing to collect broad telemetry for operational analysis.", c: false },
+      { t: "Consent management: present clear collection choices and record user preferences for optional analytics categories.", c: false }
+    ],
+    exp: `GDPR emphasizes data minimization and limiting retention to what is necessary for specified purposes.`
+  },
+  // 4
+  {
+    domain: "Data Standards (NIST / Control Families)",
+    q: `A security program uses NIST guidance to map controls for data confidentiality and auditing. Which reference is MOST commonly used for security and privacy controls in federal-style frameworks?`,
+    options: [
+      { t: "NIST SP 800-53 security and privacy control catalog used for mapping and implementation.", c: true },
+      { t: "NIST SP 800-171 security requirements used to protect controlled information in nonfederal systems and organizations.", c: false },
+      { t: "NIST SP 800-37 risk management framework guidance used to authorize and monitor security controls over time.", c: false },
+      { t: "NIST SP 800-61 incident handling guidance used to prepare for, detect, and respond to security events.", c: false }
+    ],
+    exp: `NIST SP 800-53 provides the security and privacy control catalog. Other pubs focus on different domains (risk, SCRM, media sanitization).`
+  },
+  // 5
+  {
+    domain: "Data Standards (Data Classification)",
+    q: `An organization wants to apply different encryption and monitoring levels based on the sensitivity of data. What is the MOST foundational prerequisite?`,
+    options: [
+      { t: "Establish a data classification scheme with owners, labels, and handling requirements aligned to business risk.", c: true },
+      { t: "Standardize endpoint encryption for all managed devices and apply elevated monitoring only to systems in regulated enclaves.", c: false },
+      { t: "Build retention and deletion schedules first, then map encryption and monitoring tiers once business units approve them.", c: false },
+      { t: "Define sensitivity labels, handling rules, and ownership so technical safeguards can be mapped to each category consistently.", c: false }
+    ],
+    exp: `You can’t apply tiered controls without classification and ownership. Classification drives encryption, monitoring, and handling requirements.`
+  },
+  // 6
+  {
+    domain: "Scanning Methods (Credentialed vs Non-credentialed)",
+    q: `A scan report misses several missing patches on Windows servers. The scanner was run from outside the subnet with only open ports detected. Which change MOST increases accuracy for patch visibility?`,
+    options: [
+      { t: "Run credentialed scans with least-privilege credentials to query installed patches and configurations on hosts in scope.", c: true },
+      { t: "Run an unauthenticated scan from an internal vantage point so additional services and versions are identified more accurately.", c: false },
+      { t: "Use authenticated agent-based assessment on those servers so missing updates and local configurations are enumerated directly.", c: false },
+      { t: "Add version and banner checks from multiple subnets to improve network visibility while leaving host inspection unchanged.", c: false }
+    ],
+    exp: `Credentialed scans can interrogate patch level and configuration, reducing false negatives from port-only external scanning.`
+  },
+  // 7
+  {
+    domain: "Scanning Methods (Authenticated Scanning Risk)",
+    q: `Security wants credentialed scans, but operations is concerned the scanner account could be abused if compromised. Which approach BEST balances accuracy and risk?`,
+    options: [
+      { t: "Use dedicated least-privilege scanner accounts, store secrets in a vault, and restrict account use to scanner IPs.", c: true },
+      { t: "Use local administrative rights on each asset class and rotate those credentials regularly through an approved privileged workflow.", c: false },
+      { t: "Create a service account limited to read-oriented remote checks and monitor its use through a centralized secrets platform.", c: false },
+      { t: "Run agent-based configuration assessment on high-value systems while reserving network-based credentialed scans for lower-risk segments.", c: false }
+    ],
+    exp: `Dedicated least-privilege accounts + vaulting + network restrictions and monitoring mitigate scanner credential risk.`
+  },
+  // 8
+  {
+    domain: "Scanning Methods (Scope Control)",
+    q: `A vulnerability scan accidentally targets a partner’s public IP range due to a typo in the target list. Which process control MOST directly prevents this in the future?`,
+    options: [
+      { t: "Implement scan authorization and scope validation with change control and peer review for target lists before execution.", c: true },
+      { t: "Require approved target inventories to be generated from authoritative asset records before each scheduled assessment cycle.", c: false },
+      { t: "Enforce written rules of engagement that specify source ranges, approved targets, and named owners before scans begin.", c: false },
+      { t: "Use pre-scan validation jobs that compare requested targets against allowed ranges and stop execution on mismatches.", c: false }
+    ],
+    exp: `Formal authorization/scope validation and peer review reduce accidental scanning of out-of-scope assets.`
+  },
+  // 9
+  {
+    domain: "Vulnerability Analysis (CVSS vs Risk)",
+    q: `A critical CVSS vulnerability is found on an internal test server that is isolated and cannot reach production. The business asks why it is not top priority. What is the BEST explanation?`,
+    options: [
+      { t: "CVSS is severity, but risk prioritization also considers exploitability, exposure, compensating controls, and business impact.", c: true },
+      { t: "The severity score reflects technical impact, while remediation order depends on where the asset sits and how reachable it is.", c: false },
+      { t: "An isolated nonproduction host with strong segmentation can be scheduled behind issues that present greater business exposure.", c: false },
+      { t: "A high rating still needs context from attack paths, asset sensitivity, and available mitigations before ranking it ahead of others.", c: false }
+    ],
+    exp: `CySA+ emphasizes context-based risk: exposure, exploit likelihood, controls, asset value, and impact, not CVSS alone.`
+  },
+  // 10
+  {
+    domain: "Scanning Methods (False Positives)",
+    q: `A scanner flags an “outdated OpenSSL” vulnerability on a Linux host, but the package manager shows it is patched via backporting. What is the BEST next step?`,
+    options: [
+      { t: "Validate with package metadata/vendor advisories and confirm running library versions, then mark as exception if applicable.", c: true },
+      { t: "Compare the package release to the vendor advisory and rescan with authenticated checks before deciding whether remediation is still needed.", c: false },
+      { t: "Review the detection method and create a time-bounded exception for that host while preserving the check for other systems.", c: false },
+      { t: "Verify whether the product uses backported fixes and document evidence from the distribution maintainer before closing the issue.", c: false }
+    ],
+    exp: `Backported fixes can confuse version-based checks. Validate using vendor advisories, package changelogs, and runtime versions.`
+  },
+  // 11
+  {
+    domain: "Data Standards (Encryption at Rest)",
+    q: `A company stores sensitive customer data in a database. They need to meet a standard requiring strong cryptography and key management. Which implementation BEST aligns?`,
+    options: [
+      { t: "Encrypt data at rest using strong algorithms with centralized KMS, rotation policies, and strict key access controls.", c: true },
+      { t: "Apply transparent database encryption with locally managed keys stored on the same server for simpler operational recovery.", c: false },
+      { t: "Tokenize only selected fields while leaving full plaintext values available in reporting replicas used by business analysts.", c: false },
+      { t: "Encrypt storage volumes through the hypervisor and limit database-level controls to application permissions and role design.", c: false }
+    ],
+    exp: `Strong cryptography requires real encryption plus key management controls (KMS, rotation, access restrictions, auditing).`
+  },
+  // 12
+  {
+    domain: "Vulnerability Analysis (Exploitability)",
+    q: `A new RCE vulnerability is reported. No public exploit exists yet, but the affected service is internet-facing and widely used. Which factor MOST increases urgency?`,
+    options: [
+      { t: "High exposure and probable exploit development: internet-facing, common software, and high impact encourages rapid weaponization.", c: true },
+      { t: "The flaw affects a service role that is exposed publicly on a large portion of internet-facing deployments in the environment.", c: false },
+      { t: "Exploit activity has not been observed yet, but broad deployment and remote reachability raise the chance of rapid weaponization.", c: false },
+      { t: "Available mitigations are limited to monitoring and segmentation, which still leaves a high-consequence remotely reachable path.", c: false }
+    ],
+    exp: `Exposure + likely exploit development are key drivers for prioritization, especially for internet-facing common services.`
+  },
+  // 13
+  {
+    domain: "Scanning Methods (Network Discovery)",
+    q: `You’re tasked with scanning a new subnet, but documentation is outdated. What is the MOST appropriate first technical step before deep vulnerability checks?`,
+    options: [
+      { t: "Perform host discovery and service enumeration to build an accurate asset inventory and identify scan targets in scope.", c: true },
+      { t: "Start with a fast TCP sweep of common ports only, then treat responding hosts as the complete scan scope for that subnet.", c: false },
+      { t: "Use host discovery and lightweight service fingerprinting first so deeper checks can be targeted at confirmed live systems.", c: false },
+      { t: "Begin with ARP, ICMP, and selective port discovery to identify responsive assets before running more intrusive vulnerability checks.", c: false }
+    ],
+    exp: `Asset discovery + service enumeration provides accurate target scope and reduces noise before vulnerability checks.`
+  },
+  // 14
+  {
+    domain: "Data Standards (Retention / Disposal)",
+    q: `A policy requires that sensitive records be retained for 7 years and securely destroyed afterward. Which practice BEST supports the destruction requirement?`,
+    options: [
+      { t: "Use documented retention schedules and secure sanitization methods aligned to NIST media sanitization guidance.", c: true },
+      { t: "Expire records from active applications on schedule, then destroy the underlying media with approved sanitization or destruction methods.", c: false },
+      { t: "Use encrypted archival storage with restricted access, then sanitize retired media after the retention period has elapsed.", c: false },
+      { t: "Retain records in immutable storage for the required period and document the end-of-life purge process for associated backups.", c: false }
+    ],
+    exp: `Secure destruction requires validated sanitization (e.g., NIST SP 800-88) plus retention schedule governance.`
+  },
+  // 15
+  {
+    domain: "Vulnerability Analysis (Compensating Controls)",
+    q: `A vulnerable service cannot be patched for 30 days due to vendor constraints. Which compensating control is MOST effective short-term?`,
+    options: [
+      { t: "Reduce exposure via network controls (ACL/WAF), disable unneeded features, and add monitoring while planning patching.", c: true },
+      { t: "Restrict access to trusted source ranges, place the service behind additional filtering, and watch closely for signs of abuse.", c: false },
+      { t: "Disable the affected module or interface if possible, narrow who can reach it, and increase alerting until a permanent fix is available.", c: false },
+      { t: "Move the service behind a reverse proxy or segmentation boundary that can block known attack paths while patching is deferred.", c: false }
+    ],
+    exp: `If patching is delayed, reduce exposure and add monitoring/controls; scanning doesn’t prevent exploitation by itself.`
+  },
+  // 16
+  {
+    domain: "Scanning Methods (Web App Scanning)",
+    q: `A DAST scanner reports no issues, but a manual test finds an IDOR (insecure direct object reference) in the API. Why might the scanner miss it?`,
+    options: [
+      { t: "Logic flaws like IDOR often require context-specific authorization tests and user role modeling beyond simple crawling.", c: true },
+      { t: "Automated crawling may exercise endpoints successfully without switching roles or object identifiers in ways that expose broken access control.", c: false },
+      { t: "The tool may have validated input handling but not the authorization decisions made when one user requests another user’s records.", c: false },
+      { t: "API business logic flaws often require authenticated workflows and multiple personas that generic scanning templates do not model well.", c: false }
+    ],
+    exp: `Authorization logic issues require role-based test cases and business context; automated scanners can miss them.`
+  },
+  // 17
+  {
+    domain: "Data Standards (DLP)",
+    q: `A company must prevent sensitive data from being emailed externally and uploaded to unmanaged cloud storage. Which control BEST aligns?`,
+    options: [
+      { t: "Deploy DLP with content inspection, classification labels, and enforcement at email/web gateways and endpoints.", c: true },
+      { t: "Apply CASB policies for unsanctioned cloud uploads and mail-flow inspection rules for regulated content leaving approved channels.", c: false },
+      { t: "Tag regulated content through classification engines and enforce policy at endpoints, browsers, and mail gateways for matching data types.", c: false },
+      { t: "Limit unmanaged cloud storage through proxy controls and tenant restrictions while allowing monitored transfers to approved destinations.", c: false }
+    ],
+    exp: `DLP is designed to detect and prevent exfiltration based on content/classification across channels (email, web, endpoint).`
+  },
+  // 18
+  {
+    domain: "Vulnerability Analysis (Prioritization Workflow)",
+    q: `You have 2,000 findings. Leadership wants the “top 20 to fix first.” Which method BEST produces a defensible prioritized list?`,
+    options: [
+      { t: "Risk rank by asset criticality + exposure + exploit intelligence + compensating controls, then validate with owners.", c: true },
+      { t: "Combine technical severity with exploit maturity and exposure, then adjust ranking based on the importance of the affected assets.", c: false },
+      { t: "Group issues by common root cause, but order remediation based on reachable paths, business criticality, and ease of exploitation.", c: false },
+      { t: "Use a weighted scoring model that incorporates asset value, attack surface, exploit availability, and existing mitigations before selecting the top set.", c: false }
+    ],
+    exp: `CySA+ emphasizes risk-based prioritization using multiple inputs (asset criticality, exposure, exploitability, controls).`
+  },
+  // 19
+  {
+    domain: "Scanning Methods (Safe Scanning in Production)",
+    q: `A production OT-adjacent environment is sensitive to disruption. Security must scan for vulnerabilities without causing outages. Which approach is BEST?`,
+    options: [
+      { t: "Use safe scan profiles, throttle rates, coordinate maintenance windows, and prefer authenticated checks over aggressive exploits.", c: true },
+      { t: "Use nonintrusive discovery during operations and reserve more thorough authenticated checks for approved maintenance periods.", c: false },
+      { t: "Coordinate with operations, tune checks to avoid disruptive probes, and segment the target list so scanning stays within system tolerances.", c: false },
+      { t: "Favor vendor-safe checks, slower timing, and authenticated assessment methods that reduce load on fragile industrial-adjacent assets.", c: false }
+    ],
+    exp: `Production-sensitive scanning needs coordination, throttling, safe profiles, and minimal-disruption checks.`
+  },
+  // 20
+  {
+    domain: "Data Standards (Tokenization)",
+    q: `A payment system wants to reduce the scope of sensitive data stored in internal systems while still supporting business processes. Which approach BEST supports this?`,
+    options: [
+      { t: "Tokenize sensitive values and store tokens internally while keeping the actual data in a secured vault/service.", c: true },
+      { t: "Encrypt stored values with format-preserving controls while continuing to replicate the original records to multiple internal systems.", c: false },
+      { t: "Use irreversible hashing for selected lookup fields while keeping the underlying sensitive values in the primary application database.", c: false },
+      { t: "Truncate the stored value where possible and isolate the remaining elements in a highly restricted vault tied to detokenization workflows.", c: false }
+    ],
+    exp: `Tokenization reduces sensitive data footprint by substituting tokens while protecting the real data in a controlled store.`
+  },
+  // 21
+  {
+    domain: "Vulnerability Analysis (Patch Validation)",
+    q: `After patching, the scanner still reports the same vulnerability. The system owner insists it is fixed. What is the BEST next action?`,
+    options: [
+      { t: "Validate patch level and service versions, confirm the scanner plugin logic, and retest with credentialed checks.", c: true },
+      { t: "Compare installed patch metadata to the scanner criteria and confirm any required service restart or package backport before closure.", c: false },
+      { t: "Review evidence from the system owner, then verify manually whether the vulnerable component is still present or merely misidentified.", c: false },
+      { t: "Check whether the plugin depends on banners or package versions and determine whether authenticated validation is needed to prove closure.", c: false }
+    ],
+    exp: `Confirm with evidence: installed versions/patches, service restarts, scanner credentials, and plugin expectations.`
+  },
+  // 22
+  {
+    domain: "Scanning Methods (External Scanning Requirement)",
+    q: `A standard requires regular scans of internet-facing systems from an external perspective. What scan type BEST fulfills this?`,
+    options: [
+      { t: "External vulnerability scanning against public IPs and exposed services, validated and documented.", c: true },
+      { t: "Internet-based scans from approved external sources against public addresses and exposed services to verify perimeter exposure.", c: false },
+      { t: "Scheduled assessment of publicly reachable hosts from outside the environment, documented against the applicable compliance requirement.", c: false },
+      { t: "External network and service scanning of exposed assets, combined with evidence retention and exception tracking for any validated issues.", c: false }
+    ],
+    exp: `Some standards explicitly call for external scanning of internet-facing assets to validate exposure and patch posture.`
+  },
+  // 23
+  {
+    domain: "Data Standards (Access Logging / Audit Trail)",
+    q: `A regulator asks for evidence of who accessed sensitive data and when. Which implementation BEST supports a defensible audit trail?`,
+    options: [
+      { t: "Centralized immutable logging with time sync, identity attribution, and retention controls aligned to compliance needs.", c: true },
+      { t: "A centralized SIEM ingesting application and database events with synchronized timestamps and access controls for log integrity.", c: false },
+      { t: "Database activity monitoring paired with protected retention and user attribution so investigators can reconstruct access to records.", c: false },
+      { t: "Tamper-evident audit records forwarded off-system with retention, time synchronization, and controls that limit modification rights.", c: false }
+    ],
+    exp: `Defensible audits require centralized, tamper-resistant logging with identity attribution, time sync, and retention.`
+  },
+  // 24
+  {
+    domain: "Vulnerability Analysis (Attack Surface Mapping)",
+    q: `A scan shows an old service listening on TCP 8080 across many servers. The asset owner says it “shouldn’t be there.” What is the BEST next step to assess risk?`,
+    options: [
+      { t: "Identify the service/process, map exposure paths, confirm business function, and determine if it can be removed or patched.", c: true },
+      { t: "Confirm whether the listener is expected, determine which systems can reach it, and assess whether segmentation or removal is appropriate.", c: false },
+      { t: "Investigate the process owner and package source first, then evaluate exposure and remediation options before making broad network changes.", c: false },
+      { t: "Correlate the service to business purpose, software inventory, and reachable paths so treatment decisions are based on actual exposure.", c: false }
+    ],
+    exp: `You need to identify what it is, why it exists, where it’s reachable, and then decide remove/patch/segment.`
+  },
+  // 25
+  {
+    domain: "Scanning Methods (Agent vs Agentless)",
+    q: `A scanner cannot reach endpoints on laptops that are frequently off-network. The team still needs vulnerability visibility. Which approach BEST addresses this?`,
+    options: [
+      { t: "Use endpoint agent-based vulnerability assessment that reports over the internet with policy controls and encryption.", c: true },
+      { t: "Deploy an agent that reports software and configuration posture whenever the device has internet access outside the corporate network.", c: false },
+      { t: "Use cloud-connected endpoint telemetry so mobile assets remain visible even when they are not reachable through on-premises scanners.", c: false },
+      { t: "Adopt agent-based assessment with centralized policy and encrypted reporting to maintain visibility for roaming endpoints.", c: false }
+    ],
+    exp: `Agent-based tooling provides continuous visibility even when devices are off-network, with centralized reporting.`
+  },
+  // 26
+  {
+    domain: "Data Standards (FIPS / Crypto Modules)",
+    q: `A federal-aligned contract requires validated cryptography for certain systems. Which statement BEST fits common compliance language?`,
+    options: [
+      { t: "Use FIPS-validated cryptographic modules for required systems and document configuration and validation boundaries.", c: true },
+      { t: "Select approved implementations that have completed formal validation and ensure the covered operating mode matches the deployment.", c: false },
+      { t: "Use validated modules where required and maintain evidence showing how those modules are configured within the system boundary.", c: false },
+      { t: "Document the cryptographic boundary and verify that required services use modules operating in their validated configuration mode.", c: false }
+    ],
+    exp: `Many federal contracts require FIPS-validated crypto modules (validated implementations) and documented boundaries.`
+  },
+  // 27
+  {
+    domain: "Vulnerability Analysis (Risk Acceptance)",
+    q: `A critical vulnerability exists on a legacy system that cannot be patched and is required for business operations. Leadership accepts the risk. What is the BEST documentation outcome?`,
+    options: [
+      { t: "Create a formal risk acceptance with compensating controls, expiration date, owner sign-off, and a retest plan.", c: true },
+      { t: "Record the decision in the risk register with business justification, review date, and the controls used to reduce likelihood or impact.", c: false },
+      { t: "Approve a documented exception that names the owner, duration, compensating measures, and trigger points for reevaluation.", c: false },
+      { t: "Track the issue formally with sign-off, review cadence, and conditions that would require remediation if the risk picture changes.", c: false }
+    ],
+    exp: `Risk acceptance must be formal, time-bounded, with ownership, compensating controls, and a plan to revisit.`
+  },
+  // 28
+  {
+    domain: "Scanning Methods (Credentialed Windows Checks)",
+    q: `Credentialed scans against Windows hosts are failing. The scanner shows “access denied” even though the account is valid. What is the MOST likely cause?`,
+    options: [
+      { t: "Required remote management settings/services (WMI/WinRM/SMB) or firewall rules are blocked for the scanner context.", c: true },
+      { t: "Remote checks may be blocked by missing WMI, WinRM, or SMB permissions even though the supplied account can log on locally.", c: false },
+      { t: "A valid account still needs the right services, firewall exceptions, and administrative context for the scanner to collect host data.", c: false },
+      { t: "Credentialed assessment can fail when remote administration paths are filtered or the account lacks the privileges expected by the plugin.", c: false }
+    ],
+    exp: `Credentialed scans depend on remote management channels and permissions. Blocked WMI/WinRM/SMB or firewall rules commonly cause failures.`
+  },
+  // 29
+  {
+    domain: "Data Standards (Integrity / Hashing)",
+    q: `A team needs to detect unauthorized changes to sensitive configuration files and produce evidence for audits. Which control BEST supports integrity verification?`,
+    options: [
+      { t: "Implement file integrity monitoring with cryptographic hashes, protected baselines, and alerting for changes in scope.", c: true },
+      { t: "Use signed configuration baselines and compare current files against known-good hashes to alert on unauthorized modification.", c: false },
+      { t: "Store approved baseline hashes securely and monitor protected paths so unexpected changes generate an auditable record.", c: false },
+      { t: "Pair change monitoring with privileged access control so configuration edits are attributable and deviations from baseline are detected.", c: false }
+    ],
+    exp: `FIM uses hashes and protected baselines to detect changes and provide audit evidence for integrity control.`
+  },
+  // 30
+  {
+    domain: "Vulnerability Analysis (Reporting & Remediation)",
+    q: `A vulnerability report is going to executives. They want clarity on what to fix first and why, plus measurable follow-up. Which report element is MOST valuable?`,
+    options: [
+      { t: "A prioritized remediation plan with risk rationale, owners, due dates, compensating controls, and retest verification criteria.", c: true },
+      { t: "A treatment roadmap that groups related issues, explains business impact, and assigns accountable owners for verification.", c: false },
+      { t: "An executive summary that ranks actions by business risk, shows deadlines, and defines how remediation success will be confirmed.", c: false },
+      { t: "A concise remediation tracker linking each major issue to rationale, responsible teams, timing, and the planned validation step.", c: false }
+    ],
+    exp: `Execs need prioritization + rationale + accountability and measurable verification (retest criteria), not raw scanner dumps.`
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+
+let questions = [];
+let idx = 0;
+let score = 0;
+let correct = 0;
+let incorrect = 0;
+let answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function padVisualOptions(options){
+  const trimmed = options.map(o => ({...o, t: o.t.trim().replace(/\s+/g, " ")}));
+  const longest = Math.max(...trimmed.map(o => o.t.length));
+  return trimmed.map(o => ({...o, display: o.t + "\u00A0".repeat(Math.max(0, longest - o.t.length))}));
+}
+
+function prepQuestions(){
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const shuffledOpts = shuffle(padVisualOptions(q.options));
+    return {...q, options: shuffledOpts};
+  });
+}
+
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  const pct = (idx / questions.length) * 100;
+  barEl.style.width = `${pct}%`;
+}
+
+function lockOptions(lock=true){
+  const nodes = answersEl.querySelectorAll(".opt");
+  nodes.forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt";
+    div.role = "button";
+    div.tabIndex = 0;
+    div.setAttribute("aria-disabled","false");
+
+    const letter = document.createElement("div");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+
+    const text = document.createElement("div");
+    text.className = "opttext";
+    text.textContent = opt.display || opt.t;
+
+    div.appendChild(letter);
+    div.appendChild(text);
+
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+
+    answersEl.appendChild(div);
+  });
+
+  explainText.textContent = item.exp;
+  setStats();
+}
+
+function choose(i){
+  if(answered) return;
+
+  const item = questions[idx];
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const picked = item.options[i];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(picked.c){
+    score += 1;
+    correct += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Good pick—this aligns best with standards-driven controls or scanning analysis logic.</span>`;
+    }
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>Choose the option that best matches scope, evidence quality, and risk-based prioritization.</span>`;
+    }
+  }
+
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  setStats();
+  nextBtn.disabled = false;
+}
+
+function reveal(){
+  if(answered) return;
+  const item = questions[idx];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  nodes[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked){
+    feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Correct option highlighted—review the explanation for the “why.”</span>`;
+  }
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  nextBtn.disabled = false;
+  setStats();
+}
+
+function next(){
+  if(!answered) return;
+  idx += 1;
+  if(idx >= questions.length){
+    finish();
+    return;
+  }
+  render();
+}
+
+function finish(){
+  barEl.style.width = `100%`;
+  answersEl.innerHTML = "";
+  feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed all 30 questions.";
+  domainEl.textContent = "Domain: Completed";
+  explainText.textContent = "";
+  explainBox.open = false;
+
+  nextBtn.disabled = true;
+  revealBtn.disabled = true;
+
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+
+function reset(){
+  idx = 0;
+  score = 0;
+  correct = 0;
+  incorrect = 0;
+  prepQuestions();
+  render();
+}
+
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+
+prepQuestions();
+render();
+</script>
+</body>
+</html>

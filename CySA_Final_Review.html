@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode — Final Review (All Topics) — 45 Questions</title>
+  <style>
+    :root{
+      --bg:#071427;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#2f7dff;
+      --good:#2fd48f;
+      --bad:#ff5c7a;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{ max-width: 1040px; margin: 0 auto; padding: 28px 18px 54px; }
+    header{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; }
+    .titlebox{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+      flex:1;
+    }
+    h1{ margin:0 0 6px; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:0; color:var(--muted); font-size: 13px; }
+    .stats{
+      min-width: 270px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+    }
+    .statrow{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size: 13px; color: var(--muted);
+      padding: 6px 2px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+    }
+    .statrow:last-child{border-bottom:0}
+    .statrow b{color:var(--text); font-weight:650}
+
+    .barwrap{
+      margin: 14px 0 18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55));
+      transition: width .35s ease;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .qmeta{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:12px; margin-bottom: 10px;
+      color: var(--muted); font-size: 13px;
+      flex-wrap: wrap;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px; background: rgba(0,0,0,.15);
+      color: var(--muted); font-size: 12px; user-select:none;
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(47,125,255,.95);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.15);
+    }
+
+    .qtext{ font-size: 16px; margin: 6px 0 14px; white-space: pre-wrap; }
+
+    .answers{ display:grid; grid-template-columns: 1fr; gap: 10px; margin: 10px 0 14px; }
+    .opt{
+      display:flex; gap:12px; align-items:stretch;
+      padding: 12px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.35); }
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{
+      flex:0 0 auto; width: 28px; height: 28px; border-radius: 10px;
+      display:grid; place-items:center; font-weight: 800;
+      background: rgba(47,125,255,.16);
+      border:1px solid rgba(47,125,255,.28);
+      color: var(--text);
+    }
+    /* Monospace makes “same length” visually consistent. */
+    .opttext{
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.35;
+      padding-top: 2px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      white-space: pre-wrap;
+     width: 100%; }
+
+    .opt.correct{ border-color: rgba(47,212,143,.55); background: rgba(47,212,143,.10); }
+    .opt.correct .letter{ background: rgba(47,212,143,.18); border-color: rgba(47,212,143,.55); }
+    .opt.wrong{ border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10); }
+    .opt.wrong .letter{ background: rgba(255,92,122,.18); border-color: rgba(255,92,122,.55); }
+
+    .feedback{
+      margin-top: 8px; font-size: 13px; color: var(--muted);
+      display:flex; gap:10px; align-items:center; min-height: 22px;
+      flex-wrap: wrap;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      font-size: 12px; color: var(--muted);
+    }
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95); }
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95); }
+
+    details{
+      margin-top: 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    summary{ cursor:pointer; color: var(--muted); font-size: 13px; user-select:none; }
+    .explain{ margin-top: 10px; color: var(--text); font-size: 13px; white-space: pre-wrap; }
+
+    .controls{
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 12px; margin-top: 14px; flex-wrap: wrap;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.40); }
+    button:active{ transform: translateY(0px); }
+    button.primary{ background: rgba(47,125,255,.22); border-color: rgba(47,125,255,.45); }
+    button[disabled]{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .footer{ margin-top: 16px; color: var(--muted); font-size: 12px; text-align:center; }
+
+    .end{ margin-top: 18px; display:none; }
+    .end h2{ margin: 0 0 8px; font-size: 18px; }
+    .end p{ margin: 0; color: var(--muted); }
+
+    .toggleRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .toggle{
+      display:flex; gap:10px; align-items:center;
+      padding: 10px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      color: var(--muted); font-size: 12px;
+      user-select:none;
+    }
+    .toggle input{ transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — Final Review (All Topics)</h1>
+        <p class="subtitle">45 questions • per-load answer shuffling • <b>every option is visually equal-length per question</b></p>
+        <div class="toggleRow">
+          <label class="toggle" title="Shows feedback immediately after you choose an option.">
+            <input id="instantFeedback" type="checkbox" checked />
+            Instant feedback
+          </label>
+          <label class="toggle" title="Auto-opens the explanation after you answer.">
+            <input id="autoExplain" type="checkbox" />
+            Auto-open explanations
+          </label>
+          <label class="toggle" title="Resets question order and reshuffles answer positions by reloading.">
+            <span>Tip: Reload to reshuffle.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 45</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+
+    <div class="barwrap" aria-label="Progress bar">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: Mixed</span></span>
+        <span class="pill">Difficulty: Hard (word-salad)</span>
+      </div>
+
+      <div class="qtext" id="questionText">Loading…</div>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+
+      <div class="controls">
+        <button id="resetBtn" title="Restart quiz (keeps this page load’s shuffle)">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" title="Show the correct answer for this question (counts as answered)" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Length guard: per question, A/B/C/D are padded with NBSP in monospace and normalized by height.</div>
+  </div>
+
+<script>
+/**
+ * EXACT SAME LENGTH GUARANTEE
+ * - For each question, compute TARGET = max(original option length), clamped to [120..170].
+ * - Every option is then transformed to EXACTLY TARGET characters:
+ *    - If longer: hard-trim to TARGET, but reserve 1 char for ellipsis "…" when trimming.
+ *    - If shorter: pad with NBSP ("\u00A0") until exact length.
+ * - We also use monospace font for option text so equal char counts are visually consistent.
+ */
+
+const RAW_QUESTIONS = [{ domain:"Network Security (Segmentation)", q:`During an investigation, ransomware spread from a user VLAN to server subnets using SMB/RDP. Which control MOST reduces blast radius without breaking all workflows?`,
+    options:[
+      { t: "Enforce zone-to-zone allowlists, limit remote admin paths to hardened jump points, and log exception traffic.", c: true },
+      { t: "Rotate privileged secrets, require phishing-resistant MFA, and review failed logons from administrative groups.", c: false },
+      { t: "Disable legacy file-sharing features, review lateral-tool artifacts, and hunt for recent service-creation events.", c: false },
+      { t: "Quarantine affected endpoints, preserve volatile evidence, and compare encryption scope across impacted business units.", c: false }
+    
+    ], exp:`Segmentation + controlled admin paths limits lateral movement and restricts high-risk protocols to monitored choke points.`},
+  { domain:"Logging & Monitoring (SIEM)", q:`An attacker cleared local Windows logs. What is the BEST way to reconstruct the timeline?`,
+    options:[
+      { t: "Rebuild the sequence from remote collectors and corroborate with endpoint, DNS, proxy, and firewall records.", c: true },
+      { t: "Capture volatile artifacts from the suspect workstation and compare running services against the gold image baseline.", c: false },
+      { t: "Review time-sync drift and ingestion latency to explain gaps before concluding events were intentionally removed.", c: false },
+      { t: "Check case notes and maintenance windows to separate analyst activity from adversary actions on the affected host.", c: false }
+    
+    ], exp:`Centralized logs and other sources remain available even if local logs are cleared, enabling defensible timelines.`},
+  { domain:"Malware (Beaconing)", q:`During an investigation, proxy logs show HTTPS connections every 60 seconds to a newly registered domain with consistent sizes. What is MOST likely?`,
+    options:[
+      { t: "Periodic command-and-control traffic; tie the session to the parent process, account, and neighboring host activity.", c: true },
+      { t: "Routine software updates; validate signed binaries, approved vendor endpoints, and change-ticket timing first.", c: false },
+      { t: "Federation token refreshes; compare identity logs, device posture, and conditional-access events for alignment.", c: false },
+      { t: "Load-balancer health checks; review service ownership, probe cadence, and expected destination inventories.", c: false }
+    
+    ], exp:`Periodic, uniform connections to new domains are common C2 patterns; validate with process-to-connection mapping.`},
+  { domain:"Vulnerability Management (Prioritization)", q:`You have 30 “High” CVSS findings. Only 5 are internet-facing on mission-critical apps with active exploitation. BEST prioritization?`,
+    options:[
+      { t: "Rank work by exploit path, business impact, exposure, and live-threat pressure instead of severity labels alone.", c: true },
+      { t: "Patch every externally reachable finding first, then address the remaining issues strictly by descending score.", c: false },
+      { t: "Close anything with a public proof of concept before considering whether the asset actually matters to operations.", c: false },
+      { t: "Sort by scanner confidence and ticket age, since older findings usually present the highest real-world risk.", c: false }
+    
+    ], exp:`Risk-based prioritization blends severity with business impact, exposure, and active exploitation intelligence.`},
+  { domain:"IR (Containment)", q:`During an investigation, eDR confirms ransomware-like encryption behavior and shadow copy deletion. BEST immediate action?`,
+    options:[
+      { t: "Sever the affected system from the network through host isolation while preserving power and evidence for scoping.", c: true },
+      { t: "Disable file sharing across the estate immediately, then force reauthentication to break any active spread paths.", c: false },
+      { t: "Restore the most critical servers first so business operations resume before root-cause analysis begins.", c: false },
+      { t: "Shut down the infected endpoint to stop encryption quickly, then begin collecting disk artifacts afterward.", c: false }
+    
+    ], exp:`Containment stops spread while keeping artifacts for scoping/root-cause; eradication and recovery follow.`},
+  { domain:"IAM (Authorization)", q:`A user can access an application but sees “403 Forbidden” when requesting admin endpoints. Which concept BEST explains this?`,
+    options:[
+      { t: "The identity check passed, but the account lacks the rights required for that protected function.", c: true },
+      { t: "The request was rejected because the browser failed to present a valid session cookie to the application tier.", c: false },
+      { t: "The action was blocked because the client device no longer met health requirements defined by access policy.", c: false },
+      { t: "The transaction failed because the backend service could not impersonate the caller to the downstream API.", c: false }
+    
+    ], exp:`403 indicates the user is identified but not permitted to perform that action—an authorization control.`},
+  { domain:"Network Security (Firewall Policy)", q:`A broad allow rule sits above a narrow deny for a malicious IP range, and traffic is still allowed. Why?`,
+    options:[
+      { t: "The broader match is evaluated first, so the later restriction is not reached during policy evaluation.", c: true },
+      { t: "The deny object is malformed, so any overlapping permit statements automatically take precedence by design.", c: false },
+      { t: "The destination range is cached by the firewall, preventing policy updates from affecting current traffic flows.", c: false },
+      { t: "The rule compiles correctly, but encrypted sessions bypass address-based filtering until certificate inspection is enabled.", c: false }
+    
+    ], exp:`Many firewalls process top-down; first match wins. Place specific denies above broad allows.`},
+  { domain:"Cloud Security", q:`A public cloud storage bucket is accidentally set to world-readable. BEST immediate mitigation?`,
+    options:[
+      { t: "Remove anonymous exposure immediately, tighten the resource policy, and review access records to size the leak.", c: true },
+      { t: "Rotate all cloud credentials at once, then rebuild the bucket so inherited permissions cannot reappear.", c: false },
+      { t: "Move the dataset behind private networking controls and rely on routing isolation as the primary fix for the exposure.", c: false },
+      { t: "Delete the affected object store and restore from backup to guarantee no public metadata remains accessible.", c: false }
+    
+    ], exp:`Fix the misconfiguration first, then assess impact via logs and enforce preventive controls.`},
+  { domain:"Container Security", q:`A container is running as root and can write to the host filesystem via a mounted path. BEST hardening?`,
+    options:[
+      { t: "Drop privileges inside the workload, minimize runtime capabilities, and constrain mounts to only what is required.", c: true },
+      { t: "Increase image scanning frequency and sign releases so unapproved packages cannot be introduced into deployment flows.", c: false },
+      { t: "Place the orchestrator API behind a bastion host and require step-up authentication for cluster administration.", c: false },
+      { t: "Rotate node credentials and segregate tenant namespaces so east-west traffic cannot traverse the overlay network.", c: false }
+    
+    ], exp:`Least privilege for containers: non-root, minimal capabilities, restrictive mounts, and policy enforcement reduce breakout risk.`},
+  { domain:"Secure Coding (SQLi)", q:`An API concatenates untrusted input into SQL strings. BEST prevention?`,
+    options:[
+      { t: "Use bound parameters so supplied values stay data, paired with validation and restricted database rights.", c: true },
+      { t: "Encode output in the browser context and add a strict policy header to reduce script execution opportunities.", c: false },
+      { t: "Add per-user rate limits and anomaly alerts so repeated malformed requests are blocked before the database layer.", c: false },
+      { t: "Move secrets to a vault and rotate the service account so compromised repository history cannot expose access.", c: false }
+    
+    ], exp:`Parameterized queries prevent user input from being interpreted as code; validation and least privilege reduce impact.`},
+  { domain:"Secure Coding (XSS)", q:`A page reflects user input into HTML without encoding. BEST mitigation?`,
+    options:[
+      { t: "Render untrusted content with the proper contextual escaping rules and add policy-based browser safeguards.", c: true },
+      { t: "Adopt bound SQL parameters and stronger database roles so user input cannot alter backend query structure.", c: false },
+      { t: "Require anti-forgery tokens and origin validation so cross-site requests cannot trigger state-changing actions.", c: false },
+      { t: "Restrict server-side fetch destinations and metadata access so backend requests cannot pivot internally.", c: false }
+    
+    ], exp:`Output encoding is primary; CSP adds defense-in-depth. Client-side validation alone is insufficient.`},
+  { domain:"Threat Hunting (Process Lineage)", q:`During an investigation, WINWORD.EXE spawns PowerShell.exe, then rundll32.exe with encoded arguments and outbound connections. What is the BEST triage step?`,
+    options:[
+      { t: "Trace the parent-child chain, inspect the encoded invocation, and map the child process to its network activity.", c: true },
+      { t: "Check whether the same user recently authenticated from a second host, indicating possible token or ticket misuse.", c: false },
+      { t: "Review DHCP leases and switch telemetry to identify where the workstation was physically connected at the time.", c: false },
+      { t: "Enable deeper packet capture on the user segment to compare this host against normal office productivity traffic.", c: false }
+    
+    ], exp:`Lineage + command line + network mapping quickly confirms macro/LOLBAS activity and helps scope.`},
+  { domain:"TTPs (Credential Access)", q:`A process attempts to open many handles to LSASS.exe and read its memory. What is the MOST likely objective?`,
+    options:[
+      { t: "Harvesting authentication material from memory for reuse, escalation, or movement across additional systems.", c: true },
+      { t: "Enumerating open shares so a worm can choose the most efficient path for remote file replication.", c: false },
+      { t: "Disabling endpoint visibility by modifying protected logging services and local audit configurations.", c: false },
+      { t: "Preparing the workstation for encryption by deleting restore data and staging a ransom message on disk.", c: false }
+    
+    ], exp:`LSASS access is a classic credential dumping indicator; correlate with privileges and subsequent auth events.`},
+  { domain:"BCP/DR", q:`A critical system must be restored within 2 hours and can tolerate 15 minutes of data loss. Which metrics do those values represent?`,
+    options:[
+      { t: "Two hours defines the service restoration target, while fifteen minutes defines the tolerated data rollback window.", c: true },
+      { t: "Two hours is the maximum outage before declaring disaster, and fifteen minutes is the acceptable notification delay.", c: false },
+      { t: "Two hours measures the backup interval, and fifteen minutes measures how quickly failover must begin after detection.", c: false },
+      { t: "Two hours reflects the time to investigate root cause, and fifteen minutes reflects the time to reimage a host.", c: false }
+    
+    ], exp:`RTO = time to restore service. RPO = acceptable data loss window.`},
+  { domain:"Digital Forensics (Chain of Custody)", q:`During an investigation, evidence may be used legally. What MOST supports admissibility and integrity?`,
+    options:[
+      { t: "Document custody, preserve hashes, record every handler, and secure the item whenever possession changes.", c: true },
+      { t: "Write a detailed analyst narrative first so later technical handling steps can be aligned to the response timeline.", c: false },
+      { t: "Acquire volatile evidence before disk evidence because courts typically prioritize the most recent artifacts.", c: false },
+      { t: "Store the evidence with the incident ticket so operational staff can reference it during restoration activities.", c: false }
+    
+    ], exp:`Chain of custody + hashing + controlled access demonstrates integrity and accountability.`},
+  { domain:"Vuln Scanning (Credentialed Scans)", q:`A scan shows few findings, but patch/config posture is unknown. BEST improvement?`,
+    options:[
+      { t: "Use authenticated inspection so the scanner can verify local package, patch, and configuration state directly.", c: true },
+      { t: "Increase the scan frequency so timing gaps do not allow recently disclosed weaknesses to evade detection.", c: false },
+      { t: "Run the scanner from multiple network segments to improve banner collection from filtered internal services.", c: false },
+      { t: "Lower the detection threshold so informational findings expose configuration weaknesses that severe checks missed.", c: false }
+    
+    ], exp:`Credentialed scans provide local evidence and reduce blind spots from remote-only checks.`},
+  { domain:"Pen Testing (Rules of Engagement)", q:`During an investigation, client needs clarity on allowed methods, scope, and sensitive data handling. Which document BEST defines this?`,
+    options:[
+      { t: "The authorization package that sets boundaries, approved techniques, timing, and data-handling constraints.", c: true },
+      { t: "The final report, because it becomes the formal record of what testers were allowed to do during execution.", c: false },
+      { t: "The vulnerability register, because any tested asset must be prelisted there before reconnaissance can begin.", c: false },
+      { t: "The service-level agreement, because it governs acceptable downtime and therefore all security testing scope.", c: false }
+    
+    ], exp:`RoE formalizes authorization and boundaries for safe, agreed testing.`},
+  { domain:"Network (NAT Attribution)", q:`During an investigation, outbound traffic uses PAT. You see a suspicious public connection. What data is MOST needed to identify the internal host?`,
+    options:[
+      { t: "The translation records that pair inside address and source port with the observed public tuple over time.", c: true },
+      { t: "Endpoint command history showing which browser or service opened a connection near the observed timestamp.", c: false },
+      { t: "DHCP lease history alone, because a single internal address is sufficient to determine the originator behind PAT.", c: false },
+      { t: "Proxy logs only, since outbound address sharing does not affect user attribution when web filtering is enabled.", c: false }
+    
+    ], exp:`PAT hides many hosts behind one IP; port mappings over time map sessions back to the source host.`},
+  { domain:"Monitoring (IDS Placement)", q:`During an investigation, IDS watches only the internet edge. Lateral movement is suspected internally. What is the BEST improvement?`,
+    options:[
+      { t: "Add visibility at internal transit points so movement between trusted segments is observable and attributable.", c: true },
+      { t: "Push the edge signatures into prevention mode so blocked internet traffic cannot establish the initial foothold.", c: false },
+      { t: "Increase endpoint alert severity for remote administration tools so later movement is inferred from host telemetry alone.", c: false },
+      { t: "Mirror only the server farm uplinks, since user-to-user pivots are less relevant than north-south traffic paths.", c: false }
+    
+    ], exp:`Edge-only monitoring misses internal lateral movement; internal visibility at key segments is required.`},
+  { domain:"Malware (Sandbox Evasion)", q:`A file detonates cleanly in a sandbox but later behaves maliciously on a real endpoint. Why?`,
+    options:[
+      { t: "The sample likely withheld behavior until real-user context, timing, or environment checks were satisfied.", c: true },
+      { t: "The sandbox failed because encrypted traffic cannot be inspected without installing a trusted root certificate.", c: false },
+      { t: "The file probably became malicious only after download, indicating corruption by the endpoint storage subsystem.", c: false },
+      { t: "The behavior was missed because the detonation environment restricted outbound traffic in a way the sample checked for.", c: false }
+    
+    ], exp:`Evasion and delayed execution can cause sandbox false negatives; correlate with endpoint behavior and telemetry.`},
+  { domain:"Hardening (Secure Protocols)", q:`A legacy app uses Telnet and FTP for admin and transfers. BEST security change?`,
+    options:[
+      { t: "Move administrative and file-transfer functions to encrypted protocols and tightly controlled management paths.", c: true },
+      { t: "Keep the legacy services but tunnel them through a VPN so the plaintext risk is removed without changing tooling.", c: false },
+      { t: "Retain the current design and rotate passwords more frequently because credential freshness offsets protocol weakness.", c: false },
+      { t: "Expose the services only on an internal VLAN since unencrypted administration is acceptable when it stays on-premises.", c: false }
+    
+    ], exp:`SSH/SFTP provide encrypted channels, preventing credential capture common with Telnet/FTP.`},
+  { domain:"Secure Coding (Secrets)", q:`During an investigation, developers store API keys in code repositories. BEST remediation?`,
+    options:[
+      { t: "Store secrets in a managed vault, rotate exposed values, and add controls that stop future commits of sensitive data.", c: true },
+      { t: "Require developers to encrypt configuration files locally before commits so repository history contains protected keys.", c: false },
+      { t: "Move the repositories to a private network segment because exposure occurs only when source control is internet-facing.", c: false },
+      { t: "Replace all API keys with long-lived certificates in code, since certificate material is safer to keep in repositories.", c: false }
+    
+    ], exp:`Secrets belong in vaults with rotation and least privilege; repos need scanning to prevent recurrence.`},
+  { domain:"Forensics (Volatility)", q:`A live system may have memory-resident malware. What evidence should be collected FIRST?`,
+    options:[
+      { t: "Capture memory and active connection state first, before any action can erase what only exists on the live system.", c: true },
+      { t: "Acquire the disk image immediately, because persistent evidence is more complete and can reproduce volatile state later.", c: false },
+      { t: "Restart the system into a trusted environment so malicious memory artifacts cannot interfere with collection tools.", c: false },
+      { t: "Export event logs before anything else, since they provide the broadest timeline and are least affected by shutdown.", c: false }
+    
+    ], exp:`Order of volatility: memory and live connections vanish on reboot/shutdown—capture them early.`},
+  { domain:"Authorization (Zero Trust)", q:`During an investigation, which statement BEST represents zero trust network access?`,
+    options:[
+      { t: "Access decisions are re-evaluated continually using identity, device, and context, with narrowly scoped entitlements.", c: true },
+      { t: "Users remain broadly connected after sign-in, but sensitive actions prompt additional verification when risk rises.", c: false },
+      { t: "All remote access must traverse a full-tunnel VPN so central inspection can determine which internal paths to allow.", c: false },
+      { t: "Resources are protected primarily by network location, with stronger checks applied only on high-value subnets.", c: false }
+    
+    ], exp:`Zero trust removes implicit trust based on network location and enforces continuous, contextual access decisions.`},
+  { domain:"Virtualization Security", q:`A VM host shares management network with tenant traffic. BEST hardening?`,
+    options:[
+      { t: "Isolate the administrative plane from tenant paths and restrict it with strong authentication and audit controls.", c: true },
+      { t: "Place all virtual machines on a common trunk so east-west monitoring can inspect both management and workload traffic.", c: false },
+      { t: "Rely on host-based firewalls inside each guest, since separating the hypervisor network adds little practical security.", c: false },
+      { t: "Expose management services through the same load balancer as tenant workloads to simplify certificate handling.", c: false }
+    
+    ], exp:`Management plane isolation and strong access controls reduce hypervisor compromise risk and lateral movement.`},
+  { domain:"Threat Intel (IOC vs TTP)", q:`During an investigation, attackers recompile malware frequently and bypass hash blocks. BEST detection improvement?`,
+    options:[
+      { t: "Detect stable adversary behaviors across execution, persistence, and communications instead of relying on static artifacts.", c: true },
+      { t: "Expand the hash blocklist daily so newly compiled binaries are covered before analysts can study their behavior.", c: false },
+      { t: "Prioritize file reputation feeds because malware families usually preserve enough code structure for signature matching.", c: false },
+      { t: "Use stronger perimeter deny lists, since recompilation mainly affects inbound delivery and not post-execution activity.", c: false }
+    
+    ], exp:`TTP-based detections are more resilient than static IOCs, especially against polymorphism and rapid changes.`},
+  { domain:"Incident Response (Eradication)", q:`After containment, what is the BEST eradication step to prevent re-entry?`,
+    options:[
+      { t: "Eliminate the foothold and persistence, rotate exposed identities, remediate the weakness, and verify the result.", c: true },
+      { t: "Restore from known-good backups first, because a clean operating image is enough to remove any chance of re-entry.", c: false },
+      { t: "Close the incident once monitoring quiets down, then schedule patching during the next regular maintenance cycle.", c: false },
+      { t: "Block the observed indicators permanently, since successful containment means the underlying access path no longer matters.", c: false }
+    
+    ], exp:`Eradication is root-cause removal + credential hygiene + patching + validation, not just restoring systems.`},
+  { domain:"Web Security (WAF)", q:`A web app is targeted by injection attempts and needs HTTP-level blocking. BEST control?`,
+    options:[
+      { t: "Place an application-aware filter in front of the site to inspect requests and enforce attack-specific protections.", c: true },
+      { t: "Deploy a network intrusion sensor at the perimeter so malicious web payloads are blocked before reaching the server.", c: false },
+      { t: "Harden browser policy headers, since client-enforced controls are the most direct way to stop hostile requests.", c: false },
+      { t: "Use endpoint application control on the web server, because HTTP abuse is best prevented by restricting local binaries.", c: false }
+    
+    ], exp:`WAFs operate at the application layer to block web attack patterns like injection and protocol misuse.`},
+  { domain:"Wireless Security", q:`During an investigation, company wants per-user Wi-Fi authentication with central control (not WPA2-PSK). BEST solution?`,
+    options:[
+      { t: "Use enterprise wireless authentication with centralized identity-backed access decisions for each individual user.", c: true },
+      { t: "Adopt a stronger shared passphrase standard, because rotating the key often provides equivalent accountability.", c: false },
+      { t: "Require captive-portal sign-in before network access, since browser-based identity prompts replace 802.1X controls.", c: false },
+      { t: "Hide the SSID and filter device addresses, as those measures allow centrally managed user-level authentication.", c: false }
+    
+    ], exp:`Enterprise Wi-Fi uses 802.1X/RADIUS to authenticate users individually and apply policy-based access.`},
+  { domain:"OS Process Mgmt (Linux Persistence)", q:`A Linux user’s ~/.bashrc is modified to run a binary at login, and a user crontab is added. What does this MOST indicate?`,
+    options:[
+      { t: "Startup hooks in the shell profile and scheduled user tasks are being used to survive reboots and logins.", c: true },
+      { t: "A memory-only implant is executing without persistence, so the observed files are likely unrelated user customization.", c: false },
+      { t: "The account is preparing for privilege escalation by replacing PAM modules, which commonly appears first in shell history.", c: false },
+      { t: "The changes mainly indicate data staging, because cron is usually chosen to compress files before exfiltration.", c: false }
+    
+    ], exp:`Attackers commonly persist by editing shell profiles and adding cron jobs for recurring execution.`},
+  { domain:"Email Security (Phishing)", q:`During an investigation, email urges users to open a macro-enabled “invoice.” BEST preventive control combination?`,
+    options:[
+      { t: "Layer delivery filtering with detonation, script-control restrictions, and awareness measures that reduce user execution.", c: true },
+      { t: "Block all external spreadsheets at the gateway, because invoices delivered as documents are the main phishing vector.", c: false },
+      { t: "Require users to open attachments only from virtual desktops, eliminating the need for mail-layer inspection controls.", c: false },
+      { t: "Rely on sender reputation alone, since macro-enabled attachments are obvious enough for trained users to avoid.", c: false }
+    
+    ], exp:`Layered controls reduce delivery and execution: filtering, sandboxing, macro hardening, and awareness training.`},
+  { domain:"Honeypots / Deception", q:`A SOC deploys a honeypot in a DMZ. What is the PRIMARY security benefit?`,
+    options:[
+      { t: "A decoy provides early, high-confidence insight into adversary interest and methods when someone interacts with it.", c: true },
+      { t: "It diverts all malicious traffic away from production assets, functioning as the primary containment control in the DMZ.", c: false },
+      { t: "It creates legally admissible evidence by automatically preserving full packet capture for every hostile interaction.", c: false },
+      { t: "It patches visibility gaps by replacing the need for endpoint telemetry on servers exposed to the internet.", c: false }
+    
+    ], exp:`Honeypots are detection/deception tools that provide high-fidelity alerts and intelligence, not primary prevention.`},
+  { domain:"Compliance/Data Standards", q:`During an investigation, which control MOST directly supports PCI DSS requirements for cardholder data transmission?`,
+    options:[
+      { t: "Protect transmissions with strong session encryption and controlled access to systems that handle payment data.", c: true },
+      { t: "Retain transaction records for at least one year, because storage duration is the primary safeguard for payment traffic.", c: false },
+      { t: "Tokenize account numbers at rest only, since transmission channels fall outside the scope of cardholder protections.", c: false },
+      { t: "Restrict database administrator access, as network protections are secondary once payment systems are segmented.", c: false }
+    
+    ], exp:`PCI emphasizes protecting cardholder data with strong encryption in transit and access controls with monitoring.`},
+  { domain:"Network Concepts (DNS Security)", q:`During an investigation, which data source BEST helps identify newly registered suspicious domains used for C2?`,
+    options:[
+      { t: "Resolver and query records paired with domain-age context and endpoint attribution best expose suspicious new lookups.", c: true },
+      { t: "Full packet capture alone is sufficient, because resolver logging rarely includes enough detail to spot fresh domains.", c: false },
+      { t: "Email gateway telemetry is most effective, since newly registered command domains usually arrive through phishing links.", c: false },
+      { t: "Authentication logs are enough, because hosts contacting attacker infrastructure typically also show failed logons.", c: false }
+    
+    ], exp:`DNS telemetry plus reputation/age and endpoint mapping supports detection of suspicious new domains and C2 patterns.`},
+  { domain:"Vuln Validation (Backports)", q:`A scanner flags an old vulnerable version by banner, but the OS uses backported security fixes. BEST action?`,
+    options:[
+      { t: "Confirm package and patch reality with authenticated evidence and vendor guidance rather than trusting version banners.", c: true },
+      { t: "Treat the banner as authoritative unless exploitation succeeds, because backported fixes do not change risk posture.", c: false },
+      { t: "Ignore the finding if the package name matches the vendor build, since distribution releases remove version ambiguity.", c: false },
+      { t: "Prioritize the issue for immediate patching, because scanners underreport risk more often than they overreport it.", c: false }
+    
+    ], exp:`Backports can keep version strings while patching vulnerabilities. Use authenticated checks and vendor advisories to confirm.`},
+  { domain:"Pen Testing (Out-of-Scope)", q:`During a test you find a new subnet not listed in scope. BEST next step?`,
+    options:[
+      { t: "Pause activity and obtain explicit written approval before touching anything outside the authorized boundary.", c: true },
+      { t: "Perform only passive discovery on the subnet, since observation does not count as testing against out-of-scope assets.", c: false },
+      { t: "Continue if the new range appears related to an in-scope environment, documenting the assumption in the final report.", c: false },
+      { t: "Validate one non-intrusive proof of concept first, then request scope expansion only if a weakness is confirmed.", c: false }
+    
+    ], exp:`Operate only within authorized scope. Document and seek approval for any expansion.`},
+  { domain:"Process Injection", q:`A new unsigned DLL is injected into browser processes and outbound connections to low-reputation domains begin. MOST likely function?`,
+    options:[
+      { t: "Interfering with browser activity to steal session material or redirect traffic while maintaining external communications.", c: true },
+      { t: "Adding redundancy to the user’s web stack so encrypted sessions can survive browser restarts without data loss.", c: false },
+      { t: "Performing local privilege escalation through browser sandbox escape, which does not require any network callback.", c: false },
+      { t: "Enumerating installed extensions for inventory purposes before a software-updater process verifies their signatures.", c: false }
+    
+    ], exp:`Browser injection is common for credential theft/session hijack, often paired with suspicious outbound communications.`},
+  { domain:"Secure Coding (CSRF)", q:`A web app relies only on cookies for state-changing actions. Users can be tricked into actions. BEST mitigation?`,
+    options:[
+      { t: "Require request-specific anti-forgery validation in addition to browser cookie controls for state-changing actions.", c: true },
+      { t: "Escape untrusted output before rendering so browser-delivered scripts cannot alter the page and submit hidden forms.", c: false },
+      { t: "Use prepared statements on the backend because forged requests succeed only when input reaches the database unsafely.", c: false },
+      { t: "Inspect inbound payloads with a web filter, since browser-initiated cross-site actions are mainly a request-signature issue.", c: false }
+    
+    ], exp:`CSRF requires request validation beyond cookies: tokens and same-site/origin checks reduce cross-site abuse.`},
+  { domain:"Hardening (Egress Controls)", q:`During an investigation, blocking known malicious domains fails because attackers rotate domains fast. BEST control improvement?`,
+    options:[
+      { t: "Constrain outbound paths with policy-backed broker controls and telemetry so rapid domain rotation is less useful.", c: true },
+      { t: "Increase perimeter deny-list updates, because rotation speed is mainly a feed-latency problem rather than a design issue.", c: false },
+      { t: "Force all endpoints onto full-tunnel remote access, since domain churn is most effective only when users split tunnel.", c: false },
+      { t: "Harden password policy for service accounts, because outbound domain changes usually accompany credential spraying.", c: false }
+    
+    ], exp:`Egress controls reduce outbound abuse and provide visibility. Allowlists (where possible) shrink the attack surface.`},
+  { domain:"OS/Endpoint Hardening (Allowlisting)", q:`During an investigation, which control BEST reduces malware execution from user-writable paths like %TEMP% and Downloads?`,
+    options:[
+      { t: "Permit only approved code paths and prevent launches from user-controlled locations where malware commonly lands.", c: true },
+      { t: "Increase antivirus signature updates, because execution from temporary folders mainly succeeds when definitions are stale.", c: false },
+      { t: "Remove local administrator rights, since user-writable directories cannot launch code once elevation is unavailable.", c: false },
+      { t: "Disable browser downloads by policy, because that fully addresses executable content appearing in temporary folders.", c: false }
+    
+    ], exp:`Attackers often execute from user-writable paths; allowlisting and execution controls reduce initial execution vectors.`},
+  { domain:"Forensics (Imaging)", q:`During an investigation, what is the BEST practice for acquiring a suspect drive without altering evidence?`,
+    options:[
+      { t: "Use a write-protected acquisition path, capture a full forensic image, and validate it with cryptographic digests.", c: true },
+      { t: "Copy only user files of interest to minimize handling risk, then hash the archive so evidence remains admissible.", c: false },
+      { t: "Mount the drive read-only within the operating system and export folders, since sector-level imaging is rarely necessary.", c: false },
+      { t: "Boot the suspect device into a trusted environment and compress the disk contents to preserve storage space.", c: false }
+    
+    ], exp:`Write blockers prevent modifications; bit-level imaging preserves sectors; hashes validate integrity.`},
+  { domain:"Authentication (Kerberos)", q:`During an investigation, many Kerberos service ticket requests (TGS) target a service account, and offline cracking is suspected. Which technique does this MOST likely indicate?`,
+    options:[
+      { t: "Requesting service tickets tied to service principals so their encrypted material can be cracked offline.", c: true },
+      { t: "Reusing ticket-granting tickets across hosts after disabling preauthentication on the user account.", c: false },
+      { t: "Forging interdomain referral tickets to impersonate administrators without interacting with service accounts.", c: false },
+      { t: "Capturing NTLM challenge-response pairs from network flows after an authentication path shifted away from service-ticket use.", c: false }
+    
+    ], exp:`Kerberoasting abuses service tickets for offline cracking of service account credentials.`},
+  { domain:"DDoS", q:`A public site is hit by volumetric DDoS saturating bandwidth. BEST mitigation at scale?`,
+    options:[
+      { t: "Use provider-side absorption and traffic scrubbing capabilities rather than relying only on local edge devices.", c: true },
+      { t: "Block the top source addresses at the firewall, because volumetric attacks depend on a small number of persistent senders.", c: false },
+      { t: "Increase web-application filtering, since bandwidth exhaustion is mainly driven by malformed HTTP request payloads.", c: false },
+      { t: "Fail over to another region without coordination, because attack traffic rarely follows a site once DNS changes propagate.", c: false }
+    
+    ], exp:`Volumetric DDoS requires upstream mitigation since local devices cannot handle saturated circuits.`},
+  { domain:"Secure Coding (Password Storage)", q:`During an investigation, passwords are stored using unsalted MD5. BEST fix?`,
+    options:[
+      { t: "Move to adaptive password hashing with unique salts and tuned cost parameters, then migrate accounts safely.", c: true },
+      { t: "Encrypt the password table with a server-held key, because reversible protection is easier to integrate with legacy logins.", c: false },
+      { t: "Keep MD5 but add transport encryption, since offline cracking risk comes primarily from weak session protection.", c: false },
+      { t: "Store a second unhashed backup copy temporarily so users can be migrated to the stronger scheme without resets.", c: false }
+    
+    ], exp:`Passwords should be hashed with slow, salted algorithms resistant to offline cracking (not encryption/encoding).`},
+  { domain:"Governance (Exception Handling)", q:`A team requests a patch exception for a critical vuln on a customer-facing server. BEST process?`,
+    options:[
+      { t: "Approve only a time-bounded exception with justification, compensating measures, ownership, and follow-up verification.", c: true },
+      { t: "Delay patching informally while the application team prepares a maintenance window, then close the risk if no incidents occur.", c: false },
+      { t: "Accept the risk permanently once leadership signs off, because customer-facing systems often cannot tolerate repeated changes.", c: false },
+      { t: "Lower the scanner severity for that asset so reporting better reflects operational constraints while remediation is deferred.", c: false }
+    
+    ], exp:`Exceptions must be governed: time-bound approvals, compensating controls, documented rationale, and monitoring.`}];
+
+const LETTERS = ["A","B","C","D"];
+
+let questions = [];
+let idx = 0;
+let score = 0;
+let correct = 0;
+let incorrect = 0;
+let answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+
+
+/**
+ * PERFECT LENGTH + VISUAL NORMALIZATION
+ * - For each question, TARGET = max(option length after normalization).
+ * - No trimming, no ellipses, no filler words.
+ * - Pad shorter options with NBSP so all A/B/C/D are EXACT same length per question.
+ * - Monospace option font + height equalizer removes wrap/shape clues.
+ */
+
+function padNBSP(optionText, targetLength){
+  let t = (optionText || "").toString().replace(/\s+/g, " ").trim();
+  if(!t.endsWith(".")) t += ".";
+  while(t.length < targetLength){
+    t += "\u00A0";
+  }
+  return t;
+}
+
+function equalizeOptionLengths(opts){
+  const base = opts.map(o => {
+    let s = (o.t || "").toString().replace(/\s+/g, " ").trim();
+    if(!s.endsWith(".")) s += ".";
+    return {...o, t: s};
+  });
+  const target = Math.max(...base.map(o => o.t.length));
+  return base.map(o => ({...o, t: padNBSP(o.t, target)}));
+}
+
+function equalizeOptionHeights(){
+  const texts = Array.from(document.querySelectorAll("#answers .opt .opttext"));
+  if(texts.length === 0) return;
+
+  // reset
+  texts.forEach(t => { t.style.height = "auto"; });
+
+  // wait for layout
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const maxH = Math.max(...texts.map(t => t.getBoundingClientRect().height));
+      const h = Math.ceil(maxH) + "px";
+      texts.forEach(t => { t.style.height = h; });
+    });
+  });
+}
+
+function prepQuestions(){
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const shuffled = shuffle(q.options.map(o => ({...o}))); // per-load correct answer moves
+    const equalized = equalizeOptionLengths(shuffled);
+    return {...q, options: equalized};
+  });
+}
+
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  barEl.style.width = `${(idx / questions.length) * 100}%`;
+}
+
+function lockOptions(lock=true){
+  const nodes = answersEl.querySelectorAll(".opt");
+  nodes.forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt";
+    div.role = "button";
+    div.tabIndex = 0;
+    div.setAttribute("aria-disabled","false");
+
+    const letter = document.createElement("div");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+
+    const text = document.createElement("div");
+    text.className = "opttext";
+    // Use textContent so NBSP padding is preserved exactly
+    text.textContent = opt.t;
+
+    div.appendChild(letter);
+    div.appendChild(text);
+
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+
+    answersEl.appendChild(div);
+  });
+
+  explainText.textContent = item.exp;
+  setStats();
+  equalizeOptionHeights();
+}
+
+function choose(i){
+  if(answered) return;
+
+  const item = questions[idx];
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const picked = item.options[i];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(picked.c){
+    score += 1;
+    correct += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Good pick—analyst logic + constraints.</span>`;
+    }
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>Re-check scope, evidence integrity, and risk-based action.</span>`;
+    }
+  }
+
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  setStats();
+  nextBtn.disabled = false;
+  equalizeOptionHeights();
+}
+
+function reveal(){
+  if(answered) return;
+  const item = questions[idx];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  nodes[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked){
+    feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Correct option highlighted—read the explanation.</span>`;
+  }
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  nextBtn.disabled = false;
+  setStats();
+  equalizeOptionHeights();
+}
+
+function next(){
+  if(!answered) return;
+  idx += 1;
+  if(idx >= questions.length){
+    finish();
+    return;
+  }
+  render();
+}
+
+function finish(){
+  barEl.style.width = `100%`;
+  answersEl.innerHTML = "";
+  feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed the 45-question final review.";
+  domainEl.textContent = "Domain: Completed";
+  explainText.textContent = "";
+  explainBox.open = false;
+
+  nextBtn.disabled = true;
+  revealBtn.disabled = true;
+
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+
+function reset(){
+  idx = 0;
+  score = 0;
+  correct = 0;
+  incorrect = 0;
+  prepQuestions();
+  render();
+}
+
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+
+prepQuestions();
+render();
+</script>
+</body>
+</html>

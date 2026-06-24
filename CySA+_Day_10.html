@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode Quiz — OS Process Mgmt, Analyzing Malicious Activity, Malicious TTPs</title>
+  <style>
+    :root{
+      --bg:#071427;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#2f7dff;
+      --good:#2fd48f;
+      --bad:#ff5c7a;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 28px 18px 54px; }
+    header{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; }
+    .titlebox{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+      flex:1;
+    }
+    h1{ margin:0 0 6px; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:0; color:var(--muted); font-size: 13px; }
+    .stats{
+      min-width: 260px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+    }
+    .statrow{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size: 13px; color: var(--muted);
+      padding: 6px 2px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+    }
+    .statrow:last-child{border-bottom:0}
+    .statrow b{color:var(--text); font-weight:650}
+
+    .barwrap{
+      margin: 14px 0 18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55));
+      transition: width .35s ease;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .qmeta{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:12px; margin-bottom: 10px;
+      color: var(--muted); font-size: 13px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px; background: rgba(0,0,0,.15);
+      color: var(--muted); font-size: 12px; user-select:none;
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(47,125,255,.95);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.15);
+    }
+
+    .qtext{ font-size: 16px; margin: 6px 0 14px; white-space: pre-wrap; }
+
+    .answers{ display:grid; grid-template-columns: 1fr; gap: 10px; margin: 10px 0 14px; }
+    .opt{
+      display:flex; gap:12px; align-items:flex-start;
+      padding: 12px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.35); }
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{
+      flex:0 0 auto; width: 28px; height: 28px; border-radius: 10px;
+      display:grid; place-items:center; font-weight: 800;
+      background: rgba(47,125,255,.16);
+      border:1px solid rgba(47,125,255,.28);
+      color: var(--text);
+    }
+    .opttext{ color: var(--text); font-size: 14px; line-height: 1.35; padding-top: 2px;  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;  white-space: pre-wrap; }
+
+    .opt.correct{ border-color: rgba(47,212,143,.55); background: rgba(47,212,143,.10); }
+    .opt.correct .letter{ background: rgba(47,212,143,.18); border-color: rgba(47,212,143,.55); }
+    .opt.wrong{ border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10); }
+    .opt.wrong .letter{ background: rgba(255,92,122,.18); border-color: rgba(255,92,122,.55); }
+
+    .feedback{
+      margin-top: 8px; font-size: 13px; color: var(--muted);
+      display:flex; gap:10px; align-items:center; min-height: 22px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      font-size: 12px; color: var(--muted);
+    }
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95); }
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95); }
+
+    details{
+      margin-top: 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    summary{ cursor:pointer; color: var(--muted); font-size: 13px; user-select:none; }
+    .explain{ margin-top: 10px; color: var(--text); font-size: 13px; white-space: pre-wrap; }
+
+    .controls{
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 12px; margin-top: 14px; flex-wrap: wrap;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.40); }
+    button:active{ transform: translateY(0px); }
+    button.primary{ background: rgba(47,125,255,.22); border-color: rgba(47,125,255,.45); }
+    button[disabled]{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .footer{ margin-top: 16px; color: var(--muted); font-size: 12px; text-align:center; }
+
+    .end{ margin-top: 18px; display:none; }
+    .end h2{ margin: 0 0 8px; font-size: 18px; }
+    .end p{ margin: 0; color: var(--muted); }
+    .tiny{ font-size: 12px; color: var(--muted); }
+
+    .toggleRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .toggle{
+      display:flex; gap:10px; align-items:center;
+      padding: 10px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      color: var(--muted); font-size: 12px;
+      user-select:none;
+    }
+    .toggle input{ transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — OS Process Mgmt, Malicious Analysis, Malicious TTPs</h1>
+        <p class="subtitle">30 scenario-heavy questions • per-load answer shuffling • equal-length options • next-button flow • collapsible explanations</p>
+        <div class="toggleRow">
+          <label class="toggle" title="Shows feedback immediately after you choose an option.">
+            <input id="instantFeedback" type="checkbox" checked />
+            Instant feedback
+          </label>
+          <label class="toggle" title="Auto-opens the explanation after you answer.">
+            <input id="autoExplain" type="checkbox" />
+            Auto-open explanations
+          </label>
+          <label class="toggle" title="Resets question order and reshuffles answer positions by reloading.">
+            <span>Tip: Reload to reshuffle.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 30</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+
+    <div class="barwrap" aria-label="Progress bar">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: Processes / Triage / ATT&CK-style TTPs</span></span>
+        <span class="pill" id="difficultyPill">Difficulty: Hard (word-salad)</span>
+      </div>
+
+      <div class="qtext" id="questionText">Loading…</div>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+
+      <div class="controls">
+        <button id="resetBtn" title="Restart quiz (keeps this page load’s shuffle)">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" title="Show the correct answer for this question (counts as answered)" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+        <p class="tiny" style="margin-top:10px;">Want a PBQ set (process tree + logs + containment decisions)? Tell me.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built for CySA+ practice. Focus: process trees, persistence, credential access, lateral movement, C2, and investigation workflows.
+    </div>
+  </div>
+
+<script>
+/**
+ * Saved template behaviors:
+ * - A/B/C/D labels
+ * - Per-load correct answer shuffles between A/B/C/D (options shuffled while keeping letters A-D)
+ * - Next button flow
+ * - Collapsible explanations
+ * - Progress bar + score
+ * - "Hard / word-salad" style + equal-length option formatting
+ */
+
+const RAW_QUESTIONS = [
+  {
+    "domain": "OS Process Mgmt (Process Tree)",
+    "q": "An EDR alert shows WINWORD.EXE spawning powershell.exe which then spawns rundll32.exe and initiates outbound HTTPS to a rare domain. What is the BEST next triage step?",
+    "options": [
+      {
+        "t": "Trace lineage, arguments, socket ownership, and logon session to validate whether the chain reflects staged execution.",
+        "c": true
+      },
+      {
+        "t": "Check whether the file originated from a recent approved workflow and compare the launch context with normal office activity.",
+        "c": false
+      },
+      {
+        "t": "Place the device in containment first, then defer process review until after volatile collection completes from the console.",
+        "c": false
+      },
+      {
+        "t": "Block the destination globally and begin hunting for the domain before determining which child initiated the traffic.",
+        "c": false
+      }
+    ],
+    "exp": "Start by validating lineage, command-line use, and which child owned the connection. That confirms whether the document chain drove malicious execution and gives you scoping anchors."
+  },
+  {
+    "domain": "Malicious Activity (Persistence)",
+    "q": "A Windows host re-creates a suspicious executable after every reboot. Logs show a scheduled task created by a non-admin user and running with highest privileges. What technique is MOST likely?",
+    "options": [
+      {
+        "t": "Abuse of recurring task execution with elevated run context to regain foothold after restart.",
+        "c": true
+      },
+      {
+        "t": "Installer-driven maintenance registration from an approved package that routinely stages binaries after startup.",
+        "c": false
+      },
+      {
+        "t": "Application self-healing through software distribution policy that restores missing components on boot.",
+        "c": false
+      },
+      {
+        "t": "Service recovery behavior caused by crash handling rules that copy the file back after each failed launch.",
+        "c": false
+      }
+    ],
+    "exp": "A recurring task created by a lower-privileged user but executing with elevated context strongly suggests scheduled-task persistence with privilege misuse."
+  },
+  {
+    "domain": "OS Process Mgmt (Linux)",
+    "q": "A Linux server shows a new process listening on an unusual high port. The binary path points to /tmp and the process parent is a web server worker. What is the BEST response?",
+    "options": [
+      {
+        "t": "Collect pid, argv, cwd, open files, sockets, hash, and parent details before containment or removal.",
+        "c": true
+      },
+      {
+        "t": "Delete the file from temporary storage immediately so the listener cannot rebind during further investigation.",
+        "c": false
+      },
+      {
+        "t": "Restart the web service to terminate the child, then review logs afterward if the process fails to return.",
+        "c": false
+      },
+      {
+        "t": "Add a host firewall deny rule for the port first and postpone artifact collection until scheduled downtime.",
+        "c": false
+      }
+    ],
+    "exp": "A web-server child running from /tmp and listening externally is highly suspicious. Preserve process, file, and socket evidence before containment/removal."
+  },
+  {
+    "domain": "TTPs (Credential Access)",
+    "q": "EDR detects a process attempting to read LSASS memory and opening many handles to lsass.exe. What attacker objective does this MOST align with?",
+    "options": [
+      {
+        "t": "Harvesting reusable authentication material for later pivoting and privilege expansion across the environment.",
+        "c": true
+      },
+      {
+        "t": "Inventorying local security products by touching protected memory regions used by endpoint tooling.",
+        "c": false
+      },
+      {
+        "t": "Performing crash-triage collection associated with operating system diagnostics after an application fault.",
+        "c": false
+      },
+      {
+        "t": "Validating smart-card middleware state by enumerating protected handles tied to interactive sessions.",
+        "c": false
+      }
+    ],
+    "exp": "Opening numerous handles to LSASS and reading its memory is a classic sign of obtaining credentials, hashes, or tickets for later movement."
+  },
+  {
+    "domain": "Malicious Activity (C2 Beaconing)",
+    "q": "Proxy logs show an endpoint making HTTPS connections to the same domain every 60 seconds with consistent request sizes. DNS shows the domain is newly registered. What is the MOST likely interpretation?",
+    "options": [
+      {
+        "t": "Periodic operator check-ins from an implanted foothold, pending host-side confirmation of the owning process.",
+        "c": true
+      },
+      {
+        "t": "Routine patch compliance polling from a newly onboarded vendor platform that uses fixed heartbeat intervals.",
+        "c": false
+      },
+      {
+        "t": "Browser synchronization traffic from an extension that happened to deploy a new cloud endpoint this week.",
+        "c": false
+      },
+      {
+        "t": "Expected telemetry uploads from a recently installed management agent that batches data in equal-sized posts.",
+        "c": false
+      }
+    ],
+    "exp": "Regular timing, stable sizes, and a newly registered destination are classic beaconing signals. Confirm by mapping the traffic to the responsible process and user context."
+  },
+  {
+    "domain": "OS Process Mgmt (Windows Services)",
+    "q": "Security logs show a new service installed with a random name, pointing to an unsigned binary in a user profile directory. What should you check FIRST?",
+    "options": [
+      {
+        "t": "Creation metadata, startup mode, signer status, originating account, and adjacent process activity from that window.",
+        "c": true
+      },
+      {
+        "t": "Whether the binary loads successfully after reboot so you can confirm the service is actually persistent.",
+        "c": false
+      },
+      {
+        "t": "Enterprise change records for all software pushes before reviewing the service creation event in detail.",
+        "c": false
+      },
+      {
+        "t": "Other autorun locations across the host first, because services rarely matter unless multiple footholds exist.",
+        "c": false
+      }
+    ],
+    "exp": "Randomly named services pointing to unsigned user-path binaries often indicate persistence. First confirm who created it, what it runs, and how it launched."
+  },
+  {
+    "domain": "TTPs (Defense Evasion)",
+    "q": "A process disables Windows Defender using PowerShell and modifies registry keys related to security settings, then clears event logs. Which technique category BEST matches?",
+    "options": [
+      {
+        "t": "Suppressing protective controls and removing traces to reduce visibility on the endpoint.",
+        "c": true
+      },
+      {
+        "t": "Expanding privileges by modifying local policy areas commonly touched during administrative role changes.",
+        "c": false
+      },
+      {
+        "t": "Surveying the host security posture to decide which controls exist before choosing later actions.",
+        "c": false
+      },
+      {
+        "t": "Executing a scripted maintenance workflow that changes configuration and rotates local diagnostic records.",
+        "c": false
+      }
+    ],
+    "exp": "Disabling security controls and clearing logs fits defense evasion and indicator removal, not discovery or privilege escalation."
+  },
+  {
+    "domain": "Analyzing Malicious Activity (Triage)",
+    "q": "An endpoint alert triggers on “encoded PowerShell.” IT confirms scripts are used widely. What is the BEST way to separate benign from malicious?",
+    "options": [
+      {
+        "t": "Compare launch context, parentage, signer trust, decoded behavior, and outbound activity against known-good baselines.",
+        "c": true
+      },
+      {
+        "t": "Treat any use of obfuscation as hostile because administrative automation should never require transformed content.",
+        "c": false
+      },
+      {
+        "t": "Suppress the alert for the entire enterprise and rely on users to report anything that looks suspicious.",
+        "c": false
+      },
+      {
+        "t": "Focus only on whether the script was signed, because trusted signing eliminates the need for context review.",
+        "c": false
+      }
+    ],
+    "exp": "Encoded PowerShell can be legitimate. The discriminator is surrounding context: who launched it, what it decoded to, what it touched, and where it connected."
+  },
+  {
+    "domain": "OS Process Mgmt (Handles/Modules)",
+    "q": "A suspicious process injects a DLL into a browser process and then the browser starts making outbound connections to low-reputation domains. What is the BEST interpretation?",
+    "options": [
+      {
+        "t": "A trusted user-facing program is being used as a host for theft or traffic manipulation through injected code.",
+        "c": true
+      },
+      {
+        "t": "A normal plugin registration event where unsigned extensions transiently load before browser policy approval finishes.",
+        "c": false
+      },
+      {
+        "t": "Endpoint monitoring hooks added by a security agent, which commonly produce unknown destinations until reputation sync completes.",
+        "c": false
+      },
+      {
+        "t": "A developer troubleshooting session in which browser memory was modified to reproduce rendering issues in the lab.",
+        "c": false
+      }
+    ],
+    "exp": "Injection into a browser followed by suspicious outbound traffic often indicates credential theft, session hijacking, or traffic interception through that trusted process."
+  },
+  {
+    "domain": "TTPs (Discovery)",
+    "q": "PowerShell history shows commands like whoami, ipconfig, net user, net group, nltest, and arp -a before lateral movement. What stage does this MOST represent?",
+    "options": [
+      {
+        "t": "Environment and identity reconnaissance performed to understand privileges, trust paths, and nearby targets.",
+        "c": true
+      },
+      {
+        "t": "Data staging because local and domain queries are routinely needed before packaging files for export.",
+        "c": false
+      },
+      {
+        "t": "Direct collection of reusable secrets because account enumeration normally yields plaintext credentials for reuse.",
+        "c": false
+      },
+      {
+        "t": "Initial payload execution because built-in utilities are often launched immediately after code runs on a host.",
+        "c": false
+      }
+    ],
+    "exp": "Those commands map to learning who the actor is, what the network looks like, and where trust relationships exist before moving laterally."
+  },
+  {
+    "domain": "OS Process Mgmt (Windows Event IDs)",
+    "q": "You see repeated log clears and then a sudden gap in Security logs on a suspected host. What is the BEST investigative action?",
+    "options": [
+      {
+        "t": "Rebuild the timeline from centralized and adjacent telemetry such as SIEM, EDR, Sysmon, DNS, and firewall records.",
+        "c": true
+      },
+      {
+        "t": "Repair the local event database first so missing records can repopulate and reduce the need for cross-source review.",
+        "c": false
+      },
+      {
+        "t": "Assume the issue is collector instability and postpone endpoint investigation until logging health is restored.",
+        "c": false
+      },
+      {
+        "t": "Limit review to the host itself because external copies may introduce timing skew that complicates chronology.",
+        "c": false
+      }
+    ],
+    "exp": "When local logs are tampered with, reconstruct activity from centralized copies and alternate telemetry sources."
+  },
+  {
+    "domain": "TTPs (Lateral Movement)",
+    "q": "Network logs show a host initiating many SMB sessions to multiple servers, followed by remote service creation events on targets. Which technique is MOST likely?",
+    "options": [
+      {
+        "t": "Remote execution over administrative file sharing with temporary service creation on downstream systems.",
+        "c": true
+      },
+      {
+        "t": "Routine software deployment that always appears suspicious because installers commonly fan out through administrative shares.",
+        "c": false
+      },
+      {
+        "t": "Share enumeration only, since service creation can occur during read-only access to hidden administrative folders.",
+        "c": false
+      },
+      {
+        "t": "Backup agent registration in which temporary services are created on every server before nightly collection begins.",
+        "c": false
+      }
+    ],
+    "exp": "SMB fan-out paired with service creation on targets strongly resembles PsExec-style lateral movement."
+  },
+  {
+    "domain": "Analyzing Malicious Activity (Indicators vs TTPs)",
+    "q": "A defender blocks known malware hashes, but the attacker recompiles payloads frequently. Which detection approach is MOST resilient?",
+    "options": [
+      {
+        "t": "Behavioral hunting anchored on repeatable execution, persistence, and communications patterns across data sources.",
+        "c": true
+      },
+      {
+        "t": "More frequent hash refresh cycles so the blocklist can keep pace with each rebuild of the malicious binary.",
+        "c": false
+      },
+      {
+        "t": "Broader denial of newly seen destinations because changing payloads matter less once internet exposure is reduced.",
+        "c": false
+      },
+      {
+        "t": "Stricter mail filtering only, since stopping delivery removes the need to detect changing host-side behavior.",
+        "c": false
+      }
+    ],
+    "exp": "Recompiled payloads break static hashes. Repeated behavior and technique patterns remain useful despite binary changes."
+  },
+  {
+    "domain": "OS Process Mgmt (Signed vs Unsigned)",
+    "q": "A binary is running from C:\Users\Public\ with a random name and no valid signature. It spawns cmd.exe with /c to run encoded PowerShell. What is the BEST next step?",
+    "options": [
+      {
+        "t": "Capture provenance, arguments, prevalence, and related ancestry, then pivot for matching executions across the estate.",
+        "c": true
+      },
+      {
+        "t": "Reimage the workstation immediately because host restoration should precede any effort to scope related activity.",
+        "c": false
+      },
+      {
+        "t": "Block transformed script execution globally before collecting details about where the binary appeared elsewhere.",
+        "c": false
+      },
+      {
+        "t": "Send the file to sandboxing first and wait for verdicts before reviewing telemetry already available in the environment.",
+        "c": false
+      }
+    ],
+    "exp": "Unknown unsigned binaries in public paths spawning interpreters should be scoped quickly through prevalence, lineage, and command-line pivots before remediation."
+  },
+  {
+    "domain": "TTPs (Initial Access)",
+    "q": "A user opens a macro-enabled document, and shortly afterward you see mshta.exe and rundll32.exe activity with network connections to a new domain. What is the MOST likely initial access vector?",
+    "options": [
+      {
+        "t": "User-targeted lure content that triggered a staged chain through built-in utilities to fetch the next component.",
+        "c": true
+      },
+      {
+        "t": "Direct exploitation of a browsing session, since script hosts and DLL launchers commonly appear after web compromise.",
+        "c": false
+      },
+      {
+        "t": "Ordinary application setup using helper binaries that contact the internet for localization or registration resources.",
+        "c": false
+      },
+      {
+        "t": "Remote administration from help desk tooling, because document viewing often invokes external helper components.",
+        "c": false
+      }
+    ],
+    "exp": "A macro-enabled lure followed by LOLBAS execution and external retrieval most strongly indicates phishing with a malicious attachment."
+  },
+  {
+    "domain": "Analyzing Malicious Activity (Containment)",
+    "q": "You confirm an endpoint is beaconing to suspected C2 and has created persistence via a scheduled task. What is the BEST immediate action sequence?",
+    "options": [
+      {
+        "t": "Stop ongoing interaction, preserve volatile artifacts, then remove the foothold and rotate exposed identities.",
+        "c": true
+      },
+      {
+        "t": "Delete the recurring mechanism first and leave network access intact so you can watch for fallback behavior.",
+        "c": false
+      },
+      {
+        "t": "Only block the destination and postpone host isolation to avoid user disruption during the workday.",
+        "c": false
+      },
+      {
+        "t": "Restore the system from gold image immediately and decide later whether memory or credential scope mattered.",
+        "c": false
+      }
+    ],
+    "exp": "Containment should halt continued operator control, preserve volatile evidence, and then address persistence plus potentially exposed credentials."
+  },
+  {
+    "domain": "OS Process Mgmt (Linux Persistence)",
+    "q": "A Linux endpoint executes a suspicious binary that later reappears after login. You discover a new entry in ~/.bashrc and a new user crontab. What does this MOST indicate?",
+    "options": [
+      {
+        "t": "User-level re-execution anchored in shell startup and time-based invocation after interactive access returns.",
+        "c": true
+      },
+      {
+        "t": "Routine developer environment customization because shell initialization files often launch helper programs at sign-in.",
+        "c": false
+      },
+      {
+        "t": "Package post-install configuration from the distribution tooling, which commonly writes into user task schedules.",
+        "c": false
+      },
+      {
+        "t": "Backup automation deployed by operations, since personal cron entries usually govern recurring data protection jobs.",
+        "c": false
+      }
+    ],
+    "exp": "Modifications to shell startup files plus user cron entries are classic Linux persistence mechanisms."
+  },
+  {
+    "domain": "TTPs (Privilege Escalation)",
+    "q": "A standard user process spawns cmd.exe, then uses runas and creates a new local admin account. Which objective is MOST likely?",
+    "options": [
+      {
+        "t": "Gaining durable elevated access by obtaining stronger local control than the original session possessed.",
+        "c": true
+      },
+      {
+        "t": "Routine workstation support preparation in which temporary administrators are added for short maintenance windows.",
+        "c": false
+      },
+      {
+        "t": "Pure reconnaissance of access boundaries, because new accounts are often created only to test policy responses.",
+        "c": false
+      },
+      {
+        "t": "Application deployment staging, since installers commonly create administrative users before package execution begins.",
+        "c": false
+      }
+    ],
+    "exp": "Using runas and then creating a local administrator account indicates privilege escalation combined with persistence."
+  },
+  {
+    "domain": "Analyzing Malicious Activity (PCAP / SYNs)",
+    "q": "PCAP shows repeated SYN packets from a host to many random IPs with no completed handshakes. What is the MOST likely activity?",
+    "options": [
+      {
+        "t": "Broad reachability probing intended to map services, targets, or egress behavior without establishing sessions.",
+        "c": true
+      },
+      {
+        "t": "Normal application retries from a flaky client that chooses random internet peers during connection backoff logic.",
+        "c": false
+      },
+      {
+        "t": "Synthetic packet generation by the capture stack itself, which often emits half-open traffic during interface testing.",
+        "c": false
+      },
+      {
+        "t": "Misconfigured load-balancer health polling that accidentally selected arbitrary public addresses as service members.",
+        "c": false
+      }
+    ],
+    "exp": "Many SYNs to numerous unrelated IPs without completed handshakes most closely matches scanning or reconnaissance."
+  },
+  {
+    "domain": "TTPs (Exfiltration)",
+    "q": "A host compresses large directories, then initiates long-duration outbound transfers to a personal cloud storage domain over TLS. Which evidence BEST supports exfiltration?",
+    "options": [
+      {
+        "t": "Time-linked file staging, byte counts, destination context, and user attribution all pointing to the same transfer event.",
+        "c": true
+      },
+      {
+        "t": "Proxy categorization alone showing the site belongs to cloud storage, which is enough to prove improper data removal.",
+        "c": false
+      },
+      {
+        "t": "Manager confirmation that the employee lacked approval, because intent matters more than endpoint and network evidence.",
+        "c": false
+      },
+      {
+        "t": "Absence of DLP alerts, since true outbound theft should always trigger content inspection when sensitive data is involved.",
+        "c": false
+      }
+    ],
+    "exp": "To support exfiltration, correlate staging activity on the host with transfer volume, timing, destination, and the responsible user."
+  },
+  {
+    "domain": "OS Process Mgmt (DLL Search Order)",
+    "q": "A signed application loads an unexpected DLL from the current working directory rather than the system directory. What technique does this MOST resemble?",
+    "options": [
+      {
+        "t": "Trusted-process execution obtained by manipulating library resolution so attacker-controlled code loads first.",
+        "c": true
+      },
+      {
+        "t": "Expected plugin discovery, because signed programs normally prefer the working directory over protected system paths.",
+        "c": false
+      },
+      {
+        "t": "Security instrumentation shimming, since monitoring agents routinely place unsigned modules beside user applications.",
+        "c": false
+      },
+      {
+        "t": "Updater rollback behavior where old components are loaded locally until the next maintenance cycle completes.",
+        "c": false
+      }
+    ],
+    "exp": "Loading an unexpected DLL from the working directory points to DLL search order hijacking or sideloading."
+  },
+  {
+    "domain": "TTPs (Command Execution / LOLBAS)",
+    "q": "A defender sees certutil.exe downloading a file from an external URL and then executing it. Why is this significant?",
+    "options": [
+      {
+        "t": "A built-in utility is being repurposed to retrieve and launch content while blending into normal system tooling.",
+        "c": true
+      },
+      {
+        "t": "Certificate enrollment operations often require internet retrieval and immediate execution of support components.",
+        "c": false
+      },
+      {
+        "t": "Only plaintext downloads matter here, because encrypted transfers through native tools are generally trustworthy.",
+        "c": false
+      },
+      {
+        "t": "This mainly indicates software installation, since native utilities rarely appear in malicious delivery chains.",
+        "c": false
+      }
+    ],
+    "exp": "certutil is a common LOLBAS utility. Attackers abuse it to download or decode payloads while hiding within native tooling."
+  },
+  {
+    "domain": "Analyzing Malicious Activity (Scope)",
+    "q": "One host is confirmed compromised. What is the BEST SIEM query strategy to scope related activity across the environment?",
+    "options": [
+      {
+        "t": "Hunt with a mix of high-confidence artifacts and repeatable patterns such as lineage, destinations, auth anomalies, and paths.",
+        "c": true
+      },
+      {
+        "t": "Search only for the contacted domain, since process context creates too much noise when expanding from one host.",
+        "c": false
+      },
+      {
+        "t": "Pivot only on the exact file hash because broad behavioral searches usually overwhelm investigators with false leads.",
+        "c": false
+      },
+      {
+        "t": "Constrain all queries to the known hostname first, because enterprise spread is unlikely once one device is isolated.",
+        "c": false
+      }
+    ],
+    "exp": "Best scoping combines concrete indicators with behavior patterns across multiple telemetry sources and time ranges."
+  },
+  {
+    "domain": "OS Process Mgmt (Windows Startup Locations)",
+    "q": "You find a suspicious executable referenced in HKCU\Software\Microsoft\Windows\CurrentVersion\Run. What does this MOST indicate?",
+    "options": [
+      {
+        "t": "User-context re-launch at sign-in through a common autorun location tied to interactive startup.",
+        "c": true
+      },
+      {
+        "t": "Core operating system service registration, since this area mainly governs protected components and policy refresh.",
+        "c": false
+      },
+      {
+        "t": "Temporary troubleshooting automation that exists only for a single session and disappears at next logout.",
+        "c": false
+      },
+      {
+        "t": "Application inventory metadata written by installers to record version information without affecting execution.",
+        "c": false
+      }
+    ],
+    "exp": "The HKCU Run key is a classic per-user autorun location and frequently used for persistence."
+  },
+  {
+    "domain": "TTPs (Data Destruction / Impact)",
+    "q": "A threat actor deletes backups and disables recovery services after gaining admin access, but does not immediately encrypt files. What is the MOST likely objective?",
+    "options": [
+      {
+        "t": "Reducing the victim’s ability to recover before later coercive or destructive action is launched.",
+        "c": true
+      },
+      {
+        "t": "Performing storage cleanup because old recovery points commonly interfere with normal production performance.",
+        "c": false
+      },
+      {
+        "t": "Meeting retention policy requirements that remove legacy restore paths after a successful administrative review.",
+        "c": false
+      },
+      {
+        "t": "Gathering documentation from backup catalogs, since disabling those services is mainly useful for environmental mapping.",
+        "c": false
+      }
+    ],
+    "exp": "Destroying backups and recovery paths usually prepares the environment for ransomware or other high-impact actions."
+  },
+  {
+    "domain": "Analyzing Malicious Activity (False Positive Control)",
+    "q": "An alert flags “rundll32 executing from user directory,” but IT has a legitimate tool that uses rundll32 for plugin loading. What is the BEST way to reduce false positives while retaining detection?",
+    "options": [
+      {
+        "t": "Permit only the known good implementation via strong identifiers while keeping analytics on unknown parents, paths, and unsigned modules.",
+        "c": true
+      },
+      {
+        "t": "Disable the rule entirely because native binaries used by approved tools cannot be monitored without excessive noise.",
+        "c": false
+      },
+      {
+        "t": "Suppress all executions from user-writable locations since legitimate software commonly launches from those paths.",
+        "c": false
+      },
+      {
+        "t": "Block the native binary everywhere and require exception tickets for any team that still depends on it.",
+        "c": false
+      }
+    ],
+    "exp": "The right tuning approach is narrow allow-listing for the known tool while preserving detections on suspicious contexts."
+  },
+  {
+    "domain": "OS Process Mgmt (Windows Tokens)",
+    "q": "EDR indicates a process launched with a high-integrity token shortly after UAC prompts were accepted unexpectedly. What is the MOST likely security concern?",
+    "options": [
+      {
+        "t": "An unplanned elevation event likely driven by social engineering or abuse of approval to gain stronger execution rights.",
+        "c": true
+      },
+      {
+        "t": "Routine desktop behavior, because any consent prompt automatically validates the launched process as trustworthy.",
+        "c": false
+      },
+      {
+        "t": "Name-resolution problems affecting administrative resources, which commonly surface as unexpected consent prompts.",
+        "c": false
+      },
+      {
+        "t": "Normal updater activity that should be presumed benign whenever a user clicks through a privilege prompt.",
+        "c": false
+      }
+    ],
+    "exp": "Unexpected UAC acceptance followed by high-integrity execution can indicate consent phishing or privilege escalation."
+  },
+  {
+    "domain": "TTPs (Credential Access / Kerberos)",
+    "q": "Security sees many Kerberos service ticket requests for a service account and then offline cracking attempts are suspected. Which technique is this MOST associated with?",
+    "options": [
+      {
+        "t": "Obtaining crackable service-ticket material to recover an account secret without interacting with the host again.",
+        "c": true
+      },
+      {
+        "t": "Trying many common passwords directly against the account until one succeeds and produces a lockout pattern.",
+        "c": false
+      },
+      {
+        "t": "Forging universal domain access after compromise of the ticket-granting authority’s long-term secret.",
+        "c": false
+      },
+      {
+        "t": "Reusing NTLM-derived material for authentication relay against services that do not require ticket requests.",
+        "c": false
+      }
+    ],
+    "exp": "Requesting many service tickets for SPNs and then attempting offline cracking is characteristic of Kerberoasting."
+  },
+  {
+    "domain": "Analyzing Malicious Activity (Evidence Preservation)",
+    "q": "A suspected compromised system is still running, and you need volatile artifacts (network connections, memory-resident malware). What is the BEST approach?",
+    "options": [
+      {
+        "t": "Keep power intact, restrict communication, and acquire ephemeral state before any shutdown or rebuild action.",
+        "c": true
+      },
+      {
+        "t": "Turn the system off immediately so the adversary loses access, then attempt memory recovery from the disk image later.",
+        "c": false
+      },
+      {
+        "t": "Restart first to clear unstable processes and begin collection once the operating system returns to a clean state.",
+        "c": false
+      },
+      {
+        "t": "Prioritize disk imaging alone because transient state rarely affects malware investigations when logs are available.",
+        "c": false
+      }
+    ],
+    "exp": "Volatile evidence disappears on reboot or shutdown. Isolate communications and collect memory and live state first."
+  },
+  {
+    "domain": "TTPs (Command and Control / Egress)",
+    "q": "An organization blocks known malicious domains, but attackers rotate domains quickly. What control MOST reduces C2 success while maintaining business needs?",
+    "options": [
+      {
+        "t": "Tighter outbound governance using proxy or DNS policy, selective allow rules, and telemetry for anomaly review.",
+        "c": true
+      },
+      {
+        "t": "Permit unrestricted internet access so business traffic is never disrupted by destination-based security decisions.",
+        "c": false
+      },
+      {
+        "t": "Eliminate DNS logging to reduce attacker visibility into defender monitoring of new domains and lookups.",
+        "c": false
+      },
+      {
+        "t": "Force all outbound traffic onto encrypted web ports, since command channels cannot operate once ports are standardized.",
+        "c": false
+      }
+    ],
+    "exp": "Egress controls, DNS/proxy security, selective allow-listing, and good logging reduce command-and-control success better than simple domain blocklists."
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+
+let questions = [];
+let idx = 0;
+let score = 0;
+let correct = 0;
+let incorrect = 0;
+let answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+
+
+
+
+
+
+
+function padNBSP(optionText, targetLength){
+  let t = (optionText || "").trim();
+  if(!t.endsWith(".")) t += ".";
+  while(t.length < targetLength){
+    t += "\u00A0";
+  }
+  return t;
+}
+
+function prepQuestions(){
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const base = q.options.map(o => {
+      let s = (o.t || "").trim();
+      if(!s.endsWith(".")) s += ".";
+      return {...o, t: s};
+    });
+    const targetLen = Math.max(...base.map(o => o.t.length));
+    const padded = base.map(o => ({...o, t: padNBSP(o.t, targetLen)}));
+    const shuffledOpts = shuffle(padded);
+    return {...q, options: shuffledOpts};
+  });
+}
+
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  const pct = (idx / questions.length) * 100;
+  barEl.style.width = `${pct}%`;
+}
+
+function lockOptions(lock=true){
+  const nodes = answersEl.querySelectorAll(".opt");
+  nodes.forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt";
+    div.role = "button";
+    div.tabIndex = 0;
+    div.setAttribute("aria-disabled","false");
+
+    const letter = document.createElement("div");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+
+    const text = document.createElement("div");
+    text.className = "opttext";
+    text.textContent = opt.t;
+
+    div.appendChild(letter);
+    div.appendChild(text);
+
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+
+    answersEl.appendChild(div);
+  });
+
+  explainText.textContent = item.exp;
+  setStats();
+}
+
+function choose(i){
+  if(answered) return;
+
+  const item = questions[idx];
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const picked = item.options[i];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(picked.c){
+    score += 1;
+    correct += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Nice—this aligns with process triage and attacker TTP logic.</span>`;
+    }
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>Pick the option that best matches real attacker workflow and preserves evidence.</span>`;
+    }
+  }
+
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  setStats();
+  nextBtn.disabled = false;
+}
+
+function reveal(){
+  if(answered) return;
+  const item = questions[idx];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  nodes[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked){
+    feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Correct option highlighted—use the explanation to lock in the concept.</span>`;
+  }
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  nextBtn.disabled = false;
+  setStats();
+}
+
+function next(){
+  if(!answered) return;
+  idx += 1;
+  if(idx >= questions.length){
+    finish();
+    return;
+  }
+  render();
+}
+
+function finish(){
+  barEl.style.width = `100%`;
+  answersEl.innerHTML = "";
+  feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed all 30 questions.";
+  domainEl.textContent = "Domain: Completed";
+  explainText.textContent = "";
+  explainBox.open = false;
+
+  nextBtn.disabled = true;
+  revealBtn.disabled = true;
+
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+
+function reset(){
+  idx = 0;
+  score = 0;
+  correct = 0;
+  incorrect = 0;
+  prepQuestions();
+  render();
+}
+
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+
+prepQuestions();
+render();
+</script>
+</body>
+</html>

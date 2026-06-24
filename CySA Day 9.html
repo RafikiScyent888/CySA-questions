@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode Quiz — Network Security Concepts & Malware</title>
+  <style>
+    :root{
+      --bg:#071427;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#2f7dff;
+      --good:#2fd48f;
+      --bad:#ff5c7a;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 28px 18px 54px; }
+    header{ display:flex; gap:14px; align-items:flex-start; justify-content:space-between; margin-bottom: 16px; }
+    .titlebox{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+      flex:1;
+    }
+    h1{ margin:0 0 6px; font-size: 20px; letter-spacing: .2px; }
+    .subtitle{ margin:0; color:var(--muted); font-size: 13px; }
+    .stats{
+      min-width: 260px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+    }
+    .statrow{
+      display:flex; justify-content:space-between; gap:10px;
+      font-size: 13px; color: var(--muted);
+      padding: 6px 2px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+    }
+    .statrow:last-child{border-bottom:0}
+    .statrow b{color:var(--text); font-weight:650}
+
+    .barwrap{
+      margin: 14px 0 18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55));
+      transition: width .35s ease;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .qmeta{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:12px; margin-bottom: 10px;
+      color: var(--muted); font-size: 13px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px; background: rgba(0,0,0,.15);
+      color: var(--muted); font-size: 12px; user-select:none;
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(47,125,255,.95);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.15);
+    }
+
+    .qtext{ font-size: 16px; margin: 6px 0 14px; white-space: pre-wrap; }
+
+    .answers{ display:grid; grid-template-columns: 1fr; gap: 10px; margin: 10px 0 14px; }
+    .opt{
+      display:flex; gap:12px; align-items:flex-start;
+      padding: 12px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.35); }
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{
+      flex:0 0 auto; width: 28px; height: 28px; border-radius: 10px;
+      display:grid; place-items:center; font-weight: 800;
+      background: rgba(47,125,255,.16);
+      border:1px solid rgba(47,125,255,.28);
+      color: var(--text);
+    }
+    .opttext{ color: var(--text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace; font-size: 14px; line-height: 1.35; padding-top: 2px;  white-space: pre-wrap; }
+
+    .opt.correct{ border-color: rgba(47,212,143,.55); background: rgba(47,212,143,.10); }
+    .opt.correct .letter{ background: rgba(47,212,143,.18); border-color: rgba(47,212,143,.55); }
+    .opt.wrong{ border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10); }
+    .opt.wrong .letter{ background: rgba(255,92,122,.18); border-color: rgba(255,92,122,.55); }
+
+    .feedback{
+      margin-top: 8px; font-size: 13px; color: var(--muted);
+      display:flex; gap:10px; align-items:center; min-height: 22px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 6px 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      font-size: 12px; color: var(--muted);
+    }
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95); }
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95); }
+
+    details{
+      margin-top: 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    summary{ cursor:pointer; color: var(--muted); font-size: 13px; user-select:none; }
+    .explain{ margin-top: 10px; color: var(--text); font-size: 13px; white-space: pre-wrap; }
+
+    .controls{
+      display:flex; justify-content:space-between; align-items:center;
+      gap: 12px; margin-top: 14px; flex-wrap: wrap;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.40); }
+    button:active{ transform: translateY(0px); }
+    button.primary{ background: rgba(47,125,255,.22); border-color: rgba(47,125,255,.45); }
+    button[disabled]{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .footer{ margin-top: 16px; color: var(--muted); font-size: 12px; text-align:center; }
+
+    .end{ margin-top: 18px; display:none; }
+    .end h2{ margin: 0 0 8px; font-size: 18px; }
+    .end p{ margin: 0; color: var(--muted); }
+    .tiny{ font-size: 12px; color: var(--muted); }
+
+    .toggleRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; }
+    .toggle{
+      display:flex; gap:10px; align-items:center;
+      padding: 10px 12px; border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      color: var(--muted); font-size: 12px;
+      user-select:none;
+    }
+    .toggle input{ transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — Network Security Concepts & Malware</h1>
+        <p class="subtitle">30 scenario-heavy questions • per-load answer shuffling • equal-length options • next-button flow • collapsible explanations</p>
+        <div class="toggleRow">
+          <label class="toggle" title="Shows feedback immediately after you choose an option.">
+            <input id="instantFeedback" type="checkbox" checked />
+            Instant feedback
+          </label>
+          <label class="toggle" title="Auto-opens the explanation after you answer.">
+            <input id="autoExplain" type="checkbox" />
+            Auto-open explanations
+          </label>
+          <label class="toggle" title="Resets question order and reshuffles answer positions by reloading.">
+            <span>Tip: Reload to reshuffle.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 30</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+
+    <div class="barwrap" aria-label="Progress bar">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: Network / Malware / Detection</span></span>
+        <span class="pill" id="difficultyPill">Difficulty: Hard (word-salad)</span>
+      </div>
+
+      <div class="qtext" id="questionText">Loading...</div>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+
+      <div class="controls">
+        <button id="resetBtn" title="Restart quiz (keeps this page load’s shuffle)">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" title="Show the correct answer for this question (counts as answered)" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+        <p class="tiny" style="margin-top:10px;">Want a PBQ-style set (PCAP clues + containment decisions + malware triage)? Tell me.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built for CySA+ practice. Focus: segmentation, controls, secure protocols, IDS/NDR, and malware behaviors + response.
+    </div>
+  </div>
+
+<script>
+/**
+ * Saved template behaviors:
+ * - A/B/C/D labels
+ * - Per-load correct answer shuffles between A/B/C/D (options shuffled while keeping letters A-D)
+ * - Next button flow
+ * - Collapsible explanations
+ * - Progress bar + score
+ * - "Hard / word-salad" style + equal-length option formatting
+ */
+
+const RAW_QUESTIONS = [
+  // 1
+  {
+    domain: "Network Security (Segmentation)",
+    q: `A ransomware incident spread from a user VLAN to server subnets using SMB and RDP. Leadership wants to reduce blast radius without breaking business workflows. Which control is MOST effective?`,
+        options: [
+      { t: "Create tightly scoped inter-subnet policy boundaries and force administrative access through brokered management paths.", c: true },
+      { t: "Harden the server tier locally while leaving most routed paths between user and server networks unchanged.", c: false },
+      { t: "Protect the protocols themselves but keep ordinary workstation reachability into sensitive segments available.", c: false },
+      { t: "Give administrators safer workstations yet preserve broad east-west trust relationships inside production.", c: false }
+    ],
+    exp: `Segmentation + least-privilege network paths and controlled admin access (jump hosts) significantly limits lateral movement.`
+  },
+  // 2
+  {
+    domain: "Network Security (Zero Trust)",
+    q: `A company is adopting a zero trust model. Which statement BEST represents the zero trust approach to network access?`,
+        options: [
+      { t: "Validate identity, device health, and request context each time before granting narrowly scoped application access.", c: true },
+      { t: "Require strong login at session start and then rely on role membership for broad internal reachability.", c: false },
+      { t: "Place apps behind policy gates but continue trusting an approved endpoint until its session naturally expires.", c: false },
+      { t: "Recheck posture periodically while treating the authenticated session as trusted between evaluations.", c: false }
+    ],
+    exp: `Zero trust emphasizes continuous verification, least privilege, and micro-segmentation rather than implicit trust based on location.`
+  },
+  // 3
+  {
+    domain: "Network Security (Firewall Policy)",
+    q: `A firewall has a broad “allow any to web 443” rule above a narrow deny for a malicious IP range. Traffic from the bad range is still allowed. Why?`,
+        options: [
+      { t: "The general permit is evaluated first, so the later exception never gets a chance to match that traffic.", c: true },
+      { t: "The device defers address checks until after certificate inspection, which causes the deny list to be skipped.", c: false },
+      { t: "The session becomes stateful before address evaluation, so subsequent packets ignore the specific restriction.", c: false },
+      { t: "Translation changes the packet identity so rule precedence no longer matters for that connection.", c: false }
+    ],
+    exp: `First-match processing can cause shadowing. Place specific denies above broader allows or narrow the allow rule conditions.`
+  },
+  // 4
+  {
+    domain: "Network Security (NAT Attribution)",
+    q: `A suspicious public connection is identified, but the company uses PAT for outbound traffic. What log data is MOST needed to map the event to the internal host?`,
+        options: [
+      { t: "Time-correlated port translation records that tie the inside socket to the observed public socket.", c: true },
+      { t: "Web gateway activity showing the requested destination and browser fingerprint for outbound sessions.", c: false },
+      { t: "Address assignment history indicating which workstation held the private address during that period.", c: false },
+      { t: "Sign-in events mapping users to endpoints during the window when the connection was observed.", c: false }
+    ],
+    exp: `PAT requires translation tuples (inside/outside IP:port) with time to identify which internal host owned a public session.`
+  },
+  // 5
+  {
+    domain: "Malware (Ransomware Behavior)",
+    q: `An endpoint begins rapidly encrypting files and deleting shadow copies while attempting to contact multiple external IPs. What is the BEST immediate containment action?`,
+        options: [
+      { t: "Quarantine the endpoint immediately through endpoint controls so execution stops while artifacts remain available.", c: true },
+      { t: "Block common lateral channels first and allow the affected system to remain reachable during triage.", c: false },
+      { t: "Shut the machine off at once and begin restoration before collecting any short-lived runtime evidence.", c: false },
+      { t: "Reset the user account and remove the suspected message source before addressing the active host behavior.", c: false }
+    ],
+    exp: `Contain quickly (EDR isolation) to stop spread while preserving artifacts for scoping and root-cause analysis.`
+  },
+  // 6
+  {
+    domain: "Malware (Command-and-Control Beaconing)",
+    q: `Network telemetry shows periodic HTTPS connections every 60 seconds to a rare domain with small outbound bytes and larger inbound bytes. What is the MOST likely explanation?`,
+        options: [
+      { t: "Periodic low-volume check-ins to a rare destination are most consistent with remote tasking traffic.", c: true },
+      { t: "A newly installed management client performing expected cloud heartbeats from a known enterprise process.", c: false },
+      { t: "A consumer synchronization service polling for notifications from a widely used content platform.", c: false },
+      { t: "A software update component retrieving routine manifests from established vendor infrastructure.", c: false }
+    ],
+    exp: `Regular periodic connections with consistent sizes often indicate beaconing. Correlate to process, domain age, and reputation.`
+  },
+  // 7
+  {
+    domain: "Network Security (IDS Placement)",
+    q: `An IDS sensor only monitors the internet edge. Lateral movement between internal subnets is suspected but not detected. What change MOST improves detection?`,
+        options: [
+      { t: "Instrument internal transit points so east-west flows between sensitive segments are actually visible.", c: true },
+      { t: "Tune the perimeter signatures more aggressively while continuing to observe only north-south traffic.", c: false },
+      { t: "Rely on mirrored core links alone without designing coverage around the lateral paths of interest.", c: false },
+      { t: "Shift the problem almost entirely to host logs even though the movement is occurring across network segments.", c: false }
+    ],
+    exp: `Edge-only monitoring misses internal movement. East-west visibility via internal sensors/NDR is crucial.`
+  },
+  // 8
+  {
+    domain: "Malware (Living off the Land)",
+    q: `An alert shows powershell.exe spawning rundll32.exe with a long base64 command line. Why is this pattern concerning?`,
+        options: [
+      { t: "An encoded script launching a dual-use binary strongly suggests stealthy native-tool abuse requiring triage.", c: true },
+      { t: "A signed automation workflow invoking an approved library through standard administrative procedures.", c: false },
+      { t: "A packaging routine registering components during a normal application deployment sequence.", c: false },
+      { t: "A maintenance script handing compressed configuration data to a helper module during remote support.", c: false }
+    ],
+    exp: `PowerShell + encoded commands + LOLBins like rundll32 are common in malware tradecraft and warrant correlation and triage.`
+  },
+  // 9
+  {
+    domain: "Network Security (VPN vs ZTNA)",
+    q: `A company wants to reduce broad network access granted by VPN and move toward per-app access with continuous checks. Which solution BEST fits?`,
+        options: [
+      { t: "Move users behind an identity-aware broker that exposes only approved applications after ongoing posture checks.", c: true },
+      { t: "Keep tunnel-based connectivity but reduce reachable subnets through narrower routing and access lists.", c: false },
+      { t: "Use an always-on tunnel with repeated authentication prompts while preserving routed internal connectivity.", c: false },
+      { t: "Publish only selected front-end ranges through the tunnel rather than exposing the entire enterprise address space.", c: false }
+    ],
+    exp: `ZTNA is designed for per-app access and continuous verification, avoiding the “network-level trust” of traditional VPNs.`
+  },
+  // 10
+  {
+    domain: "Malware (Trojan vs Worm)",
+    q: `A malicious program disguises itself as legitimate software and requires a user to run it, then installs a backdoor. What malware type BEST matches?`,
+        options: [
+      { t: "Trojan horse delivering secondary access after the victim launches what appears to be a normal program.", c: true },
+      { t: "Worm that automatically propagates between systems through reachable services without depending on user launch.", c: false },
+      { t: "Dropper whose main role is to unpack or install another stage rather than masquerade as something benign.", c: false },
+      { t: "Backdoor whose defining trait is covert remote access rather than the deceptive delivery method.", c: false }
+    ],
+    exp: `Trojans rely on deception and user execution; worms are self-propagating. Trojans commonly drop backdoors.`
+  },
+  // 11
+  {
+    domain: "Network Security (DDoS Mitigation)",
+    q: `A public web service is hit with a volumetric DDoS attack saturating bandwidth. Which mitigation is MOST effective at scale?`,
+        options: [
+      { t: "Offload the flood to upstream scrubbing or distribution providers that can absorb volume before your circuit fills.", c: true },
+      { t: "Tighten protections on the local web tier so the servers can better withstand request bursts at the host level.", c: false },
+      { t: "Scale out the application stack and cache layers so internal capacity grows with the inbound flood size.", c: false },
+      { t: "Filter apparent source regions and obvious signatures at the border while the circuit remains saturated.", c: false }
+    ],
+    exp: `Volumetric DDoS requires upstream mitigation (scrubbing/CDN/ISP) since local firewalls cannot handle saturated links.`
+  },
+  // 12
+  {
+    domain: "Malware (Fileless / Memory-Resident)",
+    q: `EDR shows suspicious PowerShell activity, but no malicious files are found on disk. The behavior persists across reboots via scheduled tasks. What is the BEST description?`,
+        options: [
+      { t: "Memory-resident abuse of native tooling with task-based persistence and minimal traditional file artifacts.", c: true },
+      { t: "Ordinary script-based persistence that still depends primarily on dropped executables stored on disk.", c: false },
+      { t: "Early-boot compromise that alters startup components before the operating system and services initialize.", c: false },
+      { t: "A pure credential theft case driven mainly by stolen logon scripts rather than resident execution logic.", c: false }
+    ],
+    exp: `Fileless activity can avoid disk artifacts. Persistence can still be established via scheduled tasks, registry run keys, WMI, etc.`
+  },
+  // 13
+  {
+    domain: "Network Security (Secure Protocols)",
+    q: `A legacy application uses Telnet and FTP for administration and file transfers. Security wants to reduce credential exposure. What is the BEST change?`,
+        options: [
+      { t: "Use encrypted administrative and transfer channels with modern authentication instead of cleartext management services.", c: true },
+      { t: "Keep the legacy protocols but wrap them with network isolation so credentials are only exposed on trusted paths.", c: false },
+      { t: "Replace the transfer mechanism only, leaving remote administration over the original plaintext service unchanged.", c: false },
+      { t: "Add stronger passwords to the existing services while continuing to send secrets over observable sessions.", c: false }
+    ],
+    exp: `SSH and SFTP/FTPS provide encrypted channels, preventing cleartext credential exposure typical of Telnet/FTP.`
+  },
+  // 14
+  {
+    domain: "Malware (Botnet Indicators)",
+    q: `Multiple endpoints begin making outbound connections to many random IPs on uncommon ports, and the patterns are similar across hosts. What is the MOST likely concern?`,
+        options: [
+      { t: "Coordinated external tasking across many hosts, likely from centrally controlled malicious infrastructure.", c: true },
+      { t: "Normal peer-to-peer collaboration traffic generated by a newly approved communications platform.", c: false },
+      { t: "Network discovery by an internal inventory tool contacting a wide range of addresses on uncommon ports.", c: false },
+      { t: "Misconfigured software updates causing many endpoints to seek content from rotating third-party mirrors.", c: false }
+    ],
+    exp: `Coordinated similar outbound patterns across many hosts can indicate botnet C2 or scanning behavior. Validate with endpoint telemetry.`
+  },
+  // 15
+  {
+    domain: "Network Security (802.1X / NAC)",
+    q: `An organization wants to prevent unknown devices from connecting to internal wired networks and to apply dynamic VLAN placement. Which control BEST fits?`,
+        options: [
+      { t: "Require identity-driven admission control at the edge and assign access dynamically based on policy results.", c: true },
+      { t: "Lock access ports to remembered hardware addresses and manually place compliant devices into VLANs.", c: false },
+      { t: "Enforce stronger switch port policies while relying on static segment assignment for authorized endpoints.", c: false },
+      { t: "Use DHCP reservations and directory groups to decide where devices should live after they already connect.", c: false }
+    ],
+    exp: `802.1X with RADIUS is standard for port-based access control and dynamic VLAN assignment based on identity/posture.`
+  },
+  // 16
+  {
+    domain: "Malware (Rootkit Risk)",
+    q: `A compromised host shows suspicious kernel-level drivers and security tools fail to enumerate certain processes. What is the MOST likely malware category?`,
+        options: [
+      { t: "Rootkit using privileged stealth mechanisms to hide activity from ordinary operating system and security views.", c: true },
+      { t: "Boot sector malware focused on pre-OS startup compromise rather than runtime concealment of processes.", c: false },
+      { t: "Spyware centered on user data capture without needing deep kernel manipulation to remain hidden.", c: false },
+      { t: "Ransomware that disrupts availability but does not primarily depend on invisible kernel-level presence.", c: false }
+    ],
+    exp: `Rootkits often operate at kernel level and hide artifacts, interfering with normal enumeration and security tools.`
+  },
+  // 17
+  {
+    domain: "Network Security (WAF vs IDS)",
+    q: `A web application is targeted by injection attempts. The security team wants a control that can enforce HTTP-level rules and block malicious requests. What is the BEST fit?`,
+        options: [
+      { t: "Deploy an inline control that understands web requests well enough to enforce and block application-layer abuse.", c: true },
+      { t: "Place a passive detector near the web tier so suspicious patterns are alerted on but not actively stopped.", c: false },
+      { t: "Use a network gateway that filters hosts and ports even though the logic does not parse application semantics deeply.", c: false },
+      { t: "Rely on endpoint protection at the server so dangerous input is handled after it already reaches the application.", c: false }
+    ],
+    exp: `A WAF is designed to inspect HTTP/S requests and block application-layer attacks like injection.`
+  },
+  // 18
+  {
+    domain: "Malware (Phishing Delivery)",
+    q: `Users report an email urging them to “view invoice” with a macro-enabled document attachment. What is the BEST preventive control combination?`,
+        options: [
+      { t: "Layer message filtering, detonation, macro hardening, and user skepticism to reduce initial execution risk.", c: true },
+      { t: "Depend mainly on awareness training and warning banners while allowing active content to run when requested.", c: false },
+      { t: "Block executable attachments but permit office documents with embedded code from external senders.", c: false },
+      { t: "Quarantine suspicious mail after delivery based on endpoint alerts rather than stopping it earlier in the chain.", c: false }
+    ],
+    exp: `Layered controls: secure email gateway, sandboxing, macro hardening, and training reduce phishing-to-malware execution.`
+  },
+  // 19
+  {
+    domain: "Network Security (DMZ)",
+    q: `A company hosts a public web server and wants to reduce the risk of attackers pivoting to internal networks if it is compromised. Which architecture BEST supports this?`,
+        options: [
+      { t: "Expose the public-facing workload from an isolated buffer zone with tightly mediated paths inward.", c: true },
+      { t: "Keep the workload on the internal network and depend on host controls to stop pivoting after compromise.", c: false },
+      { t: "Place the server behind the same trust boundary as application databases to simplify east-west communication.", c: false },
+      { t: "Provide direct routed reachability to selected internal segments so support teams can administer it more easily.", c: false }
+    ],
+    exp: `A DMZ isolates exposed services and limits pivot paths into internal networks through strict firewall segmentation.`
+  },
+  // 20
+  {
+    domain: "Malware (IOC vs Behavior)",
+    q: `A SOC blocks known malicious hashes, but attackers recompile malware frequently and bypass hash blocks. What detection approach BEST increases resilience?`,
+        options: [
+      { t: "Prioritize execution patterns, persistence methods, and communication behaviors over brittle static fingerprints.", c: true },
+      { t: "Lean mostly on user and entity baselining to catch outliers without anchoring detections to attacker tradecraft.", c: false },
+      { t: "Expand static blocks continuously so repacked samples and fresh infrastructure are covered as they appear.", c: false },
+      { t: "Focus on reputation and rare destinations, which helps some cases but misses local execution and persistence signals.", c: false }
+    ],
+    exp: `Behavior/TTP-based detections are harder to evade than static IOCs like hashes, which are brittle against polymorphism.`
+  },
+  // 21
+  {
+    domain: "Network Security (TLS Inspection Tradeoffs)",
+    q: `Security wants to inspect encrypted outbound traffic for malware, but legal/privacy teams are concerned. What is the BEST balanced approach?`,
+        options: [
+      { t: "Decrypt selectively under explicit governance, defined exceptions, and protected handling of revealed content.", c: true },
+      { t: "Inspect nearly everything centrally so security teams gain maximum visibility into outbound encrypted sessions.", c: false },
+      { t: "Avoid decryption entirely and depend on metadata-only analytics to stay clear of privacy concerns.", c: false },
+      { t: "Apply category-based decryption broadly first and document exceptions later once issues are reported.", c: false }
+    ],
+    exp: `Selective inspection with governance, transparency, and strong key management balances security outcomes with privacy/regulatory needs.`
+  },
+  // 22
+  {
+    domain: "Malware (Lateral Movement Tools)",
+    q: `EDR shows an endpoint running PsExec-like behavior to create a service on remote hosts and execute a binary. What is the MOST likely attacker goal?`,
+        options: [
+      { t: "Use one compromised foothold to execute remotely on peers and widen operational reach across the environment.", c: true },
+      { t: "Establish long-term startup persistence on each targeted machine through newly installed background services.", c: false },
+      { t: "Inventory remote systems and enumerate service states without intending to launch additional code.", c: false },
+      { t: "Stage files centrally for later collection rather than using service creation for active expansion.", c: false }
+    ],
+    exp: `Remote service creation/execution is a classic lateral movement technique to spread tooling or deploy malware.`
+  },
+  // 23
+  {
+    domain: "Network Security (Port Security vs NAC)",
+    q: `A switch is configured with basic port security, but attackers still connect unauthorized devices by spoofing MAC addresses. What upgrade BEST mitigates this?`,
+        options: [
+      { t: "Authenticate endpoints with stronger machine identity at the edge instead of trusting a changeable address claim.", c: true },
+      { t: "Tighten remembered-address enforcement and violation actions so spoofed hardware identities are rejected faster.", c: false },
+      { t: "Improve segmentation and disable unused jacks while leaving device identity based on observed addresses.", c: false },
+      { t: "Rely on DHCP snooping and address inspection alone to infer whether the connected system is authorized.", c: false }
+    ],
+    exp: `MAC spoofing defeats MAC-based controls; 802.1X with certs/posture provides stronger identity and access enforcement.`
+  },
+  // 24
+  {
+    domain: "Malware (Sandboxing Limits)",
+    q: `A suspicious file detonates cleanly in a sandbox, but later behaves maliciously on a real endpoint. Why might this happen?`,
+        options: [
+      { t: "The sample may wait for human-like conditions or detect analysis artifacts before revealing its real behavior.", c: true },
+      { t: "The binary is harmless unless it receives a later update, so dynamic analysis is not useful during first detonation.", c: false },
+      { t: "Only command-line variations can unlock the payload, meaning environmental awareness is not part of the problem.", c: false },
+      { t: "A clean detonation usually proves the file is benign, with later malicious activity pointing to a separate cause.", c: false }
+    ],
+    exp: `Evasion techniques can detect virtual environments, delay execution, or require user interaction, causing false negatives in sandboxes.`
+  },
+  // 25
+  {
+    domain: "Network Security (Least Privilege Services)",
+    q: `A service account has domain admin rights “for convenience.” A malware infection steals the credentials and compromises domain controllers. What control MOST reduces impact?`,
+        options: [
+      { t: "Constrain service identities to only required actions and tightly limit where and how those credentials can be used.", c: true },
+      { t: "Rotate the secret frequently and store it safely even if the account continues holding broad administrative rights.", c: false },
+      { t: "Isolate directory infrastructure and monitor sign-ins while leaving the overpowered account design unchanged.", c: false },
+      { t: "Reduce ordinary user privileges first because workstation accounts are usually the primary route to directory takeover.", c: false }
+    ],
+    exp: `Over-privileged service accounts are high-risk. Least privilege and constrained usage reduce blast radius if credentials are stolen.`
+  },
+  // 26
+  {
+    domain: "Malware (Keylogger Indicators)",
+    q: `A user reports random authentication failures. EDR shows a new unsigned DLL injected into browser processes and frequent outbound connections to a low-reputation domain. What is the MOST likely malware function?`,
+        options: [
+      { t: "The intrusion is likely harvesting browser-entered secrets and sending them to an external operator.", c: true },
+      { t: "The failures are most likely caused by users mistyping passwords during a temporary directory synchronization issue.", c: false },
+      { t: "The outbound traffic mainly indicates software telemetry, while the injected module is probably a browser extension.", c: false },
+      { t: "The activity points chiefly to denial of service against the authentication stack rather than theft of submitted secrets.", c: false }
+    ],
+    exp: `Browser injection + outbound C2 is consistent with credential theft (keylogging/form grabbing) and account takeover attempts.`
+  },
+  // 27
+  {
+    domain: "Network Security (Secure Wireless)",
+    q: `A company wants stronger Wi-Fi security than WPA2-PSK and needs per-user authentication with central control. Which solution BEST fits?`,
+        options: [
+      { t: "Use enterprise wireless access with centralized authentication tied to individual identities.", c: true },
+      { t: "Adopt a stronger shared passphrase model that resists guessing while all users still rely on one secret.", c: false },
+      { t: "Present a login page after association so users identify themselves even though access is not enforced at the link layer.", c: false },
+      { t: "Encrypt open guest access automatically without requiring each person to authenticate uniquely.", c: false }
+    ],
+    exp: `Enterprise Wi-Fi uses 802.1X/RADIUS for per-user auth and stronger control than shared PSKs.`
+  },
+  // 28
+  {
+    domain: "Malware (Worm Propagation)",
+    q: `A malware strain spreads rapidly across subnets without user interaction by exploiting a service vulnerability. What term BEST describes this behavior?`,
+        options: [
+      { t: "Autonomous self-spread by exploiting reachable services rather than waiting for a person to assist.", c: true },
+      { t: "A remote-control network pushing commands to compromised hosts, which explains coordination but not self-spread.", c: false },
+      { t: "A disguised installer that requires someone to launch it before any further activity can occur.", c: false },
+      { t: "An encryption-focused outbreak using stolen credentials, where propagation is secondary to extortion objectives.", c: false }
+    ],
+    exp: `Worms self-propagate by exploiting network-accessible weaknesses without needing user interaction.`
+  },
+  // 29
+  {
+    domain: "Network Security (Egress Controls)",
+    q: `Security finds malware repeatedly reaching new C2 infrastructure because domains change often. What network control BEST limits outbound malware communications?`,
+        options: [
+      { t: "Constrain outbound paths with destination controls and mediated name resolution so new command channels fail more often.", c: true },
+      { t: "Keep expanding deny lists for newly discovered destinations and addresses as threat intelligence catches up.", c: false },
+      { t: "Centralize egress for visibility but continue permitting most encrypted outbound sessions to any destination.", c: false },
+      { t: "Rely mainly on endpoint blocking because network controls are less useful once attackers rotate infrastructure quickly.", c: false }
+    ],
+    exp: `Outbound controls (egress filtering, DNS security, proxies) reduce C2 success and provide visibility for detection and containment.`
+  },
+  // 30
+  {
+    domain: "Malware Response (Eradication vs Recovery)",
+    q: `After containment, the IR team wants to ensure malware is fully removed and access is not re-established. What is the BEST next step?`,
+        options: [
+      { t: "Remove persistence, revoke abused access, fix the entry path, and verify the environment before returning to normal.", c: true },
+      { t: "Restore affected systems from backup first and investigate any remaining footholds after operations resume.", c: false },
+      { t: "Maintain containment boundaries while delaying cleanup steps until business services have fully recovered.", c: false },
+      { t: "Reimage only the visibly affected host and treat unchanged credentials or access paths as separate later work.", c: false }
+    ],
+    exp: `Eradication includes removing persistence, fixing root cause, credential resets, patching, and validating via monitoring and retesting.`
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+
+let questions = [];
+let idx = 0;
+let score = 0;
+let correct = 0;
+let incorrect = 0;
+let answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+
+
+
+
+
+
+
+
+
+function padNBSP(optionText, targetLength){
+  let t = (optionText || "").trim();
+  if(!t.endsWith(".")) t += ".";
+  while(t.length < targetLength){
+    t += "\u00A0";
+  }
+  return t;
+}
+
+function prepQuestions(){
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const base = q.options.map(o => {
+      let s = (o.t || "").trim();
+      if(!s.endsWith(".")) s += ".";
+      return {...o, t: s};
+    });
+    const targetLen = Math.max(...base.map(o => o.t.length));
+    const eq = base.map(o => ({...o, t: padNBSP(o.t, targetLen)}));
+    const shuffledOpts = shuffle(eq);
+    return {...q, options: shuffledOpts};
+  });
+}
+
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  const pct = (idx / questions.length) * 100;
+  barEl.style.width = `${pct}%`;
+}
+
+function lockOptions(lock=true){
+  const nodes = answersEl.querySelectorAll(".opt");
+  nodes.forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt";
+    div.role = "button";
+    div.tabIndex = 0;
+    div.setAttribute("aria-disabled","false");
+
+    const letter = document.createElement("div");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+
+    const text = document.createElement("div");
+    text.className = "opttext";
+    text.textContent = opt.t;
+
+    div.appendChild(letter);
+    div.appendChild(text);
+
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+
+    answersEl.appendChild(div);
+  });
+
+  explainText.textContent = item.exp;
+  setStats();
+}
+
+function choose(i){
+  if(answered) return;
+
+  const item = questions[idx];
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const picked = item.options[i];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(picked.c){
+    score += 1;
+    correct += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Nice—this best matches network security controls or malware behavior/response logic.</span>`;
+    }
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>Pick the option that best reduces exposure, improves detection, or matches malware tradecraft.</span>`;
+    }
+  }
+
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  setStats();
+  nextBtn.disabled = false;
+}
+
+function reveal(){
+  if(answered) return;
+  const item = questions[idx];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  nodes[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked){
+    feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Correct option highlighted—review the explanation for the “why.”</span>`;
+  }
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  nextBtn.disabled = false;
+  setStats();
+}
+
+function next(){
+  if(!answered) return;
+  idx += 1;
+  if(idx >= questions.length){
+    finish();
+    return;
+  }
+  render();
+}
+
+function finish(){
+  barEl.style.width = `100%`;
+  answersEl.innerHTML = "";
+  feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed all 30 questions.";
+  domainEl.textContent = "Domain: Completed";
+  explainText.textContent = "";
+  explainBox.open = false;
+
+  nextBtn.disabled = true;
+  revealBtn.disabled = true;
+
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+
+function reset(){
+  idx = 0;
+  score = 0;
+  correct = 0;
+  incorrect = 0;
+  prepQuestions();
+  render();
+}
+
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+
+prepQuestions();
+render();
+</script>
+</body>
+</html>

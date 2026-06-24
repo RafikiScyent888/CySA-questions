@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CySA+ Hard Quiz — Threat Intelligence & Threat Gathering (30Q)</title>
+  <style>
+    :root{
+      --bg:#071a2b;
+      --text:#e9f2ff;
+      --muted:#b7c8e6;
+      --accent:#4aa3ff;
+      --good:#44d07a;
+      --bad:#ff5a6a;
+      --warn:#ffcc66;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 800px at 20% 10%, #0c2d4d 0%, var(--bg) 55%, #04101c 100%);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{max-width: 980px; margin: 28px auto; padding: 0 16px 36px;}
+    header{
+      background: linear-gradient(135deg, rgba(74,163,255,.18), rgba(68,208,122,.10));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px 18px 14px;
+    }
+    h1{margin:0 0 6px; font-size: 20px; letter-spacing:.2px;}
+    .sub{margin:0 0 12px; color:var(--muted); font-size: 13px;}
+    .bar{
+      height: 10px; background: rgba(255,255,255,.08); border-radius: 999px; overflow:hidden;
+      border:1px solid var(--border);
+    }
+    .bar > div{
+      height:100%; width:0%;
+      background: linear-gradient(90deg, var(--accent), #7bd7ff);
+      transition: width .35s ease;
+    }
+    .meta{display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; align-items:center; justify-content:space-between;}
+    .pillrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    .pill{
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color:var(--muted);
+    }
+    .pill strong{color:var(--text); font-weight:700;}
+    .btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(74,163,255,.22), rgba(74,163,255,.10));
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 650;
+      cursor:pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
+      transition: transform .06s ease, filter .2s ease, opacity .2s ease;
+      user-select:none;
+    }
+    .btn:hover{filter:brightness(1.08)}
+    .btn:active{transform: translateY(1px)}
+    .btn:disabled{opacity:.5; cursor:not-allowed;}
+    .btn.secondary{background: rgba(255,255,255,.06);}
+
+    .grid{margin-top: 16px; display:grid; grid-template-columns: 1fr; gap: 14px;}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .top{
+      padding: 14px 16px 12px;
+      background: linear-gradient(180deg, rgba(11,36,59,.75), rgba(10,31,51,.35));
+      border-bottom:1px solid var(--border);
+    }
+    .qline{display:flex; gap:10px; align-items:flex-start; justify-content:space-between;}
+    .qnum{font-family:var(--mono); font-size: 12px; color: var(--muted); padding-top: 2px; min-width: 84px;}
+    .qtext{font-size: 15px; margin:0; flex:1;}
+    .tag{
+      font-family:var(--mono);
+      font-size: 11px;
+      color: #bfe1ff;
+      background: rgba(74,163,255,.12);
+      border: 1px solid rgba(74,163,255,.25);
+      padding: 5px 8px;
+      border-radius: 999px;
+      white-space:nowrap;
+      margin-left: 10px;
+    }
+    .choices{padding: 10px 16px 14px; display:grid; gap: 10px;}
+    .choice{
+      border:1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+      padding: 10px 12px;
+      cursor:pointer;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      transition: transform .06s ease, filter .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .choice:hover{filter:brightness(1.06)}
+    .choice:active{transform: translateY(1px)}
+    .choice input{display:none}
+    .letter{
+      font-family:var(--mono);
+      font-weight:800;
+      width: 24px; height: 24px;
+      border-radius: 9px;
+      display:grid; place-items:center;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+    .ctext{
+      color: var(--text);
+      font-size: 14px;
+      font-family: var(--mono);
+      white-space: pre-wrap;
+    }
+
+    .feedback{
+      margin: 0 16px 14px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      padding: 10px 12px;
+      display:none;
+    }
+    .feedback.show{display:block;}
+    .feedback .status{font-weight:800; margin:0 0 6px; display:flex; align-items:center; gap:8px;}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block; background: var(--warn); box-shadow: 0 0 0 3px rgba(255,204,102,.14);}
+    .dot.good{background:var(--good); box-shadow:0 0 0 3px rgba(68,208,122,.14);}
+    .dot.bad{background:var(--bad); box-shadow:0 0 0 3px rgba(255,90,106,.14);}
+    .feedback p{margin:0; color:var(--muted); font-size: 13px; font-family: var(--sans);}
+    details{margin-top: 10px; border-top:1px dashed rgba(255,255,255,.14); padding-top: 10px;}
+    summary{cursor:pointer; color:#cfe6ff; font-weight:700; user-select:none;}
+    summary:hover{filter:brightness(1.08)}
+    .explain{margin: 8px 0 0; color: var(--muted); font-size: 13px; font-family: var(--sans);}
+
+    .nav{display:flex; gap:10px; justify-content:flex-end; padding: 14px 16px; border-top:1px solid var(--border); background: rgba(0,0,0,.10);}
+    .choice.correct{border-color: rgba(68,208,122,.6); background: rgba(68,208,122,.12);}
+    .choice.incorrect{border-color: rgba(255,90,106,.6); background: rgba(255,90,106,.10);}
+
+    .finish{padding: 16px; display:none;}
+    .finish.show{display:block;}
+    .finish h2{margin:0 0 8px; font-size: 18px;}
+    .finish p{margin:0; color:var(--muted)}
+    .small{font-size: 12px; color: var(--muted); margin-top: 8px; font-family: var(--mono);}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>CompTIA CySA+ (Hard) — Threat Intelligence & Threat Gathering</h1>
+      <p class="sub">30 scenario-heavy “word salad” questions • shuffled per load • equal-length answers (NBSP padded + hardened)</p>
+      <div class="bar" aria-label="Progress"><div id="progressFill"></div></div>
+      <div class="meta">
+        <div class="pillrow">
+          <div class="pill"><strong id="qCount">Q 1</strong> / 30</div>
+          <div class="pill">Score: <strong id="score">0</strong></div>
+          <div class="pill">Answered: <strong id="answered">0</strong></div>
+        </div>
+        <div class="pillrow">
+          <button class="btn secondary" id="restartBtn" type="button">Restart</button>
+          <button class="btn" id="nextBtn" type="button" disabled>Next</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card" aria-live="polite">
+        <div class="top">
+          <div class="qline">
+            <div class="qnum" id="qNum">Q01</div>
+            <p class="qtext" id="qText">Loading…</p>
+            <div class="tag" id="qTag">TI</div>
+          </div>
+        </div>
+
+        <div class="choices" id="choices"></div>
+
+        <div class="feedback" id="feedback">
+          <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">—</span></div>
+          <p id="whyText">—</p>
+          <details>
+            <summary>Show explanation</summary>
+            <p class="explain" id="explainText">—</p>
+          </details>
+        </div>
+
+        <div class="finish" id="finish">
+          <h2>Done.</h2>
+          <p id="finalLine"></p>
+          <div class="small" id="finalMeta"></div>
+        </div>
+
+        <div class="nav">
+          <button class="btn secondary" id="revealBtn" type="button" disabled>Reveal correct</button>
+          <button class="btn" id="nextBtnBottom" type="button" disabled>Next</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // ===== Helpers =====
+  const shuffle = (arr) => {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+
+  // Normalize options to a consistent "visual length":
+  // 1) replace multiple spaces with single spaces
+  // 2) trim
+  // 3) clamp very long options by rewriting (soft clamp) is not done here since you asked equal length;
+  //    we instead pad all options to match the longest option per question.
+  const normalize = (s) => String(s).replace(/\s+/g, " ").trim();
+
+  // Use NBSP to preserve alignment in monospace while matching the saved exam template.
+  const FIGURE_SPACE = "\u00A0";
+  const padToMax = (opts) => {
+    const clean = opts.map(normalize);
+    const maxLen = Math.max(...clean.map(x => x.length));
+    return clean.map(x => x + FIGURE_SPACE.repeat(Math.max(0, maxLen - x.length)));
+  };
+
+  const letters = ["A","B","C","D"];
+
+  // ===== Question bank (same 30 as prior) =====
+  const questions = [
+    {
+      tag:"TI",
+      q:"A SOC lead wants a daily feed that summarizes emerging adversary activity with minimal false leads. The team also needs predictable sourcing and editorial accountability. Which source type best fits this requirement?",
+      options:[
+        "Subscription reporting that curates findings, cites sources, and publishes on a reliable review cycle.",
+        "Volunteer chatter streams that surface fresh claims but vary widely in validation and editorial control.",
+        "Closed-forum scraping that captures raw discussion yet requires extensive analyst vetting before use.",
+        "Internal case summaries that are accurate locally but too narrow to represent the wider threat landscape."
+      ],
+      answer:"Subscription reporting that curates findings, cites sources, and publishes on a reliable review cycle.",
+      why:"A reviewed commercial-style product gives consistency, sourcing, and lower noise than raw community collection.",
+      explain:"For daily executive-ready threat awareness, a curated finished-intelligence product is usually the best fit because it balances timeliness with validation and accountability."
+    },
+    {
+      tag:"TG",
+      q:"An analyst sees a spike in suspicious domains that look like brand impersonation. The team must identify registrant patterns, hosting overlap, and passive DNS history without actively touching attacker infrastructure. What is the best approach?",
+      options:[
+        "Correlate registration records, passive resolution history, and certificate artifacts to map related infrastructure quietly.",
+        "Perform service enumeration and banner collection across the domains to infer campaign overlap from exposed ports.",
+        "Transmit controlled messages to the domains so delivery behavior can reveal whether the phishing workflow is active.",
+        "File takedown requests first, then reconstruct the infrastructure from provider responses after the domains disappear."
+      ],
+      answer:"Correlate registration records, passive resolution history, and certificate artifacts to map related infrastructure quietly.",
+      why:"Passive infrastructure correlation gives linkage without tipping off the operator or introducing collection risk.",
+      explain:"When the goal is infrastructure mapping without interaction, passive DNS, WHOIS history, and certificate transparency are safer and more defensible than active probing."
+    },
+    {
+      tag:"TI",
+      q:"Leadership asks why your intel report includes a confident attribution to a named APT group. Your evidence is primarily IP reuse and shared tooling indicators. What is the most defensible revision?",
+      options:[
+        "Lower attribution confidence and center the report on observed tradecraft, infrastructure overlap, and collection limits.",
+        "Retain the actor label but broaden the list of candidate groups so the uncertainty appears more fully represented.",
+        "Keep the attribution as written and simplify caveats so decision-makers receive a cleaner, more direct narrative.",
+        "Replace the actor name with a malware family label because family identification is usually enough to imply sponsorship."
+      ],
+      answer:"Lower attribution confidence and center the report on observed tradecraft, infrastructure overlap, and collection limits.",
+      why:"The evidence supports behaviors and overlap better than a firm actor label, so the report should reflect that.",
+      explain:"Attribution is easy to overstate. Reused infrastructure and shared tooling can indicate overlap, but they rarely justify high-confidence naming on their own."
+    },
+    {
+      tag:"TG",
+      q:"You need to collect IOCs from incident artifacts but must avoid contaminating evidence while still enabling rapid detection. Which workflow best supports both needs?",
+      options:[
+        "Preserve originals, derive indicators from working copies, and publish normalized findings with traceable provenance.",
+        "Upload the artifacts to a third-party analysis service first, then export the strongest matches into local controls.",
+        "Prioritize volatile artifacts exclusively and defer file-based review until after detections have been pushed broadly.",
+        "Convert the evidence set into screenshots for sharing so teams can review the artifacts without handling live files."
+      ],
+      answer:"Preserve originals, derive indicators from working copies, and publish normalized findings with traceable provenance.",
+      why:"That approach protects forensic integrity while still producing usable detection content quickly.",
+      explain:"Sound handling means keeping source evidence intact, working from controlled copies, and documenting where every IOC came from before operationalizing it."
+    },
+    {
+      tag:"TI",
+      q:"A feed provides thousands of IP indicators daily. Your environment generates alert storms and analyst fatigue. Which refinement best improves signal without losing coverage?",
+      options:[
+        "Weight indicators with local sightings, exposure context, and source confidence before routing them into detections.",
+        "Keep the full feed but raise alert thresholds so only the most repeated matches appear in analyst queues.",
+        "Restrict usage to internally observed indicators so outside intelligence cannot distort the environment’s baseline.",
+        "Translate each address into related domains and alert only on those because names tend to be more stable than hosts."
+      ],
+      answer:"Weight indicators with local sightings, exposure context, and source confidence before routing them into detections.",
+      why:"Context-driven scoring reduces noise while preserving the indicators most relevant to your environment.",
+      explain:"A large feed becomes useful only after environmental context is applied. Sightings, exposure, source quality, and asset criticality are key triage multipliers."
+    },
+    {
+      tag:"TI",
+      q:"A partner shares an IOC list via email. You must operationalize it quickly while preserving formatting and preventing ambiguity about indicator type. What is the best format to request?",
+      options:[
+        "A structured exchange format or strict schema file that labels each entry type and preserves source metadata.",
+        "A formatted spreadsheet tab that groups similar entries visually so analysts can infer the field type by section.",
+        "A PDF export with the list locked for editing so everyone receives the same static reference during ingestion.",
+        "A plain-text message body that keeps the transfer lightweight and lets the receiving team classify items manually."
+      ],
+      answer:"A structured exchange format or strict schema file that labels each entry type and preserves source metadata.",
+      why:"Explicit typing and provenance reduce ambiguity and make automated ingestion safer.",
+      explain:"STIX/TAXII is ideal, but even a rigid CSV schema works far better than ad hoc lists because it preserves indicator type, confidence, and source details."
+    },
+    {
+      tag:"TG",
+      q:"A junior analyst proposes using only hashes for threat hunting because they are precise and reduce false positives. What is the best response in a CySA+ context?",
+      options:[
+        "Use hashes as one signal, then add behavior-driven pivots so hunts survive repacking, renaming, and minor variants.",
+        "Favor hashes over process and network evidence because they stay more durable across malware campaigns over time.",
+        "Replace hash hunting with file-name monitoring since names better capture family-level variation than exact file fingerprints.",
+        "Limit hunts to reputation feeds because known-bad file identifiers are most effective when consumed from external vendors."
+      ],
+      answer:"Use hashes as one signal, then add behavior-driven pivots so hunts survive repacking, renaming, and minor variants.",
+      why:"Hashes are precise but fragile, so they work best as part of a broader hunting strategy.",
+      explain:"Hash matches are high confidence but easy for an adversary to evade through repacking or recompilation. Behavioral pivots make the hunt more resilient."
+    },
+    {
+      tag:"TI",
+      q:"Your intel team must brief executives on a ransomware campaign. The briefing needs decisions about backup investment and incident response readiness, not technical deep dives. Which intel product is most appropriate?",
+      options:[
+        "A business-focused assessment that frames operational risk, trend direction, and recommended resilience investments.",
+        "A defender package centered on blocklists, signatures, and quick-turn control changes for analyst implementation.",
+        "A campaign narrative describing the intrusion sequence, dwell time, and operator workflow inside victim networks.",
+        "A raw artifact bundle containing logs, malware notes, and unfiltered observations for later analytical refinement."
+      ],
+      answer:"A business-focused assessment that frames operational risk, trend direction, and recommended resilience investments.",
+      why:"Executives need strategic context tied to decisions, not technical execution detail.",
+      explain:"Strategic intelligence translates a campaign into business impact, risk posture, and investment choices such as backup maturity or response readiness."
+    },
+    {
+      tag:"TG",
+      q:"You suspect a threat actor is staging data for exfiltration using a cloud storage provider. You need to gather evidence while minimizing privacy risk and collecting only what is necessary. What is the best approach?",
+      options:[
+        "Start with access patterns and object metadata, then expand to content review only when authorization and scope require it.",
+        "Pull representative samples from every user workspace first so investigators can compare benign and suspicious file movement.",
+        "Suspend all sync activity and analyze cached endpoint copies because local artifacts are easier to review than provider logs.",
+        "Query only the provider’s threat dashboard because service-side alerts generally contain enough detail to establish misuse."
+      ],
+      answer:"Start with access patterns and object metadata, then expand to content review only when authorization and scope require it.",
+      why:"That respects data minimization while still establishing whether staging activity occurred.",
+      explain:"For cloud data investigations, begin with the least intrusive evidence—access logs, object activity, and sharing metadata—before examining contents."
+    },
+    {
+      tag:"TI",
+      q:"A threat feed includes confidence and severity fields, but your SOC sees many high-severity items with no local sightings. Which field should drive initial triage the most in your environment?",
+      options:[
+        "Environmental fit measured through local telemetry, exposed assets, and evidence that the threat intersects your stack.",
+        "Vendor severity because externally assigned impact ratings usually generalize well across different enterprise environments.",
+        "Source confidence because high-certainty reporting should enter response queues even before local applicability is confirmed.",
+        "Publication age because fresher reporting typically matters more than relevance when analysts must triage at speed."
+      ],
+      answer:"Environmental fit measured through local telemetry, exposed assets, and evidence that the threat intersects your stack.",
+      why:"Applicability to your environment determines whether an item deserves fast action.",
+      explain:"External severity can be useful, but your first question should be whether the threat is relevant to your assets, controls, and observed activity."
+    },
+    {
+      tag:"TG",
+      q:"An analyst wants to enrich an IP with geolocation to infer attacker identity. What is the most accurate guidance?",
+      options:[
+        "Treat location data as light context and lean more heavily on tradecraft, hosting patterns, and corroborating telemetry.",
+        "Use geolocation as the primary clue, then validate the conclusion with malware family overlap if available afterward.",
+        "Prioritize location over infrastructure history because registration and hosting data are easier for actors to manipulate.",
+        "Map the address to a region and align it with likely motive because geography often clarifies who is behind an intrusion."
+      ],
+      answer:"Treat location data as light context and lean more heavily on tradecraft, hosting patterns, and corroborating telemetry.",
+      why:"Geo data can be misleading, so it should support—not drive—analytical conclusions.",
+      explain:"Cloud relays, proxies, and compromised systems make IP geolocation weak attribution evidence. It is useful as context, not as a primary identifier."
+    },
+    {
+      tag:"TI",
+      q:"Your organization joins an ISAC. You want to consume indicator updates automatically and share sightings securely with peers. Which mechanism best supports this?",
+      options:[
+        "An authenticated sharing channel built for structured intel objects and automated collection-based exchange.",
+        "A scheduled mailing list with attached reports so each participant receives the same curated package for review.",
+        "A private document portal where members can upload spreadsheets and download partner submissions on demand.",
+        "A chat workspace with pinned indicator lists that analysts can copy into tools as campaigns evolve through the week."
+      ],
+      answer:"An authenticated sharing channel built for structured intel objects and automated collection-based exchange.",
+      why:"That points to standardized automated sharing rather than manual document distribution.",
+      explain:"STIX/TAXII exists specifically for machine-consumable threat intel exchange with authentication, collections, and normalized object structure."
+    },
+    {
+      tag:"TG",
+      q:"You are hunting for a campaign using a specific phishing kit. You have limited IOCs but strong behavioral patterns. Which hunting strategy is best?",
+      options:[
+        "Pivot on message traits, redirect behavior, and downstream execution activity instead of anchoring on single artifacts.",
+        "Focus on the few known domains first, then wait for fresh threat-feed additions before expanding the hunt further.",
+        "Search only endpoint malware events because phishing-kit activity usually culminates in a consistent dropped payload pattern.",
+        "Rely on mail reputation verdicts because kit-level hunts are most effective when delegated to secure email gateways alone."
+      ],
+      answer:"Pivot on message traits, redirect behavior, and downstream execution activity instead of anchoring on single artifacts.",
+      why:"Behavioral patterns remain useful even when individual kit indicators churn quickly.",
+      explain:"When IOCs are scarce or short-lived, hunts should follow stable behaviors across email, web, and endpoint telemetry rather than exact artifacts."
+    },
+    {
+      tag:"TI",
+      q:"A report says “the actor commonly uses PowerShell” but your environment has PowerShell used legitimately. What is the best analytic refinement?",
+      options:[
+        "Convert the note into specific patterns such as suspicious launch context, encoded content, and unusual execution chains.",
+        "Baseline normal administrative use, then temporarily suppress all events that resemble scripting to cut investigative volume.",
+        "Create a high-priority alert for every script interpreter launch and tune exceptions only after incidents are confirmed.",
+        "Shift focus to outbound connections because network evidence is less ambiguous than command execution on user systems."
+      ],
+      answer:"Convert the note into specific patterns such as suspicious launch context, encoded content, and unusual execution chains.",
+      why:"Vague reporting becomes actionable only after it is translated into measurable conditions.",
+      explain:"“Uses PowerShell” is too broad. Stronger detections look at command-line features, parent-child relationships, logging artifacts, and execution context."
+    },
+    {
+      tag:"TG",
+      q:"A SOC wants to validate whether a suspicious domain is actively serving malware. You need low-risk collection that avoids interacting with the payload directly. What is best?",
+      options:[
+        "Review reputation, passive artifacts, and safe analysis metadata first, then escalate to isolated detonation if approved.",
+        "Access the site from a hardened internal workstation so analysts can compare the live experience with current proxy logs.",
+        "Distribute the domain to a limited pilot group and collect screenshots to determine whether the content is actually harmful.",
+        "Wait for endpoint protection to classify the site organically because direct validation can introduce avoidable legal risk."
+      ],
+      answer:"Review reputation, passive artifacts, and safe analysis metadata first, then escalate to isolated detonation if approved.",
+      why:"Passive review minimizes risk, and sandboxing should be controlled and authorized when needed.",
+      explain:"The safer workflow is to collect indirect evidence first—reputation, history, metadata, and redirects—before using an isolated sandbox."
+    },
+    {
+      tag:"TI",
+      q:"Your analyst writes an intel note with many IOCs but no stated confidence, sources, or assumptions. What is the most important improvement?",
+      options:[
+        "Add provenance, confidence, and validation context so recipients can judge trustworthiness before automating actions.",
+        "Group the entries by indicator type and count so the note reads as a more complete snapshot of adversary activity.",
+        "Rewrite the note into a shorter executive format because concise delivery reduces the chance of operational misuse.",
+        "Append a visual risk score for each entry so analysts can prioritize quickly without reviewing sourcing details."
+      ],
+      answer:"Add provenance, confidence, and validation context so recipients can judge trustworthiness before automating actions.",
+      why:"Without provenance and confidence, recipients cannot safely evaluate or operationalize the indicators.",
+      explain:"Good intelligence is not just a list of IOCs. Consumers need source quality, assumptions, and validation notes to understand how much trust to place in it."
+    },
+    {
+      tag:"TG",
+      q:"You ingest a community feed and notice many indicators are stale and no longer resolve. What is the best handling approach?",
+      options:[
+        "Apply aging logic with periodic validation so old entries decay gracefully while reused infrastructure still retains value.",
+        "Retain the full history indefinitely and move older entries into a lower-priority tier that continues to alert in background queues.",
+        "Split the feed into active and archived sets, then disable archived matches unless another provider republishes the same entry.",
+        "Keep only the most recent publication window since older community indicators rarely contribute meaningfully to new investigations."
+      ],
+      answer:"Apply aging logic with periodic validation so old entries decay gracefully while reused infrastructure still retains value.",
+      why:"Decay and revalidation preserve useful history without letting stale artifacts dominate detections.",
+      explain:"Indicators age out at different rates. TTLs, decay scoring, and periodic checks help you manage staleness without losing patterns of infrastructure reuse."
+    },
+    {
+      tag:"TI",
+      q:"A CISO asks for “intel that prevents attacks.” You must set expectations realistically. Which statement best frames how threat intel helps?",
+      options:[
+        "It sharpens prioritization, detection, and preparedness, reducing exposure even though it cannot guarantee prevention.",
+        "It blocks most hostile activity upstream when integrated with controls, making incidents far less likely to progress internally.",
+        "It raises adversary awareness enough that many operators change plans once they know the environment consumes outside reporting.",
+        "It closes the gap between patching and response by giving defenders earlier warning than vulnerability management alone can provide."
+      ],
+      answer:"It sharpens prioritization, detection, and preparedness, reducing exposure even though it cannot guarantee prevention.",
+      why:"Threat intelligence is a decision-support capability, not a standalone preventive control.",
+      explain:"Intel helps teams decide what matters, where to hunt, and which controls to tune. It lowers risk but does not eliminate the need for layered defenses."
+    },
+    {
+      tag:"TG",
+      q:"You need to collect threat data from endpoints but are constrained by limited storage and must avoid collecting excessive personal data. Which collection choice is best?",
+      options:[
+        "Capture security-focused process, authentication, and connection telemetry with scoped retention aligned to investigation needs.",
+        "Prioritize periodic full-memory snapshots because volatile data often reveals malicious activity with less personal context than disks.",
+        "Standardize on DNS and browser history because those datasets are compact and usually sufficient for most host-based investigations.",
+        "Collect all EDR event categories briefly, then downsample older data later if the storage budget becomes difficult to sustain."
+      ],
+      answer:"Capture security-focused process, authentication, and connection telemetry with scoped retention aligned to investigation needs.",
+      why:"Focused telemetry gives strong value while respecting storage and privacy constraints.",
+      explain:"Process creation, command lines, auth records, and network connections are high-value security events. They provide strong detection utility without defaulting to maximal collection."
+    },
+    {
+      tag:"TI",
+      q:"An intel vendor reports a campaign targeting a CVE in a product your org does not run. What is the best response?",
+      options:[
+        "Log the development for awareness, verify exposure assumptions, and focus immediate effort on risks tied to your actual stack.",
+        "Tune perimeter controls for the campaign anyway so related adversary infrastructure is constrained before priorities shift later.",
+        "Forward the report to vulnerability management for cataloging since adjacent products often share similar exploitation paths.",
+        "Use the report as a tabletop input rather than a response driver because nonresident technology can still inform resilience planning."
+      ],
+      answer:"Log the development for awareness, verify exposure assumptions, and focus immediate effort on risks tied to your actual stack.",
+      why:"Threat intel should be contextualized to real exposure before it drives urgent action.",
+      explain:"A campaign can matter strategically even if you are not directly exposed, but near-term response effort should follow applicable technologies and observed risk."
+    },
+    {
+      tag:"TG",
+      q:"You are asked to convert a narrative intel report into actionable detection content. What is the best first step?",
+      options:[
+        "Map the described behaviors to available data sources, then express them as measurable logic in your tooling.",
+        "Extract the embedded indicators and deploy them in monitoring mode so analysts can gather local evidence before tuning rules.",
+        "Summarize the report by tactic area so defenders can decide which platform owner should translate it into controls later.",
+        "Review the actor profile for consistency with prior campaigns because attribution alignment often determines detection value."
+      ],
+      answer:"Map the described behaviors to available data sources, then express them as measurable logic in your tooling.",
+      why:"Operationalization starts by connecting report claims to telemetry you actually collect.",
+      explain:"Strong detection engineering turns narrative into testable analytics by matching TTPs to data sources such as EDR, DNS, proxy, auth, or mail telemetry."
+    },
+    {
+      tag:"TI",
+      q:"A threat report includes a YARA rule and claims it detects the malware family reliably. What is the best validation step before wide deployment?",
+      options:[
+        "Exercise the rule against trusted benign and malicious sample sets in a controlled environment before broad rollout.",
+        "Pilot the rule on a small endpoint subset first, then compare alert volume with vendor expectations before changing logic.",
+        "Review the strings and conditions manually, since a well-written YARA rule usually signals its own operational readiness clearly.",
+        "Deploy the rule in audit mode on malware repositories first, then decide whether endpoint use is necessary afterward."
+      ],
+      answer:"Exercise the rule against trusted benign and malicious sample sets in a controlled environment before broad rollout.",
+      why:"Controlled validation is the clearest way to assess both false positives and coverage.",
+      explain:"Before broad deployment, test detection content against known-good and known-bad samples so you understand match behavior and tuning needs."
+    },
+    {
+      tag:"TG",
+      q:"You need OSINT on a vulnerability being exploited in the wild. The goal is to understand weaponization, exploitation preconditions, and observed targets. What is the best data to gather first?",
+      options:[
+        "Technical advisories, exploit analyses, and incident reporting that describe prerequisites, affected versions, and observed abuse.",
+        "Recent discussion threads that compare adjacent flaws because exploitation patterns often emerge across related product weaknesses.",
+        "Source code references and developer issue trackers that reveal how the bug was introduced and later corrected by maintainers.",
+        "Exploit framework modules and proof-of-concept summaries that show how researchers are packaging the issue for repeatable testing."
+      ],
+      answer:"Technical advisories, exploit analyses, and incident reporting that describe prerequisites, affected versions, and observed abuse.",
+      why:"Those sources best answer exposure, weaponization, and real-world exploitation questions quickly.",
+      explain:"For an actively exploited flaw, start with authoritative descriptions of affected versions, attack preconditions, exploitation flow, and observed targeting."
+    },
+    {
+      tag:"TI",
+      q:"You are producing an intel report for defenders. Which structure best improves actionability and reduces misinterpretation?",
+      options:[
+        "A concise summary followed by scope, confidence, mapped behaviors, recommended actions, and source-backed artifacts.",
+        "An actor overview with narrative detail first, then appendices containing references that responders can review if needed.",
+        "A control-oriented layout that starts with blocklists and detections, then adds context only for items that triggered locally.",
+        "A campaign chronology that emphasizes victim timelines, then closes with a brief list of notable observables for defenders."
+      ],
+      answer:"A concise summary followed by scope, confidence, mapped behaviors, recommended actions, and source-backed artifacts.",
+      why:"That structure gives responders context, confidence, and concrete actions without forcing guesswork.",
+      explain:"Actionable defender reporting needs a clear summary, scope, confidence, mapped TTPs, defensive recommendations, and provenance for any included indicators."
+    },
+    {
+      tag:"TG",
+      q:"A junior analyst wants to scrape a forum for credentials to see if your organization’s emails appear. Legal requires minimizing risk and ensuring authorization. What is the best approach?",
+      options:[
+        "Use approved monitoring providers and legal-vetted workflows that handle exposed-data review under controlled procedures.",
+        "Coordinate with counsel, then collect only enough forum data to verify whether the organization appears in recent credential posts.",
+        "Rely on open breach-notification services first and escalate to deeper collection only if multiple sources indicate active exposure.",
+        "Task a separate red-team-style environment to observe the forum indirectly so production staff never interact with the source."
+      ],
+      answer:"Use approved monitoring providers and legal-vetted workflows that handle exposed-data review under controlled procedures.",
+      why:"Authorized, approved collection is the safest and most defensible path for breach-exposure monitoring.",
+      explain:"Threat gathering around leaked credentials should use sanctioned sources and legal guidance rather than direct risky interaction with criminal marketplaces or forums."
+    },
+    {
+      tag:"TI",
+      q:"Your SOC receives an IOC that later proves benign. Stakeholders ask how to reduce this recurring issue. What is the best process improvement?",
+      options:[
+        "Introduce validation gates with corroborating telemetry, quality scoring, and feedback loops before broad enforcement.",
+        "Shift new indicators into monitor-only mode first, then promote them after analysts review enough environmental matches.",
+        "Require multiple independent sources for every entry so low-quality submissions are filtered out before ingestion begins.",
+        "Separate blocking indicators from hunting indicators so uncertain entries can still inform analysts without immediate control changes."
+      ],
+      answer:"Introduce validation gates with corroborating telemetry, quality scoring, and feedback loops before broad enforcement.",
+      why:"A validation pipeline systematically improves quality and reduces repeated benign hits.",
+      explain:"The goal is not simply to delay action; it is to improve decision quality by checking source confidence, corroborating with telemetry, and feeding results back into the intake process."
+    },
+    {
+      tag:"TG",
+      q:"A threat report references MITRE ATT&CK techniques but your detection platform uses different taxonomy. What is the best way to use the report effectively?",
+      options:[
+        "Translate the described behaviors into your platform’s fields and logic by mapping framework concepts to local telemetry.",
+        "Adopt the framework labels within your content library first, then backfill field mappings once analysts confirm the hunt’s value.",
+        "Use the techniques to prioritize which data sources matter most, then create detections in the platform’s native schema.",
+        "Anchor the report to the closest internal use cases so platform owners can preserve their existing content without major rewrites."
+      ],
+      answer:"Translate the described behaviors into your platform’s fields and logic by mapping framework concepts to local telemetry.",
+      why:"Frameworks describe behavior; your tooling still needs concrete field mappings and platform-native logic.",
+      explain:"ATT&CK is a translation layer for behavior, not an implementation language. The practical step is to map techniques to the telemetry and fields your platform understands."
+    },
+    {
+      tag:"TI",
+      q:"An intel report suggests the adversary uses “living off the land” to reduce malware footprint. Which defensive recommendation aligns best with that insight?",
+      options:[
+        "Increase scrutiny on administrative utilities through baselines, parent-child analysis, and anomaly-focused command monitoring.",
+        "Expand script-control policy and application allowlisting so abuse of built-in tools becomes harder to blend into normal use.",
+        "Tune endpoint analytics around execution context and privileged tasking rather than relying on family-based file detections.",
+        "Review remote administration workflows so authorized maintenance patterns can be separated more cleanly from suspicious activity."
+      ],
+      answer:"Increase scrutiny on administrative utilities through baselines, parent-child analysis, and anomaly-focused command monitoring.",
+      why:"LoTL abuse is best detected through behavior around legitimate tools, not classic malware signatures.",
+      explain:"Living-off-the-land activity often uses tools already present on systems. Monitoring execution context, parent-child chains, and abnormal command use is key."
+    },
+    {
+      tag:"TG",
+      q:"You must gather threat intel on a suspected insider data theft case. The priority is legal defensibility and least-privilege access to sensitive content. Which action is best first?",
+      options:[
+        "Collect access, audit, and authentication records under chain-of-custody controls before expanding into content review.",
+        "Coordinate with HR and legal, then preserve the user’s active sessions so investigators can reconstruct near-term actions accurately.",
+        "Snapshot the relevant collaboration spaces first because sharing activity often reveals intent faster than system-level telemetry.",
+        "Query DLP alerts and transfer logs first, then decide whether endpoint or storage-side collection is warranted afterward."
+      ],
+      answer:"Collect access, audit, and authentication records under chain-of-custody controls before expanding into content review.",
+      why:"Defensible logs and audit trails provide a narrow, lawful starting point before touching sensitive content.",
+      explain:"In insider cases, begin with the least intrusive, most defensible evidence such as file access logs, authentication records, and audit trails."
+    },
+    {
+      tag:"TI",
+      q:"A threat feed offers “contextual enrichment” but your analysts still struggle to decide what to do. What missing element most often turns enrichment into action?",
+      options:[
+        "Response playbooks that tie confidence and relevance to decisions such as monitor, hunt, patch, block, or escalate.",
+        "Tighter prioritization labels so analysts can sort enriched entries faster before choosing an operational path themselves.",
+        "More examples of prior incidents so teams can compare current enriched items with historical campaigns before acting.",
+        "A single environmental risk score that combines exposure and source quality into one triage-friendly value for each item."
+      ],
+      answer:"Response playbooks that tie confidence and relevance to decisions such as monitor, hunt, patch, block, or escalate.",
+      why:"Enrichment becomes useful when it is connected to explicit decision paths and thresholds.",
+      explain:"Context alone does not tell analysts what to do. Playbooks bridge that gap by linking intelligence categories to concrete operational actions."
+    }
+  ];
+
+  // ===== DOM =====
+  const qNumEl = document.getElementById("qNum");
+  const qTextEl = document.getElementById("qText");
+  const qTagEl = document.getElementById("qTag");
+  const choicesEl = document.getElementById("choices");
+  const feedbackEl = document.getElementById("feedback");
+  const statusDot = document.getElementById("statusDot");
+  const statusText = document.getElementById("statusText");
+  const whyText = document.getElementById("whyText");
+  const explainText = document.getElementById("explainText");
+  const progressFill = document.getElementById("progressFill");
+  const scoreEl = document.getElementById("score");
+  const answeredEl = document.getElementById("answered");
+  const qCountEl = document.getElementById("qCount");
+  const nextBtn = document.getElementById("nextBtn");
+  const nextBtnBottom = document.getElementById("nextBtnBottom");
+  const restartBtn = document.getElementById("restartBtn");
+  const revealBtn = document.getElementById("revealBtn");
+  const finishEl = document.getElementById("finish");
+  const finalLine = document.getElementById("finalLine");
+  const finalMeta = document.getElementById("finalMeta");
+
+  // ===== State =====
+  let order = [];
+  let idx = 0;
+  let score = 0;
+  let answered = 0;
+  let locked = false;
+  let currentChoices = [];
+  let correctIndex = -1;
+  let selectedIndex = -1;
+
+  const buildQuiz = () => {
+    order = shuffle([...Array(questions.length).keys()]);
+    idx = 0;
+    score = 0;
+    answered = 0;
+    locked = false;
+    currentChoices = [];
+    correctIndex = -1;
+    selectedIndex = -1;
+
+    scoreEl.textContent = String(score);
+    answeredEl.textContent = String(answered);
+    finishEl.classList.remove("show");
+    feedbackEl.classList.remove("show");
+    nextBtn.disabled = true;
+    nextBtnBottom.disabled = true;
+    revealBtn.disabled = true;
+
+    render();
+  };
+
+  const setProgress = () => {
+    const pct = Math.round(((idx) / questions.length) * 100);
+    progressFill.style.width = pct + "%";
+    qCountEl.textContent = `Q ${Math.min(idx+1, questions.length)}`;
+    answeredEl.textContent = String(answered);
+    scoreEl.textContent = String(score);
+  };
+
+  const render = () => {
+    setProgress();
+
+    if (idx >= questions.length){
+      choicesEl.innerHTML = "";
+      feedbackEl.classList.remove("show");
+      finishEl.classList.add("show");
+      progressFill.style.width = "100%";
+      nextBtn.disabled = true;
+      nextBtnBottom.disabled = true;
+      revealBtn.disabled = true;
+
+      const pct = Math.round((score / questions.length) * 100);
+      finalLine.textContent = `Final score: ${score} / ${questions.length} (${pct}%).`;
+      finalMeta.textContent = "Domain: Threat Intelligence & Threat Gathering | Mode: Hard | Shuffled per load | NBSP equalized option length";
+      qNumEl.textContent = "DONE";
+      qTextEl.textContent = "Quiz complete. Use Restart to reshuffle and try again.";
+      qTagEl.textContent = "RESULTS";
+      return;
+    }
+
+    locked = false;
+    selectedIndex = -1;
+
+    const q = questions[order[idx]];
+    qNumEl.textContent = `Q${String(idx+1).padStart(2,"0")}`;
+    qTextEl.textContent = q.q;
+    qTagEl.textContent = q.tag || "TI";
+
+    // Normalize + pad to equal length per question
+    const padded = padToMax(q.options);
+    currentChoices = shuffle(padded);
+
+    // Match correct ignoring padding
+    const correctTrim = normalize(q.answer);
+    correctIndex = currentChoices.findIndex((x) => normalize(x) === correctTrim);
+
+    choicesEl.innerHTML = "";
+    currentChoices.forEach((text, i) => {
+      const label = document.createElement("label");
+      label.className = "choice";
+      label.setAttribute("data-i", String(i));
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "q";
+      input.value = String(i);
+
+      const letter = document.createElement("div");
+      letter.className = "letter";
+      letter.textContent = letters[i];
+
+      const ctext = document.createElement("div");
+      ctext.className = "ctext";
+      ctext.textContent = text;
+
+      label.appendChild(input);
+      label.appendChild(letter);
+      label.appendChild(ctext);
+
+      label.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (locked) return;
+        select(i);
+      });
+
+      choicesEl.appendChild(label);
+    });
+
+    feedbackEl.classList.remove("show");
+    statusDot.className = "dot";
+    statusText.textContent = "—";
+    whyText.textContent = "—";
+    explainText.textContent = "—";
+    nextBtn.disabled = true;
+    nextBtnBottom.disabled = true;
+    revealBtn.disabled = true;
+  };
+
+  const select = (i) => {
+    if (locked) return;
+    locked = true;
+    selectedIndex = i;
+
+    const q = questions[order[idx]];
+    answered += 1;
+
+    const nodes = [...choicesEl.querySelectorAll(".choice")];
+    nodes.forEach((n, j) => {
+      n.classList.remove("correct","incorrect");
+      if (j === correctIndex) n.classList.add("correct");
+      if (j === selectedIndex && selectedIndex !== correctIndex) n.classList.add("incorrect");
+    });
+
+    const correct = (selectedIndex === correctIndex);
+    if (correct) score += 1;
+
+    feedbackEl.classList.add("show");
+    statusDot.classList.remove("good","bad");
+    statusDot.classList.add(correct ? "good" : "bad");
+    statusText.textContent = correct ? "Correct" : "Incorrect";
+    whyText.textContent = q.why;
+    explainText.textContent = q.explain;
+
+    nextBtn.disabled = false;
+    nextBtnBottom.disabled = false;
+    revealBtn.disabled = false;
+
+    setProgress();
+  };
+
+  const reveal = () => {
+    if (!locked) return;
+    const nodes = [...choicesEl.querySelectorAll(".choice")];
+    nodes.forEach((n, j) => {
+      n.classList.remove("correct","incorrect");
+      if (j === correctIndex) n.classList.add("correct");
+      if (j === selectedIndex && selectedIndex !== correctIndex) n.classList.add("incorrect");
+    });
+    feedbackEl.classList.add("show");
+  };
+
+  const next = () => {
+    if (!locked) return;
+    idx += 1;
+    render();
+  };
+
+  nextBtn.addEventListener("click", next);
+  nextBtnBottom.addEventListener("click", next);
+  restartBtn.addEventListener("click", buildQuiz);
+  revealBtn.addEventListener("click", reveal);
+
+  buildQuiz();
+})();
+</script>
+</body>
+</html>

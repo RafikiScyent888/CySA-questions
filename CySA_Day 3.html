@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CySA+ Exam Mode Quiz — Cloud, Network Settings, Virtualization & Container Security</title>
+  <style>
+    :root{
+      --bg:#071427;
+      --panel:#0b1f3b;
+      --panel2:#0a1a33;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#2f7dff;
+      --good:#2fd48f;
+      --bad:#ff5c7a;
+      --warn:#ffd166;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(47,125,255,.18), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(47,125,255,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 54px;
+    }
+    header{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom: 16px;
+    }
+    .titlebox{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+      flex:1;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size: 20px;
+      letter-spacing: .2px;
+    }
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size: 13px;
+    }
+    .stats{
+      min-width: 260px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px 12px;
+      box-shadow: var(--shadow);
+    }
+    .statrow{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 6px 2px;
+      border-bottom: 1px dashed rgba(255,255,255,.10);
+    }
+    .statrow:last-child{border-bottom:0}
+    .statrow b{color:var(--text); font-weight:650}
+
+    .barwrap{
+      margin: 14px 0 18px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.10);
+    }
+    .bar{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(47,125,255,.95), rgba(47,125,255,.55));
+      transition: width .35s ease;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .qmeta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      background: rgba(0,0,0,.15);
+      color: var(--muted);
+      font-size: 12px;
+      user-select:none;
+    }
+    .pill .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: rgba(47,125,255,.95);
+      box-shadow: 0 0 0 4px rgba(47,125,255,.15);
+    }
+
+    .qtext{
+      font-size: 16px;
+      margin: 6px 0 14px;
+      white-space: pre-wrap;
+    }
+
+    .answers{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin: 10px 0 14px;
+    }
+
+    .opt{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.35); }
+    .opt[aria-disabled="true"]{ cursor:not-allowed; opacity:.98; }
+    .letter{
+      flex:0 0 auto;
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display:grid;
+      place-items:center;
+      font-weight: 800;
+      background: rgba(47,125,255,.16);
+      border:1px solid rgba(47,125,255,.28);
+      color: var(--text);
+    }
+    .opttext{
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.35;
+      padding-top: 2px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      white-space: pre-wrap;
+    }
+
+    .opt.correct{
+      border-color: rgba(47,212,143,.55);
+      background: rgba(47,212,143,.10);
+    }
+    .opt.correct .letter{
+      background: rgba(47,212,143,.18);
+      border-color: rgba(47,212,143,.55);
+    }
+    .opt.wrong{
+      border-color: rgba(255,92,122,.55);
+      background: rgba(255,92,122,.10);
+    }
+    .opt.wrong .letter{
+      background: rgba(255,92,122,.18);
+      border-color: rgba(255,92,122,.55);
+    }
+
+    .feedback{
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      min-height: 22px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .badge.good{ border-color: rgba(47,212,143,.35); color: rgba(234,242,255,.95); }
+    .badge.bad{ border-color: rgba(255,92,122,.35); color: rgba(234,242,255,.95); }
+
+    details{
+      margin-top: 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+    summary{
+      cursor:pointer;
+      color: var(--muted);
+      font-size: 13px;
+      user-select:none;
+    }
+    .explain{
+      margin-top: 10px;
+      color: var(--text);
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    .controls{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .2s ease, background .2s ease;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(47,125,255,.40); }
+    button:active{ transform: translateY(0px); }
+    button.primary{
+      background: rgba(47,125,255,.22);
+      border-color: rgba(47,125,255,.45);
+    }
+    button[disabled]{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .footer{
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align:center;
+    }
+
+    .end{
+      margin-top: 18px;
+      display:none;
+    }
+    .end h2{ margin: 0 0 8px; font-size: 18px; }
+    .end p{ margin: 0; color: var(--muted); }
+    .tiny{
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .toggleRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    .toggle{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      color: var(--muted);
+      font-size: 12px;
+      user-select:none;
+    }
+    .toggle input{ transform: translateY(1px); }
+    a.link{ color: rgba(47,125,255,.95); text-decoration:none; }
+    a.link:hover{ text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="titlebox">
+        <h1>CySA+ Exam Mode — Cloud, Network Settings, Virtualization & Container Security</h1>
+        <p class="subtitle">30 scenario-heavy questions • per-load answer shuffling • equal-length answer rendering • next-button flow • collapsible explanations</p>
+        <div class="toggleRow">
+          <label class="toggle" title="Shows feedback immediately after you choose an option.">
+            <input id="instantFeedback" type="checkbox" checked />
+            Instant feedback
+          </label>
+          <label class="toggle" title="Auto-opens the explanation after you answer.">
+            <input id="autoExplain" type="checkbox" />
+            Auto-open explanations
+          </label>
+          <label class="toggle" title="Resets question order and reshuffles answer positions by reloading.">
+            <span>Tip: Reload to reshuffle.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="statrow"><span>Question</span><b id="qCount">1 / 30</b></div>
+        <div class="statrow"><span>Score</span><b id="score">0</b></div>
+        <div class="statrow"><span>Correct</span><b id="correct">0</b></div>
+        <div class="statrow"><span>Incorrect</span><b id="incorrect">0</b></div>
+      </div>
+    </header>
+
+    <div class="barwrap" aria-label="Progress bar">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="card" id="quizCard" role="region" aria-live="polite">
+      <div class="qmeta">
+        <span class="pill"><span class="dot"></span><span id="domain">Domain: Cloud / Network / Virtualization / Containers</span></span>
+        <span class="pill" id="difficultyPill">Difficulty: Hard (word-salad)</span>
+      </div>
+
+      <div class="qtext" id="questionText">Loading…</div>
+
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback"></div>
+
+      <details id="explainBox">
+        <summary>Explanation (click to expand)</summary>
+        <div class="explain" id="explainText"></div>
+      </details>
+
+      <div class="controls">
+        <button id="resetBtn" title="Restart quiz (keeps this page load’s shuffle)">Restart</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="revealBtn" title="Show the correct answer for this question (counts as answered)" class="primary">Reveal Answer</button>
+          <button id="nextBtn" class="primary" disabled>Next Question</button>
+        </div>
+      </div>
+
+      <div class="end" id="endScreen">
+        <h2>Exam Complete</h2>
+        <p id="endSummary"></p>
+        <p class="tiny" style="margin-top:10px;">Want a printable answer key or PBQ-style items for these domains? Tell me what you want included.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built for CySA+ practice. Focus: cloud security controls, network setting hardening/verification, hypervisor isolation, and container runtime risk.
+    </div>
+  </div>
+
+<script>
+/**
+ * Saved template behaviors:
+ * - A/B/C/D letter labels
+ * - Per-load correct answer shuffles between A/B/C/D (options shuffled while keeping letters A-D)
+ * - Next button flow
+ * - Collapsible explanations
+ * - Progress bar + score
+ * - "Hard / word-salad" style + strict visual equal-length options
+ */
+
+const RAW_QUESTIONS = [
+  // 1
+  {
+    domain: "Cloud Security (IAM / AuthN/AuthZ)",
+    q: `A cloud engineer reports that a new microservice can read objects from a storage bucket even after its access key was rotated and the attached role policy was tightened. The SOC suspects policy evaluation is still allowing access through an unexpected path. Which action MOST directly validates the *effective permissions* being applied at request time?`,
+    options: [
+      { t: "Review the microservice source code to confirm the SDK is using the intended role session and token chain.", c: false },
+      { t: "Evaluate the active permission path with a policy analyzer against the principal, resource, and requested action.", c: true },
+      { t: "Disable the bucket’s public access settings and retest by forcing TLS-only requests from the service.", c: false },
+      { t: "Increase object storage logging retention to reconstruct historical reads for the last 30 days window.", c: false }
+    ],
+    exp: `A policy simulator/access analyzer evaluates identity + resource policies, conditions, and explicit denies to show effective permissions for the exact action and resource. Code review, public-access toggles, and log retention help, but they don’t directly compute effective permissions.`
+  },
+  // 2
+  {
+    domain: "Cloud Security (Logging / Visibility)",
+    q: `After a suspected credential theft, an analyst needs to determine whether API calls were made from atypical geolocations and whether requests failed due to conditional access controls. Which logging approach BEST supports this investigation across the control plane?`,
+    options: [
+      { t: "Enable VPC flow logs only and correlate destination ports with the object storage endpoint name resolution data.", c: false },
+      { t: "Aggregate control-plane audit events in the SIEM with geo-IP enrichment and authorization result details.", c: true },
+      { t: "Rely on hypervisor logs from the compute nodes and compare kernel messages for time-skew and login anomalies.", c: false },
+      { t: "Collect application logs from the microservices and infer API activity using request IDs from load balancer traces.", c: false }
+    ],
+    exp: `Control-plane audit logs capture API calls, principals, source IPs, response codes, and auth/authorization failures. Centralizing them and enriching with geo-IP provides the clearest view of atypical locations and denied attempts.`
+  },
+  // 3
+  {
+    domain: "Network Settings (Segmentation / ACLs)",
+    q: `A company migrates workloads into a cloud VPC. A scanner shows that a database subnet can still be reached from a dev subnet despite “deny” rules in a security group. The cloud provider evaluates rules as allow-lists and uses implicit deny. What is the MOST likely misconfiguration?`,
+    options: [
+      { t: "An attached allow path still covers the dev source range, so the expected block never takes effect.", c: true },
+      { t: "The route table is missing a default route, which causes traffic to bypass the security group evaluation process.", c: false },
+      { t: "Network ACLs are stateful, so established connections ignore all inbound filtering after the first packet passes.", c: false },
+      { t: "The database is using QUIC and therefore ignores TCP-based security group rule enforcement by design.", c: false }
+    ],
+    exp: `Many cloud SGs are allow-list only; “deny” rules aren’t supported. If access is still possible, an allow path exists (overly broad CIDR, SG-to-SG reference, or a different attached SG).`
+  },
+  // 4
+  {
+    domain: "Cloud Security (KMS / Secrets)",
+    q: `An incident responder finds a container image that includes an embedded database password in an environment variable inside the deployment manifest. The team wants to reduce blast radius while keeping the pipeline velocity. Which change MOST improves security with minimal operational friction?`,
+    options: [
+      { t: "Pull the value from a managed secrets store at runtime by using short-lived workload identity.", c: true },
+      { t: "Base64-encode the password in the manifest and restrict the cluster API to only the CI runner IP addresses.", c: false },
+      { t: "Move the password into a sidecar container file and secure it using chmod 600 on the mounted volume path.", c: false },
+      { t: "Hardcode the password into the application binary and sign the container image with a developer certificate chain.", c: false }
+    ],
+    exp: `A managed secrets service + workload identity (no long-lived keys) is the standard: runtime retrieval, rotation, auditability, and scoped access. Encoding is not protection; file/sidecar is still exposure; hardcoding is worst.`
+  },
+  // 5
+  {
+    domain: "Virtualization (Isolation / Escape Risk)",
+    q: `A hypervisor host shows abnormal CPU usage. Telemetry suggests a guest VM executed a sequence consistent with a hypervisor escape attempt. Which control MOST directly reduces the impact of a successful escape?`,
+    options: [
+      { t: "Place guest VMs on a dedicated VLAN and restrict east-west traffic using security groups across the subnet.", c: false },
+      { t: "Reduce host attack surface, patch the platform quickly, and keep management access on an isolated plane.", c: true },
+      { t: "Increase VM memory reservations so the guest cannot trigger ballooning and swap storms on the host kernel.", c: false },
+      { t: "Disable DHCP on the VM network and require static IP configuration to prevent rogue address assignment.", c: false }
+    ],
+    exp: `Escape is about the hypervisor boundary. Host hardening, rapid patching, and management-plane isolation reduce privileges and lateral control if escape occurs. VLAN/DHCP/memory tuning are secondary.`
+  },
+  // 6
+  {
+    domain: "Container Security (Runtime / Least Privilege)",
+    q: `A Kubernetes workload needs to bind to port 443 and read a config file. A security review finds the container is running as root with full Linux capabilities. Which change BEST enforces least privilege while maintaining function?`,
+    options: [
+      { t: "Run as non-root, remove unnecessary capabilities, and grant only the minimal privilege needed for binding.", c: true },
+      { t: "Keep root but set the filesystem to read-only and restrict egress to only the configuration service endpoint.", c: false },
+      { t: "Mount the container runtime socket into the pod so it can manage ports directly and avoid privilege changes.", c: false },
+      { t: "Enable host networking to bypass port binding limits and remove the need for privileged process execution.", c: false }
+    ],
+    exp: `Prefer non-root with minimal capabilities (or a proxy). Host networking and runtime socket mounts increase risk; read-only FS helps but doesn’t address root/capabilities.`
+  },
+  // 7
+  {
+    domain: "Managing Network Settings (DNS / Exposure)",
+    q: `During a cloud migration, users intermittently resolve an internal service name to a public IP. The service should be internal-only. Which configuration issue is MOST consistent with this symptom?`,
+    options: [
+      { t: "Private and public DNS views are misaligned, so some internal resolvers return the external record set.", c: true },
+      { t: "NTP drift is causing DNSSEC validation to fail, so clients default to an insecure public resolver route.", c: false },
+      { t: "The load balancer health checks are failing, so the DNS server rotates records toward public endpoints only.", c: false },
+      { t: "The VPC route table is missing a local route, so DNS returns public IPs to compensate for reachability.", c: false }
+    ],
+    exp: `Split-horizon (private zone vs public zone) mistakes can cause internal names to resolve to public records. NTP/DNSSEC can break validation, but “defaulting” to public records is less direct.`
+  },
+  // 8
+  {
+    domain: "Cloud Security (SaaS / CASB patterns)",
+    q: `A security team wants to detect unsanctioned cloud app usage and enforce DLP for uploads from managed devices without blocking the entire internet. Which approach BEST matches this requirement?`,
+    options: [
+      { t: "Use a CASB for discovery plus inline session controls and API visibility on managed endpoints.", c: true },
+      { t: "Use only endpoint EDR and rely on process lineage to block any browser performing file uploads to unknown domains.", c: false },
+      { t: "Implement a WAF in front of the SaaS provider and configure it to inspect uploads originating from the company ASN.", c: false },
+      { t: "Force all cloud apps to use shared static access keys and alert on any key use outside business hours windows.", c: false }
+    ],
+    exp: `CASB supports discovery (shadow IT), DLP, and policy enforcement (API + inline/session controls) without blanket blocking. WAF won’t front third-party SaaS; static keys are risky.`
+  },
+  // 9
+  {
+    domain: "Container Security (Supply Chain)",
+    q: `A build pipeline pulls base images from a public registry. A recent compromise replaced a popular tag with a malicious image. Which control MOST effectively prevents this specific failure mode?`,
+    options: [
+      { t: "Pin base images by immutable digest and require trusted signature verification before deployment.", c: true },
+      { t: "Enable container runtime auto-updates so the nodes always pull the most recent tag at deployment time window.", c: false },
+      { t: "Increase CI concurrency so images are pulled less frequently, reducing exposure to malicious tag swaps.", c: false },
+      { t: "Use a single shared service account for builds and store its token in the repository secrets for durability.", c: false }
+    ],
+    exp: `Mutable tags can be hijacked. Pinning by digest + signature verification (and private mirroring) prevents tag-replacement attacks.`
+  },
+  // 10
+  {
+    domain: "Virtualization (Snapshots / Forensics)",
+    q: `A VM is suspected of running a memory-resident credential stealer. The team wants a forensically sound approach with minimal downtime. Which step is MOST appropriate first?`,
+    options: [
+      { t: "Capture volatile memory with a controlled snapshot workflow and preserve handling records for evidence.", c: true },
+      { t: "Power off the VM immediately to prevent further theft and then image the disk using a standard cloning tool.", c: false },
+      { t: "Delete the VM and restore from a known-good template, then review the application logs for errors only.", c: false },
+      { t: "Patch the VM OS first and then run antivirus scans to remove any artifacts before collecting evidence.", c: false }
+    ],
+    exp: `Memory-resident malware requires memory capture. Snapshot + memory acquisition preserves state with limited downtime. Powering off loses volatile evidence; patching/remediation first contaminates evidence.`
+  },
+  // 11
+  {
+    domain: "Network Settings (TLS / Load Balancing)",
+    q: `A cloud load balancer terminates TLS. A compliance requirement mandates that backend services also use TLS and that client identity can be traced end-to-end. Which configuration BEST satisfies this?`,
+    options: [
+      { t: "Re-encrypt to the backend tier with mTLS and forward validated client identity context end to end.", c: true },
+      { t: "Terminate TLS at the load balancer and send plaintext to backends to reduce CPU overhead while logging source IP.", c: false },
+      { t: "Disable HTTP/2 to ensure identity headers cannot be modified in transit and rely on NAT logs for attribution.", c: false },
+      { t: "Use a single wildcard certificate on the load balancer only and rotate it monthly to satisfy traceability.", c: false }
+    ],
+    exp: `Re-encryption (TLS to backend) + ideally mTLS provides encryption in transit and strong service identity. Validated identity propagation supports traceability.`
+  },
+  // 12
+  {
+    domain: "Cloud Security (Shared Responsibility)",
+    q: `A team assumes the cloud provider patches all components. A breach occurs through an unpatched web application framework running on a managed VM. Which statement BEST reflects the shared responsibility model?`,
+    options: [
+      { t: "The provider is responsible for patching guest operating systems and application frameworks within customer VMs.", c: false },
+      { t: "The customer patches the guest stack on IaaS workloads, while the provider maintains the underlying platform.", c: true },
+      { t: "Shared responsibility means both parties patch everything, but only the customer is liable for regulatory penalties.", c: false },
+      { t: "In IaaS, the provider patches applications; in SaaS, the customer patches the hypervisor and physical servers.", c: false }
+    ],
+    exp: `In IaaS, customers patch OS/app in their VMs; provider patches physical/hypervisor/infrastructure. SaaS shifts more responsibility to provider, not the other way around.`
+  },
+  // 13
+  {
+    domain: "Container Security (Network Policies)",
+    q: `A cluster has multiple namespaces. A compromised pod in namespace A is laterally scanning services in namespace B. The team wants to contain blast radius without redesigning the network. Which control MOST directly addresses this?`,
+    options: [
+      { t: "Apply default-deny pod traffic rules and allow only the specific namespace-to-namespace paths that are required.", c: true },
+      { t: "Disable service discovery and require static IPs for all pods so scans cannot enumerate service names quickly.", c: false },
+      { t: "Increase pod replica counts so scanning traffic is load balanced and less likely to impact service availability.", c: false },
+      { t: "Enable privileged pods only for namespace B to allow security tools to monitor namespace A from a higher context.", c: false }
+    ],
+    exp: `NetworkPolicies enforce micro-segmentation at the pod level. Default-deny + explicit allows stops lateral movement paths without full redesign.`
+  },
+  // 14
+  {
+    domain: "Virtualization (Management Plane)",
+    q: `An attacker gains access to the hypervisor management API. Which indicator is MOST concerning for imminent widespread compromise?`,
+    options: [
+      { t: "Repeated failed logins to guest VM SSH ports from a single internal IP across a narrow time window.", c: false },
+      { t: "New high-privilege roles and broad API tokens appear in the virtualization management layer.", c: true },
+      { t: "Increased ICMP traffic between VMs as part of routine monitoring checks after a maintenance cycle.", c: false },
+      { t: "A spike in disk I/O for one VM consistent with database reindexing and log rotation housekeeping.", c: false }
+    ],
+    exp: `Management-plane token/role creation suggests persistence and control over many hosts/VMs. Guest SSH scans are serious but less immediately catastrophic than mgmt-plane takeover.`
+  },
+  // 15
+  {
+    domain: "Cloud Security (Data Protection / Storage)",
+    q: `A storage bucket contains sensitive reports. The organization requires that data be unreadable if the bucket policy is accidentally made public. Which control BEST meets this requirement?`,
+    options: [
+      { t: "Use object encryption that stays under customer-controlled keys so exposure of storage policy alone is insufficient.", c: true },
+      { t: "Enable versioning so public reads can be rolled back by restoring prior object versions from history.", c: false },
+      { t: "Set object lifecycle rules to transition older reports to archival storage to reduce the window of exposure.", c: false },
+      { t: "Enable CDN caching so requests are served faster and access logs can be analyzed for abnormal patterns.", c: false }
+    ],
+    exp: `Encryption (especially client-side/envelope) ensures confidentiality even if access policy is wrong. Versioning/lifecycle/CDN don’t prevent reading.`
+  },
+  // 16
+  {
+    domain: "Managing Network Settings (Routing / Egress)",
+    q: `A cloud workload must reach an external payment API, but policy requires that all egress be inspected and restricted. Which architecture BEST supports this while preserving availability?`,
+    options: [
+      { t: "Send outbound connections through centralized egress controls that inspect, allow-list, and log approved destinations.", c: true },
+      { t: "Assign public IPs to each instance and rely on host-based firewalls for egress control and local log storage.", c: false },
+      { t: "Disable outbound internet entirely and use DNS tunneling to reach the payment API without opening egress routes.", c: false },
+      { t: "Use a single shared jump host with SSH dynamic port forwarding so applications can reach the payment API indirectly.", c: false }
+    ],
+    exp: `Central egress via NAT + firewall/proxy supports inspection, allow-lists, and logging while avoiding per-host public IP exposure.`
+  },
+  // 17
+  {
+    domain: "Container Security (Admission Control)",
+    q: `Security wants to block deployments that request privileged mode, hostPath mounts, or runAsUser=0, but developers want fast feedback. Which control MOST directly enforces this at deploy time?`,
+    options: [
+      { t: "Enforce deployment-time policy that rejects manifests requesting disallowed privileges or node-level access.", c: true },
+      { t: "Enable node auto-scaling so noncompliant pods are placed on dedicated nodes with higher monitoring coverage.", c: false },
+      { t: "Deploy a sidecar IDS into every pod to watch syscalls and kill the container when privileged operations occur.", c: false },
+      { t: "Rely on image scanning only and block images that contain package managers and shells to reduce container misuse.", c: false }
+    ],
+    exp: `Admission control denies bad specs before they run, giving immediate feedback. Scanning/IDS helps but does not directly prevent risky pod specs.`
+  },
+  // 18
+  {
+    domain: "Virtualization (Resource Overcommit / DoS)",
+    q: `Multiple VMs on a host become unstable during peak hours. Investigation shows aggressive CPU overcommit and noisy neighbor contention. Which mitigation BEST addresses availability without weakening isolation?`,
+    options: [
+      { t: "Apply workload reservations and placement rules so competing high-load guests are not packed onto the same host.", c: true },
+      { t: "Disable hyperthreading globally so cores cannot be shared, eliminating all forms of VM contention.", c: false },
+      { t: "Enable promiscuous mode on the virtual switch so monitoring can observe and throttle chatty VMs precisely.", c: false },
+      { t: "Move all VMs to host networking so the virtual switch cannot become a bottleneck during burst traffic windows.", c: false }
+    ],
+    exp: `Reservations/limits and placement policies manage contention while keeping isolation intact. Disabling HT is heavy; promiscuous mode/host networking increase risk.`
+  },
+  // 19
+  {
+    domain: "Cloud Security (Identity Federation)",
+    q: `A company wants to avoid long-lived cloud access keys for developers while enabling SSO with MFA. Which approach BEST meets the goal?`,
+    options: [
+      { t: "Use federated sign-in that issues short-lived role credentials after MFA rather than persistent developer secrets.", c: true },
+      { t: "Create per-developer IAM users and rotate their access keys weekly using a shared spreadsheet reminder process.", c: false },
+      { t: "Use a single break-glass account for all developers and store the credentials in a password manager vault.", c: false },
+      { t: "Disable console access and allow only static API keys because programmatic access cannot support MFA flows.", c: false }
+    ],
+    exp: `Federation (SAML/OIDC) provides SSO + MFA and issues short-lived credentials (STS style), eliminating long-lived developer keys.`
+  },
+  // 20
+  {
+    domain: "Managing Network Settings (IPv6 / Filtering)",
+    q: `A security assessment finds host-based firewall rules are strict for IPv4, but the same hosts are reachable over IPv6 from segments that should not have access. What is the MOST likely root cause?`,
+    options: [
+      { t: "The hosts have a second reachable path because IPv6 filtering was not aligned with the IPv4 rule set.", c: true },
+      { t: "IPv6 traffic cannot be filtered by modern firewalls, so controls must rely entirely on application authentication.", c: false },
+      { t: "NAT for IPv6 is required for filtering, and the environment has not enabled NAT66 on the edge router.", c: false },
+      { t: "IPv6 uses mandatory IPsec, so firewall rules are ignored once encryption is negotiated between endpoints.", c: false }
+    ],
+    exp: `Common issue: IPv6 enabled with missing/loose rules. IPv6 can be filtered; NAT66 isn’t required; IPsec doesn’t bypass policy.`
+  },
+  // 21
+  {
+    domain: "Container Security (Runtime Monitoring)",
+    q: `An analyst sees a container spawning a shell and running a network scanner. The image is supposed to be a minimal web service. Which telemetry is MOST useful to confirm malicious runtime behavior?`,
+    options: [
+      { t: "Runtime syscall telemetry showing process launches, socket activity, and unexpected file access from the container.", c: true },
+      { t: "Kubernetes liveness probe failures only, because restarts correlate directly with compromise timing windows.", c: false },
+      { t: "Container image vulnerability scan results, because CVEs prove the container must be actively exploited.", c: false },
+      { t: "Node uptime graphs, because higher uptime indicates reduced administrative activity and fewer security changes.", c: false }
+    ],
+    exp: `Runtime behavior is best proven by syscall-level telemetry (process execution, sockets, file access). Scans show potential, not behavior.`
+  },
+  // 22
+  {
+    domain: "Virtualization (VM Sprawl / Governance)",
+    q: `A cloud subscription shows hundreds of idle VMs with unknown owners. Cost is rising and patching is inconsistent. Which control BEST addresses the root cause long-term?`,
+    options: [
+      { t: "Enforce ownership tags, provisioning guardrails, and automated lifecycle cleanup for unattended instances.", c: true },
+      { t: "Block all VM creation immediately and require manual approval for any future VM deployment requests.", c: false },
+      { t: "Increase the patch window frequency so idle VMs are patched faster even if ownership is unknown.", c: false },
+      { t: "Move all workloads to containers so virtualization sprawl can no longer occur in any form at all.", c: false }
+    ],
+    exp: `Governance needs ownership tags, guardrails, and automated cleanup/lifecycle management. Blanket blocks reduce agility and don’t scale.`
+  },
+  // 23
+  {
+    domain: "Cloud Security (Misconfiguration Detection)",
+    q: `Security needs to continuously detect publicly exposed storage buckets, overly permissive security groups, and risky IAM policies. Which solution BEST fits this continuous posture management need?`,
+    options: [
+      { t: "Use continuous cloud posture monitoring to check benchmarks, detect drift, and flag unsafe configurations.", c: true },
+      { t: "Run quarterly penetration tests and treat any findings as definitive proof of current cloud security posture.", c: false },
+      { t: "Rely on endpoint antivirus on cloud VMs to detect risky IAM policies through behavioral heuristic signatures.", c: false },
+      { t: "Enable full packet capture on all VPC traffic and manually review flows for signs of public exposure daily.", c: false }
+    ],
+    exp: `CSPM is designed for continuous misconfiguration detection in cloud controls: IAM, networking, storage exposure, benchmarks, drift.`
+  },
+  // 24
+  {
+    domain: "Managing Network Settings (MTU / Troubleshooting)",
+    q: `After enabling a site-to-site VPN to a cloud VPC, certain applications fail while simple pings work. Packet captures show fragmentation and repeated retransmits. Which network setting is MOST likely involved?`,
+    options: [
+      { t: "Tune packet sizing for the tunnel path so encapsulation overhead does not cause fragmentation-related breakage.", c: true },
+      { t: "DNS TTL is too low, causing frequent re-resolution and intermittent routing changes through the VPN tunnel.", c: false },
+      { t: "ARP cache timeout is too high, so stale MAC addresses persist and prevent communication across the VPN link.", c: false },
+      { t: "The VPN uses asymmetric encryption, so the application payloads are not aligned to block size and are dropped.", c: false }
+    ],
+    exp: `VPN encapsulation reduces effective MTU; without MSS clamping/PMTUD handling, large packets fragment and break certain apps.`
+  },
+  // 25
+  {
+    domain: "Container Security (Secrets / Service Accounts)",
+    q: `A pod has access to the Kubernetes API using a default service account token. The team discovers the token can list secrets cluster-wide. What is the BEST immediate fix?`,
+    options: [
+      { t: "Reduce the service account scope to only required actions and stop mounting tokens into pods that do not need them.", c: true },
+      { t: "Rotate the cluster CA certificate and restart all nodes to invalidate any cached service account tokens.", c: false },
+      { t: "Move the pod to the kube-system namespace because system namespaces are more trusted by default policies.", c: false },
+      { t: "Enable container privileged mode so it can locally encrypt secrets, preventing the API server from exposing them.", c: false }
+    ],
+    exp: `RBAC least privilege is the core fix; also disable automount tokens for pods that don’t need them and prefer workload identity where available.`
+  },
+  // 26
+  {
+    domain: "Virtualization (Storage / Snapshot Risk)",
+    q: `A regulated workload uses VM snapshots frequently. Auditors worry snapshots contain sensitive data and can persist beyond retention requirements. Which control BEST addresses this?`,
+    options: [
+      { t: "Enforce snapshot retention, access restrictions, and customer-controlled encryption across the snapshot lifecycle.", c: true },
+      { t: "Disable snapshots entirely and rely only on manual disk copy operations performed by administrators on demand.", c: false },
+      { t: "Enable thin provisioning so snapshots store less data and are therefore less sensitive by default to auditors.", c: false },
+      { t: "Store snapshots in a public bucket so they can be integrity-checked by independent parties at any time.", c: false }
+    ],
+    exp: `You need governance: retention/lifecycle enforcement, strict access controls, and encryption (preferably CMKs). Thin provisioning doesn’t solve exposure.`
+  },
+  // 27
+  {
+    domain: "Cloud Security (WAF / API Protection)",
+    q: `An internet-facing API in the cloud is receiving high-rate requests with valid authentication tokens. The traffic appears automated and is causing resource exhaustion. Which control BEST mitigates this while preserving legitimate use?`,
+    options: [
+      { t: "Apply identity-aware throttling and automated abuse controls at the gateway edge to slow hostile automation.", c: true },
+      { t: "Disable TLS to reduce CPU overhead and allow the backend to respond more quickly during the spike window.", c: false },
+      { t: "Move the API to a private subnet only and require all clients to connect through a corporate VPN gateway.", c: false },
+      { t: "Increase container privileges so the service can drop packets faster using raw sockets and kernel bypass.", c: false }
+    ],
+    exp: `Rate limiting, anomaly/bot defenses, and identity/behavior-based throttling at gateway/WAF mitigate token-abuse automation. Disabling TLS or privilege escalation is unsafe.`
+  },
+  // 28
+  {
+    domain: "Managing Network Settings (Zero Trust / Access)",
+    q: `A company wants to reduce reliance on flat internal networks. Access should be granted based on identity, device posture, and application context rather than subnet location. Which approach BEST aligns to this goal?`,
+    options: [
+      { t: "Use identity-aware access with continuous evaluation and segmented application paths instead of network-based trust.", c: true },
+      { t: "Expand the internal address space and add more VLANs so each department can have its own large trusted segment.", c: false },
+      { t: "Move all internal apps to a single DMZ and allow all internal users full access to reduce routing complexity.", c: false },
+      { t: "Use only MAC address filtering because it binds access to a physical device identity across network boundaries.", c: false }
+    ],
+    exp: `Zero Trust emphasizes identity and context, with identity-aware proxies and micro-segmentation, not subnet-based trust.`
+  },
+  // 29
+  {
+    domain: "Container Security (Pod-to-Node Boundary)",
+    q: `A pod is granted access to the host filesystem through hostPath mounts for “log collection.” A red team demonstrates it can read node credentials and pivot. Which mitigation is MOST appropriate?`,
+    options: [
+      { t: "Remove direct host filesystem mounts where possible, use constrained node agents, and deny risky mount patterns at admission.", c: true },
+      { t: "Keep hostPath but rename mount paths and obfuscate credential files to prevent easy discovery by attackers.", c: false },
+      { t: "Allow hostPath only in the default namespace because it is monitored more closely than other namespaces.", c: false },
+      { t: "Move the pod to host networking to reduce the need for filesystem mounts and simplify log routing paths.", c: false }
+    ],
+    exp: `hostPath breaks pod isolation. Prefer purpose-built agents (DaemonSets) with constrained access, and enforce deny policies via admission controls.`
+  },
+  // 30
+  {
+    domain: "Cloud + Virtualization (Backups / Ransomware Resilience)",
+    q: `A ransomware event encrypts data inside VMs and also targets attached cloud snapshots via stolen admin credentials. The organization needs recoverability even if cloud admin accounts are compromised. Which strategy BEST supports this?`,
+    options: [
+      { t: "Keep recoverable copies in immutable storage under separate administrative control, with isolated vault or offline protection.", c: true },
+      { t: "Increase snapshot frequency and store all snapshots in the same subscription so restores are faster during incidents.", c: false },
+      { t: "Store backup encryption keys inside the same VM for convenience so operators can restore quickly when needed.", c: false },
+      { t: "Disable logging to reduce attacker visibility, then rely on rapid redeployment from templates as a recovery plan.", c: false }
+    ],
+    exp: `If admin creds are stolen, same-tenant snapshots can be deleted/altered. Immutable backups with separate control planes/tenants and offline copies improve ransomware resilience.`
+  }
+];
+
+const LETTERS = ["A","B","C","D"];
+
+let questions = [];
+let idx = 0;
+let score = 0;
+let correct = 0;
+let incorrect = 0;
+let answered = false;
+
+const qCountEl = document.getElementById("qCount");
+const scoreEl = document.getElementById("score");
+const correctEl = document.getElementById("correct");
+const incorrectEl = document.getElementById("incorrect");
+const barEl = document.getElementById("bar");
+
+const domainEl = document.getElementById("domain");
+const qTextEl = document.getElementById("questionText");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const explainBox = document.getElementById("explainBox");
+const explainText = document.getElementById("explainText");
+
+const nextBtn = document.getElementById("nextBtn");
+const resetBtn = document.getElementById("resetBtn");
+const revealBtn = document.getElementById("revealBtn");
+
+const endScreen = document.getElementById("endScreen");
+const endSummary = document.getElementById("endSummary");
+
+const instantFeedbackToggle = document.getElementById("instantFeedback");
+const autoExplainToggle = document.getElementById("autoExplain");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function ensurePeriod(text){
+  const t = text.trim().replace(/[ \s]+$/g, "");
+  return /[.!?]$/.test(t) ? t : `${t}.`;
+}
+
+function padOptionsEqualLength(options){
+  const normalized = options.map(o => ({...o, t: ensurePeriod(o.t)}));
+  const maxLen = Math.max(...normalized.map(o => o.t.length));
+  return normalized.map(o => ({
+    ...o,
+    t: o.t + " ".repeat(maxLen - o.t.length)
+  }));
+}
+
+function prepQuestions(){
+  // Per-load shuffle question order too (optional “hard mode” vibe).
+  questions = shuffle(RAW_QUESTIONS).map(q => {
+    const opts = padOptionsEqualLength(q.options);
+    const shuffledOpts = shuffle(opts); // correct answer position changes every reload
+    return {...q, options: shuffledOpts};
+  });
+}
+
+function setStats(){
+  qCountEl.textContent = `${Math.min(idx+1, questions.length)} / ${questions.length}`;
+  scoreEl.textContent = score;
+  correctEl.textContent = correct;
+  incorrectEl.textContent = incorrect;
+  const pct = (idx / questions.length) * 100;
+  barEl.style.width = `${pct}%`;
+}
+
+function lockOptions(lock=true){
+  const nodes = answersEl.querySelectorAll(".opt");
+  nodes.forEach(n => n.setAttribute("aria-disabled", lock ? "true" : "false"));
+}
+
+function render(){
+  answered = false;
+  feedbackEl.innerHTML = "";
+  explainText.textContent = "";
+  explainBox.open = false;
+  nextBtn.disabled = true;
+
+  endScreen.style.display = "none";
+  revealBtn.disabled = false;
+
+  const item = questions[idx];
+  domainEl.textContent = `Domain: ${item.domain}`;
+  qTextEl.textContent = item.q;
+
+  answersEl.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+    div.className = "opt";
+    div.role = "button";
+    div.tabIndex = 0;
+    div.setAttribute("aria-disabled","false");
+
+    const letter = document.createElement("div");
+    letter.className = "letter";
+    letter.textContent = LETTERS[i];
+
+    const text = document.createElement("div");
+    text.className = "opttext";
+    text.textContent = opt.t;
+
+    div.appendChild(letter);
+    div.appendChild(text);
+
+    const handler = () => choose(i);
+    div.addEventListener("click", handler);
+    div.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); handler(); } });
+
+    answersEl.appendChild(div);
+  });
+
+  explainText.textContent = item.exp;
+  setStats();
+}
+
+function choose(i){
+  if(answered) return;
+
+  const item = questions[idx];
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  const picked = item.options[i];
+
+  const correctIndex = item.options.findIndex(o => o.c === true);
+
+  // Mark correct + chosen wrong
+  nodes[correctIndex].classList.add("correct");
+  if(i !== correctIndex) nodes[i].classList.add("wrong");
+
+  if(picked.c){
+    score += 1;
+    correct += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge good">Correct</span><span>Solid call—this matches the most direct control in the scenario.</span>`;
+    }
+  } else {
+    incorrect += 1;
+    if(instantFeedbackToggle.checked){
+      feedbackEl.innerHTML = `<span class="badge bad">Incorrect</span><span>The best answer is the option that most directly satisfies the stated constraint.</span>`;
+    }
+  }
+
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+
+  setStats();
+  nextBtn.disabled = false;
+}
+
+function reveal(){
+  if(answered) return;
+  const item = questions[idx];
+  const correctIndex = item.options.findIndex(o => o.c === true);
+  // Count as answered (no score gain)
+  answered = true;
+  lockOptions(true);
+  revealBtn.disabled = true;
+
+  const nodes = Array.from(answersEl.querySelectorAll(".opt"));
+  nodes[correctIndex].classList.add("correct");
+  if(instantFeedbackToggle.checked){
+    feedbackEl.innerHTML = `<span class="badge">Revealed</span><span>Marked the correct option so you can study the reasoning.</span>`;
+  }
+  if(autoExplainToggle.checked){
+    explainBox.open = true;
+  }
+  nextBtn.disabled = false;
+  setStats();
+}
+
+function next(){
+  if(!answered) return;
+  idx += 1;
+  if(idx >= questions.length){
+    finish();
+    return;
+  }
+  render();
+}
+
+function finish(){
+  barEl.style.width = `100%`;
+  answersEl.innerHTML = "";
+  feedbackEl.innerHTML = "";
+  qTextEl.textContent = "You’ve completed all 30 questions.";
+  domainEl.textContent = "Domain: Completed";
+  explainText.textContent = "";
+  explainBox.open = false;
+
+  nextBtn.disabled = true;
+  revealBtn.disabled = true;
+
+  endScreen.style.display = "block";
+  const pct = Math.round((correct / questions.length) * 100);
+  endSummary.textContent = `Score: ${score}/${questions.length} • Correct: ${correct} • Incorrect: ${incorrect} • Accuracy: ${pct}%`;
+}
+
+function reset(){
+  idx = 0;
+  score = 0;
+  correct = 0;
+  incorrect = 0;
+  prepQuestions(); // keeps per-load randomness but restarts flow
+  render();
+}
+
+nextBtn.addEventListener("click", next);
+resetBtn.addEventListener("click", reset);
+revealBtn.addEventListener("click", reveal);
+
+// Init
+prepQuestions();
+render();
+</script>
+</body>
+</html>

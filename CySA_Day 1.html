@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CompTIA CySA+ Hard Quiz — Managing Risk, Cryptography, PKI (30Q)</title>
+  <style>
+    :root{
+      --bg:#071a2b;          /* dark navy */
+      --panel:#0b243b;
+      --panel2:#0a1f33;
+      --text:#e9f2ff;
+      --muted:#b7c8e6;
+      --accent:#4aa3ff;
+      --good:#44d07a;
+      --bad:#ff5a6a;
+      --warn:#ffcc66;
+      --border:rgba(255,255,255,.12);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 800px at 20% 10%, #0c2d4d 0%, var(--bg) 55%, #04101c 100%);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{
+      max-width: 980px;
+      margin: 28px auto;
+      padding: 0 16px 36px;
+    }
+    header{
+      background: linear-gradient(135deg, rgba(74,163,255,.18), rgba(68,208,122,.10));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px 18px 14px;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size: 20px;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:0 0 12px;
+      color:var(--muted);
+      font-size: 13px;
+    }
+    .bar{
+      height: 10px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow:hidden;
+      border:1px solid var(--border);
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent), #7bd7ff);
+      transition: width .35s ease;
+    }
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .pillrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    .pill{
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color:var(--muted);
+    }
+    .pill strong{color:var(--text); font-weight:700;}
+    .btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(74,163,255,.22), rgba(74,163,255,.10));
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 650;
+      cursor:pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
+      transition: transform .06s ease, filter .2s ease, opacity .2s ease;
+      user-select:none;
+    }
+    .btn:hover{filter:brightness(1.08)}
+    .btn:active{transform: translateY(1px)}
+    .btn:disabled{opacity:.5; cursor:not-allowed;}
+    .grid{
+      margin-top: 16px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .top{
+      padding: 14px 16px 12px;
+      background: linear-gradient(180deg, rgba(11,36,59,.75), rgba(10,31,51,.35));
+      border-bottom:1px solid var(--border);
+    }
+    .qline{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+    }
+    .qnum{
+      font-family:var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      padding-top: 2px;
+      min-width: 84px;
+    }
+    .qtext{
+      font-size: 15px;
+      margin:0;
+      flex:1;
+    }
+    .tag{
+      font-family:var(--mono);
+      font-size: 11px;
+      color: #bfe1ff;
+      background: rgba(74,163,255,.12);
+      border: 1px solid rgba(74,163,255,.25);
+      padding: 5px 8px;
+      border-radius: 999px;
+      white-space:nowrap;
+      margin-left: 10px;
+    }
+    .choices{
+      padding: 10px 16px 14px;
+      display:grid;
+      gap: 10px;
+    }
+    .choice{
+      border:1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+      padding: 10px 12px;
+      cursor:pointer;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      transition: transform .06s ease, filter .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .choice:hover{filter:brightness(1.06)}
+    .choice:active{transform: translateY(1px)}
+    .choice input{display:none}
+    .letter{
+      font-family:var(--mono);
+      font-weight:800;
+      width: 24px;
+      height: 24px;
+      border-radius: 9px;
+      display:grid;
+      place-items:center;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+    .ctext{
+      color: var(--text);
+      font-size: 14px;
+      font-family: var(--mono);
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+
+    .feedback{
+      margin: 0 16px 14px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      padding: 10px 12px;
+      display:none;
+    }
+    .feedback.show{display:block;}
+    .feedback .status{
+      font-weight:800;
+      margin:0 0 6px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;display:inline-block;
+      background: var(--warn);
+      box-shadow: 0 0 0 3px rgba(255,204,102,.14);
+    }
+    .dot.good{background:var(--good); box-shadow:0 0 0 3px rgba(68,208,122,.14);}
+    .dot.bad{background:var(--bad); box-shadow:0 0 0 3px rgba(255,90,106,.14);}
+    .feedback p{margin:0; color:var(--muted); font-size: 13px;}
+    details{
+      margin-top: 10px;
+      border-top:1px dashed rgba(255,255,255,.14);
+      padding-top: 10px;
+    }
+    summary{
+      cursor:pointer;
+      color:#cfe6ff;
+      font-weight:700;
+      user-select:none;
+    }
+    summary:hover{filter:brightness(1.08)}
+    .explain{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      padding: 14px 16px;
+      border-top:1px solid var(--border);
+      background: rgba(0,0,0,.10);
+    }
+    .btn.secondary{
+      background: rgba(255,255,255,.06);
+    }
+
+    .choice.correct{
+      border-color: rgba(68,208,122,.6);
+      background: rgba(68,208,122,.12);
+    }
+    .choice.incorrect{
+      border-color: rgba(255,90,106,.6);
+      background: rgba(255,90,106,.10);
+    }
+
+    .finish{
+      padding: 16px;
+      display:none;
+    }
+    .finish.show{display:block;}
+    .finish h2{margin:0 0 8px; font-size: 18px;}
+    .finish p{margin:0; color:var(--muted)}
+    .small{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+      font-family: var(--mono);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>CompTIA CySA+ (Hard) — Managing Risk • Cryptography • PKI</h1>
+      <p class="sub">30 scenario-heavy questions with answer shuffling per reload, A/B/C/D labels, Next button, collapsible explanations, progress/score tracking, and hardened monospace equal-length answer rendering.</p>
+      <div class="bar" aria-label="Progress"><div id="progressFill"></div></div>
+      <div class="meta">
+        <div class="pillrow">
+          <div class="pill"><strong id="qCount">Q 1</strong> / 30</div>
+          <div class="pill">Score: <strong id="score">0</strong></div>
+          <div class="pill">Answered: <strong id="answered">0</strong></div>
+        </div>
+        <div class="pillrow">
+          <button class="btn secondary" id="restartBtn" type="button" title="Restart and reshuffle">Restart</button>
+          <button class="btn" id="nextBtn" type="button" disabled>Next</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card" id="quizCard" aria-live="polite">
+        <div class="top">
+          <div class="qline">
+            <div class="qnum" id="qNum">Q01</div>
+            <p class="qtext" id="qText">Loading…</p>
+            <div class="tag" id="qTag">CySA+</div>
+          </div>
+        </div>
+
+        <div class="choices" id="choices"></div>
+
+        <div class="feedback" id="feedback">
+          <div class="status" id="statusLine"><span class="dot" id="statusDot"></span><span id="statusText">—</span></div>
+          <p id="whyText">—</p>
+          <details id="explainBox">
+            <summary>Show explanation</summary>
+            <p class="explain" id="explainText">—</p>
+          </details>
+        </div>
+
+        <div class="finish" id="finish">
+          <h2>Done.</h2>
+          <p id="finalLine"></p>
+          <div class="small" id="finalMeta"></div>
+        </div>
+
+        <div class="nav">
+          <button class="btn secondary" id="revealBtn" type="button" disabled>Reveal correct</button>
+          <button class="btn" id="nextBtnBottom" type="button" disabled>Next</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // --- Utilities ---
+  const shuffle = (arr) => {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+
+  const letters = ["A","B","C","D"];
+
+  const ensurePeriod = (s) => {
+    const t = String(s).replace(/\s+/g, " ").trim();
+    return /[.!?]$/.test(t) ? t : t + ".";
+  };
+
+  const visualLen = (s) => String(s).replace(/\u00A0/g, " ").length;
+
+  const padChoiceText = (text, targetLen) => {
+    const base = ensurePeriod(text);
+    const diff = Math.max(0, targetLen - visualLen(base));
+    return base + "\u00A0".repeat(diff);
+  };
+
+
+  // --- Question bank (30) ---
+  // NOTE: We intentionally keep answer options similar length to reduce "longest answer = correct" tells.
+  // Each question has a "correct" option string that will be shuffled into A/B/C/D per load.
+  const questions = [
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"During a risk register review, leadership asks why a control with strong security value is still not implemented. The team notes the control increases operational latency and breaks a vendor SLA. Which risk response best aligns with maintaining business objectives while reducing residual risk?",
+      options:[
+        "Reduce exposure with a control alternative that preserves service commitments and lowers the practical attack path",
+        "Shift part of the financial consequence contractually while applying an interim safeguard that preserves operations",
+        "Mitigate the exposure by implementing a compensating control that reduces likelihood without violating the SLA",
+        "Restructure the dependent workflow so the underlying weakness no longer drives the same business interruption risk"
+      ],
+      answer:"Mitigate the exposure by implementing a compensating control that reduces likelihood without violating the SLA",
+      why:"Compensating controls are classic mitigation when a primary control is infeasible due to constraints like SLA/latency.",
+      explain:"Risk mitigation reduces likelihood/impact while honoring constraints; compensating controls can satisfy control objectives without breaking uptime/SLA commitments."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A SOC is asked to justify adding analysts for a new logging pipeline. The CFO wants a metric that ties incident frequency to monetary impact over time. Which measure most directly supports this request?",
+      options:[
+        "Mean time to detect (MTTD) for high-severity alerts and associated false-positive reduction ratio",
+        "Annualized loss expectancy (ALE) derived from SLE and ARO for the incident category",
+        "Risk appetite statements mapped to KRIs with qualitative heat-map scoring",
+        "Coverage percentage for telemetry sources compared to the ATT&CK technique matrix"
+      ],
+      answer:"Annualized loss expectancy (ALE) derived from SLE and ARO for the incident category",
+      why:"ALE is explicitly a monetary, time-based expectation of loss.",
+      explain:"ALE expresses expected annual cost of incidents and is often used for cost/benefit staffing or control investment discussions."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"GRC",
+      q:"An organization uses a third-party SaaS to process regulated data. The vendor’s SOC 2 report is current, but the contract lacks language on breach notification timelines. What should you do first to reduce legal and operational risk?",
+      options:[
+        "Require contract language that defines notification timing, evidence rights, and handling obligations for regulated data",
+        "Negotiate contract amendments to add notification SLAs, right-to-audit language, and data handling requirements",
+        "Map shared-responsibility gaps to enforceable obligations and monitoring expectations before changing deployment models",
+        "Increase service oversight internally while formalizing provider obligations tied to reporting and response coordination"
+      ],
+      answer:"Negotiate contract amendments to add notification SLAs, right-to-audit language, and data handling requirements",
+      why:"Contract language is a direct lever for third-party risk, especially breach notification timelines.",
+      explain:"SOC 2 shows controls, but the contract governs obligations. Adding SLAs and audit rights reduces exposure and improves response coordination."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A risk assessment identifies a threat with low likelihood but catastrophic impact. The business cannot tolerate downtime beyond minutes. Which approach best reflects this risk posture?",
+      options:[
+        "Redesign the service dependency so a single failure no longer creates an intolerable business outage condition",
+        "Avoid the risk by redesigning the process to eliminate the single point of failure and reduce impact to near zero",
+        "Distribute the critical function across resilient components so no single event drives the full business impact",
+        "Add recovery planning and testing, but pair it with architectural changes that materially reduce outage concentration"
+      ],
+      answer:"Avoid the risk by redesigning the process to eliminate the single point of failure and reduce impact to near zero",
+      why:"If downtime is intolerable and impact is catastrophic, avoidance via redesign is most aligned.",
+      explain:"Avoidance changes the architecture/process so the intolerable risk condition no longer exists, matching strict availability requirements."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A control test shows endpoint encryption is enabled, but key escrow is misconfigured, causing some devices to lose recovery keys. Which risk concept is MOST impacted if a laptop is stolen?",
+      options:[
+        "Inherent risk because the threat actor’s capability increases when recovery keys are centrally stored",
+        "Residual risk because the implemented control is partially ineffective and may not reduce impact as intended",
+        "Transferred risk because lost keys shift liability to the device manufacturer and cloud escrow provider",
+        "Risk appetite because policy language implies encryption alone is sufficient regardless of recovery feasibility"
+      ],
+      answer:"Residual risk because the implemented control is partially ineffective and may not reduce impact as intended",
+      why:"Residual risk is what remains after controls; misconfiguration reduces effectiveness.",
+      explain:"Encryption with broken key management can fail to meet the control objective, leaving higher residual risk than expected after implementation."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"GRC",
+      q:"A team maps controls to NIST CSF and discovers duplicate controls implemented differently across departments. What is the BEST next step to improve governance and reduce control drift?",
+      options:[
+        "Standardize control baselines with a single control owner, then measure effectiveness using consistent control test procedures",
+        "Delete overlapping controls immediately to reduce operational burden and accept any newly introduced residual risk",
+        "Increase audit frequency for each department and allow local variations to persist as long as they pass annually",
+        "Migrate all control testing to an external assessor and rely on their report as the primary evidence artifact"
+      ],
+      answer:"Standardize control baselines with a single control owner, then measure effectiveness using consistent control test procedures",
+      why:"Control consolidation + ownership + consistent testing reduces drift and improves governance.",
+      explain:"GRC maturity improves when controls have clear ownership, common baselines, and repeatable evidence/test criteria across the enterprise."
+    },
+
+    // --- Cryptography ---
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"An analyst sees repeated TLS handshakes where the client and server negotiate a suite with ECDHE and AES-GCM, but the certificate chain is valid. What property does ECDHE primarily provide in this context?",
+      options:[
+        "Nonrepudiation by binding the session key to the server’s long-term private key during negotiation",
+        "Forward secrecy by ensuring compromise of long-term keys does not decrypt previously captured sessions",
+        "Integrity by generating a MAC that is cryptographically separate from the authenticated encryption mode",
+        "Key escrow by enabling a third party to recover ephemeral keys if the server certificate is revoked"
+      ],
+      answer:"Forward secrecy by ensuring compromise of long-term keys does not decrypt previously captured sessions",
+      why:"ECDHE = ephemeral Diffie-Hellman, mainly for forward secrecy.",
+      explain:"Ephemeral DH derives per-session secrets; later compromise of the server’s cert private key does not reveal past session keys."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"A legacy application uses CBC-mode encryption without a modern AEAD. The team wants to address padding-oracle style issues without a full rewrite. What change MOST directly reduces this class of weakness?",
+      options:[
+        "Add a keyed integrity check over the ciphertext and verify it before attempting any decryption or padding checks",
+        "Increase key length from 128-bit to 256-bit to reduce brute-force feasibility against block cipher operations",
+        "Switch the random number generator to a faster PRNG so IV generation is less computationally expensive",
+        "Disable error logging for decryption failures so attackers cannot observe differences in server responses"
+      ],
+      answer:"Add a keyed integrity check over the ciphertext and verify it before attempting any decryption or padding checks",
+      why:"Encrypt-then-MAC (or AEAD) prevents oracle leakage by authenticating before decrypting.",
+      explain:"Padding oracles exploit distinguishable error behavior. Authenticating ciphertext first prevents decryption and padding handling on tampered data."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"A blue team identifies that an attacker can downgrade a client to a weaker TLS version during negotiation. Which mitigation BEST addresses downgrade attempts?",
+      options:[
+        "Enforce strict transport security and disable legacy protocol versions and weak cipher suites at the server edge",
+        "Restrict negotiation to current protocol versions and approved suites so weaker fallback paths are never selected",
+        "Constrain clients and servers to vetted versions and suites so older fallback combinations are unavailable",
+        "Enforce current transport settings and remove legacy negotiation branches rather than relying on higher-layer authentication"
+      ],
+      answer:"Enforce strict transport security and disable legacy protocol versions and weak cipher suites at the server edge",
+      why:"Prevent negotiation to weak protocols/ciphers and use HSTS where applicable.",
+      explain:"Downgrade protection is mainly configuration: disable older protocol versions/ciphers and enforce secure transport policy."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"You are validating file integrity in a pipeline and need collision resistance more than speed. Which option is the BEST fit?",
+      options:[
+        "Use a modern cryptographic hash with strong collision resistance to detect intentional modification attempts",
+        "Use a non-cryptographic checksum to detect random transmission errors with low computational overhead",
+        "Use symmetric encryption with a shared key so the file cannot be modified without access to the secret",
+        "Use base64 encoding to normalize the file content and reduce accidental bit flips during transport"
+      ],
+      answer:"Use a modern cryptographic hash with strong collision resistance to detect intentional modification attempts",
+      why:"Collision resistance is a hash function property; choose strong cryptographic hash.",
+      explain:"For adversarial integrity, cryptographic hashes (or HMAC if authenticity needed) are preferred over checksums."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"An incident report notes stolen password hashes that were unsalted and hashed with a fast algorithm. Which remediation MOST directly increases attacker workload during offline cracking?",
+      options:[
+        "Use per-user unique salts and a deliberately slow password hashing function to increase computation per guess",
+        "Increase account lockout thresholds so online brute-force attempts are throttled by authentication controls",
+        "Replace hashes with reversible encryption so credentials can be recovered if the identity provider fails",
+        "Store hashes in a different database instance so attackers cannot identify the hashing algorithm used"
+      ],
+      answer:"Use per-user unique salts and a deliberately slow password hashing function to increase computation per guess",
+      why:"Salts defeat precomputation; slow KDF raises cost per guess.",
+      explain:"For offline attacks, salts + slow password hashing (KDF) is the primary mitigation; lockouts help only for online attacks."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"A developer proposes using the same IV for multiple encryptions with a stream cipher to simplify debugging. What is the MOST accurate security concern?",
+      options:[
+        "Reusing the IV can reveal relationships between plaintexts by producing keystream reuse and enabling XOR analysis",
+        "Reusing the IV increases the chance of signature forgery because IVs are mathematically equivalent to private keys",
+        "Reusing the IV only affects confidentiality if the key length is below 128 bits and is otherwise acceptable",
+        "Reusing the IV primarily impacts nonrepudiation because the ciphertext cannot be uniquely attributed to a sender"
+      ],
+      answer:"Reusing the IV can reveal relationships between plaintexts by producing keystream reuse and enabling XOR analysis",
+      why:"Stream cipher + nonce reuse = keystream reuse catastrophe.",
+      explain:"With stream ciphers (and many modes), IV/nonce reuse repeats keystream, allowing attackers to derive plaintext relationships and recover data."
+    },
+
+    // --- PKI ---
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A company needs to enable mutual TLS for internal APIs. Engineers want the simplest way to prevent unauthorized service-to-service calls. Which PKI control BEST supports this goal?",
+      options:[
+        "Issue client certificates from an internal CA and require certificate-based auth with revocation checking on the gateway",
+        "Enroll each workload with an identity tied to policy so unauthorized callers can be blocked at connection time",
+        "Bind service trust to managed identities and revocation-aware validation rather than static per-client trust exceptions",
+        "Require managed machine identities at the gateway so segmentation and certificate validation reinforce each other"
+      ],
+      answer:"Issue client certificates from an internal CA and require certificate-based auth with revocation checking on the gateway",
+      why:"mTLS requires client certs and validation; revocation supports quick disablement.",
+      explain:"Client cert issuance and validation is the core of mTLS. Revocation/short-lived certs allow rapid response when identities are compromised."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A TLS inspection device breaks and reissues certificates on the fly. Analysts see frequent validation errors due to missing intermediate certificates. What is the MOST likely root cause?",
+      options:[
+        "The device is generating self-signed server certificates without distributing the required trust anchor to clients",
+        "The device is using elliptic curve keys, and clients do not support ECDSA signatures in the handshake",
+        "The proxy is not presenting a chain clients can build to a trusted issuer distributed in the enterprise trust store",
+        "The device is enforcing OCSP stapling, and clients treat stapled responses as invalid when offline"
+      ],
+      answer:"The device is generating self-signed server certificates without distributing the required trust anchor to clients",
+      why:"If clients don’t trust the issuer, chain/intermediate issues show up as validation failures.",
+      explain:"Interception requires a trusted enterprise CA installed on clients. Without that trust anchor (or correct chain), validation fails."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A security architect wants to reduce reliance on CRLs for short-lived workloads in a container platform. Which design choice BEST supports this objective?",
+      options:[
+        "Issue short-lived certificates and automate rotation so compromised credentials expire quickly without heavy revocation dependencies",
+        "Use a single long-lived certificate and store it in the container image to ensure identical trust across all replicas",
+        "Disable revocation checking and rely on network ACLs since containers are ephemeral and rarely persist",
+        "Replace certificates with shared secrets and rotate them annually to reduce handshake overhead and operational friction"
+      ],
+      answer:"Issue short-lived certificates and automate rotation so compromised credentials expire quickly without heavy revocation dependencies",
+      why:"Short-lived certs reduce revocation reliance.",
+      explain:"If certificates expire quickly and rotate automatically, the window of misuse is limited, minimizing the need for CRLs/OCSP at scale."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"An auditor asks for evidence that private keys for a root CA are protected against extraction. Which control provides the STRONGEST assurance?",
+      options:[
+        "Store root CA keys in a hardware security module configured to prevent key export and enforce role-based operations",
+        "Encrypt root CA keys at rest with a symmetric key stored on the same server to maintain operational continuity",
+        "Restrict filesystem access to the key directory and rotate administrator passwords quarterly with complexity rules",
+        "Back up root CA keys to offline media and place the media in a locked cabinet managed by the PKI administrator"
+      ],
+      answer:"Store root CA keys in a hardware security module configured to prevent key export and enforce role-based operations",
+      why:"HSMs provide strong non-exportable key protection with controls and auditing.",
+      explain:"HSMs are purpose-built for key protection, enforcing non-export and controlled usage, which is stronger than OS-level controls."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A server presents a certificate that is signed by an intermediate CA, but clients intermittently fail validation depending on the device. What is the MOST probable explanation?",
+      options:[
+        "Some clients lack the intermediate CA certificate and the server is not providing the full chain during the handshake",
+        "Some clients cannot build the chain because the issuing path is incomplete or absent during the handshake",
+        "Validation varies by client because the presented issuing chain is incomplete rather than consistently anchored",
+        "Some clients reject certificates that include subject alternative names because they expect only common name fields"
+      ],
+      answer:"Some clients lack the intermediate CA certificate and the server is not providing the full chain during the handshake",
+      why:"Chain presentation issues cause device-dependent failures.",
+      explain:"If the server doesn’t send the intermediate, clients that don’t already have it cannot build a chain to a trusted root."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A compromised developer workstation is suspected of signing malicious code with a legitimate certificate. What is the BEST immediate PKI action to reduce further damage?",
+      options:[
+        "Revoke the code-signing certificate and update validation systems so new signatures from that certificate are rejected",
+        "Block additional signatures from that identity and rotate trust material associated with the compromised signing workflow",
+        "Invalidate the abused signing identity quickly while preserving unaffected issuance paths and dependent trust relationships",
+        "Update validation policy to reject new artifacts from that signer while preserving evidence needed for prior trusted releases"
+      ],
+      answer:"Revoke the code-signing certificate and update validation systems so new signatures from that certificate are rejected",
+      why:"Revocation stops future trust of that cert for signing.",
+      explain:"If a code-signing key is compromised, revoke the cert (and rotate keys). Timestamping can preserve trust for old signatures, so revocation is key."
+    },
+
+    // --- Mixed hard, “word salad” CySA+ style ---
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A project team proposes a control that reduces phishing success but requires storing additional user behavior telemetry. Privacy counsel warns this increases regulatory exposure. Which activity BEST balances security benefit with compliance obligations?",
+      options:[
+        "Conduct a privacy impact assessment and adjust data minimization and retention so the control objective is met with reduced collection",
+        "Limit collection scope and retention using a documented privacy review so the detection goal is met with less data",
+        "Adjust the control design through governance review so detection value is preserved without unnecessary data exposure",
+        "Apply purpose limitation and retention controls before expanding collection, even if processing remains externally hosted"
+      ],
+      answer:"Conduct a privacy impact assessment and adjust data minimization and retention so the control objective is met with reduced collection",
+      why:"PIA + minimization/retention tuning is the right governance move.",
+      explain:"Balancing security and privacy typically uses PIA/DPIA, data minimization, retention limits, and purpose limitation while still meeting control goals."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"A team stores encrypted database backups. An attacker gains read access to the backup files but not to the key management system. Which security property is MOST directly being relied on?",
+      options:[
+        "Confidentiality because ciphertext without key material should be computationally infeasible to recover as plaintext",
+        "Availability because backup encryption ensures restores can occur quickly even if production storage is destroyed",
+        "Nonrepudiation because encrypted backups prove who created the files and prevent denial of authorship",
+        "Integrity because encryption alone guarantees the backups cannot be altered without detection by the storage system"
+      ],
+      answer:"Confidentiality because ciphertext without key material should be computationally infeasible to recover as plaintext",
+      why:"Encryption primarily provides confidentiality (without authentication).",
+      explain:"Encryption protects secrecy; integrity requires authentication (e.g., AEAD/HMAC) and availability is a separate control objective."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"An enterprise wants to enforce that only managed devices can access sensitive web apps. They plan to use certificate-based auth on endpoints. Which operational requirement is MOST critical to make this effective at scale?",
+      options:[
+        "Maintain lifecycle management for device certificates including issuance, renewal, revocation, and inventory correlation",
+        "Track certificate issuance, renewal, revocation, and asset ownership so device identity remains trustworthy over time",
+        "Maintain certificate lifecycle and inventory binding so device trust decisions remain accurate at enterprise scale",
+        "Automate enrollment and retirement of endpoint identities so device-based access decisions stay current and enforceable"
+      ],
+      answer:"Maintain lifecycle management for device certificates including issuance, renewal, revocation, and inventory correlation",
+      why:"Device cert auth lives or dies on lifecycle management and inventory mapping.",
+      explain:"Managed device assurance requires trustworthy issuance, enrollment, renewal, and rapid revocation tied to asset inventory and posture checks."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A vulnerability is exploitable only if an attacker is on the internal network. Network segmentation is planned but not yet deployed. Which factor should MOST influence the current risk rating?",
+      options:[
+        "Current exposure because compensating controls are not yet effective, increasing likelihood despite future segmentation plans",
+        "Rate the weakness against today’s exposure and live controls, then record planned segmentation as future treatment work",
+        "Use current network reachability and existing safeguards to set priority rather than assuming future segmentation already exists",
+        "Base prioritization on present access conditions and interim controls rather than on roadmap items or vulnerability age"
+      ],
+      answer:"Current exposure because compensating controls are not yet effective, increasing likelihood despite future segmentation plans",
+      why:"Risk is rated based on current state, not planned controls.",
+      explain:"Risk assessments typically consider existing controls and exposure. Planned improvements can be documented as remediation but don’t reduce today’s likelihood."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"An analyst observes a JWT-like token that is base64-encoded, signed, but not encrypted. The token contains user roles. What is the MOST accurate statement?",
+      options:[
+        "The token provides integrity and authenticity of claims, but confidentiality is not provided because the payload is readable",
+        "The token provides confidentiality because the signature algorithm obfuscates claims during verification operations",
+        "The token provides nonrepudiation because any party can verify the signature without trusting the issuer",
+        "The token provides integrity only if the token is transmitted over cleartext to avoid man-in-the-middle tampering"
+      ],
+      answer:"The token provides integrity and authenticity of claims, but confidentiality is not provided because the payload is readable",
+      why:"Signed ≠ encrypted; base64 is not secrecy.",
+      explain:"A signature protects against modification and identifies issuer, but anyone can decode base64. Encrypt (JWE) if confidentiality is required."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A CA issues certificates that include a policy OID to indicate they are valid only for client authentication. Which mechanism uses this information during validation?",
+      options:[
+        "Extended Key Usage constraints evaluated by the relying party to ensure the certificate is permitted for the intended purpose",
+        "Key stretching parameters applied to the private key so it can be used for multiple purposes without reissuance",
+        "Certificate transparency logs that block certificates lacking OIDs when the chain is built during handshake",
+        "Perfect forward secrecy settings that are negotiated based on OIDs to determine ephemeral key lengths"
+      ],
+      answer:"Extended Key Usage constraints evaluated by the relying party to ensure the certificate is permitted for the intended purpose",
+      why:"EKU/policy constraints guide intended use checks.",
+      explain:"Relying parties validate intended usage using EKU (and sometimes policy constraints) to prevent misuse of a cert for an unauthorized purpose."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"GRC",
+      q:"An internal audit notes that risk treatment decisions are being made without documenting assumptions or control evidence. Which artifact MOST directly addresses this gap?",
+      options:[
+        "A risk acceptance memo that records rationale, assumptions, compensating controls, and sign-off by the risk owner",
+        "A vulnerability scan report that lists CVEs with severities and provides a raw inventory of exposed assets",
+        "A phishing simulation summary that reports click rates and highlights departments with higher susceptibility",
+        "A network diagram that documents segmentation boundaries and highlights where sensitive systems are located"
+      ],
+      answer:"A risk acceptance memo that records rationale, assumptions, compensating controls, and sign-off by the risk owner",
+      why:"Audit wants documented decision basis and approvals.",
+      explain:"Risk governance expects traceable decisions: rationale, assumptions, evidence, and formal approval from the accountable risk owner."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"A monitoring tool flags that a service uses RSA key exchange instead of (EC)DHE. What security drawback is MOST relevant to incident response when traffic has been captured?",
+      options:[
+        "Captured traffic may be decrypted later if the server’s private key is compromised because forward secrecy is not provided",
+        "Captured traffic becomes unavailable for forensics because RSA prevents lawful decryption even with proper authorization",
+        "Captured traffic loses integrity because RSA key exchange disables authenticated encryption modes during data transfer",
+        "Captured traffic cannot be replayed by attackers because RSA ensures unique nonces are embedded into each packet"
+      ],
+      answer:"Captured traffic may be decrypted later if the server’s private key is compromised because forward secrecy is not provided",
+      why:"Static RSA key exchange lacks forward secrecy.",
+      explain:"Without ephemeral DH, compromise of the long-term private key can expose previously recorded sessions, impacting retrospective investigations."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A security team receives reports that OCSP responses are failing during an outage, causing client connection failures. What is the BEST resilience improvement?",
+      options:[
+        "Enable OCSP stapling where appropriate and ensure servers present fresh stapled responses to reduce client dependency on responders",
+        "Disable revocation checking entirely because revocation is optional and should never block mission-critical services",
+        "Increase CRL publication frequency to hourly so OCSP responders have less work and clients do not time out",
+        "Replace PKI with pre-shared keys so revocation is unnecessary and certificates are no longer required"
+      ],
+      answer:"Enable OCSP stapling where appropriate and ensure servers present fresh stapled responses to reduce client dependency on responders",
+      why:"Stapling improves availability by bundling revocation status.",
+      explain:"Stapling reduces reliance on external OCSP responders and can improve connection reliability when responders are unreachable."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A SOC recommends deploying a new DLP control, but the business unit refuses due to user friction. Which statement BEST represents a mature risk decision workflow?",
+      options:[
+        "Escalate the exception to the accountable owner, record the basis for the decision, and schedule periodic re-evaluation",
+        "Route the disagreement through formal governance so business impact and exposure are weighed by the accountable owner",
+        "Preserve decision traceability through formal exception handling instead of equating resistance to elimination of exposure",
+        "Document the treatment path under the accountable owner instead of shifting acceptance to a team without business authority"
+      ],
+      answer:"Escalate the exception to the accountable owner, record the basis for the decision, and schedule periodic re-evaluation",
+      why:"Risk owner sign-off + documentation + periodic review is mature governance.",
+      explain:"Risk treatment requires accountable ownership. Documenting exception/acceptance with review dates ensures visibility and revisitation as conditions change."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"An engineer suggests using encryption to ensure integrity of messages between microservices. Which correction is MOST accurate if the design currently lacks authentication?",
+      options:[
+        "Encryption alone does not guarantee integrity; use an AEAD mode or add a keyed integrity mechanism to detect tampering",
+        "Encryption guarantees integrity as long as keys are rotated quarterly and the cipher suite uses at least 128-bit keys",
+        "Integrity is a property of base64 encoding layered on top of encryption and therefore does not require additional controls",
+        "Integrity is provided by TLS version negotiation, so message-level integrity controls are redundant and unnecessary"
+      ],
+      answer:"Encryption alone does not guarantee integrity; use an AEAD mode or add a keyed integrity mechanism to detect tampering",
+      why:"Confidentiality ≠ integrity; add AEAD/HMAC.",
+      explain:"Without authentication, attackers can modify ciphertext (malleability). AEAD (e.g., GCM/ChaCha20-Poly1305) or Encrypt-then-MAC adds integrity."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A certificate is revoked, but software signed before revocation continues to validate due to trusted timestamps. What does this behavior MOST indicate?",
+      options:[
+        "Timestamping preserves trust for signatures created while the certificate was valid, depending on validation policy",
+        "Revocation is ignored for code-signing and only applies to TLS server authentication use cases",
+        "The signature is invalid because timestamps always invalidate signatures after a certificate is revoked",
+        "The certificate was never actually revoked because OCSP responders cannot return revoked status for code signing"
+      ],
+      answer:"Timestamping preserves trust for signatures created while the certificate was valid, depending on validation policy",
+      why:"Trusted timestamps allow validation after expiration/revocation under some policies.",
+      explain:"Many code-signing ecosystems accept a signature if it was timestamped during the cert validity period, even if the cert is later revoked."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A BIA identifies that a customer portal outage costs $50,000 per hour in lost revenue. The estimated maximum tolerable downtime is 2 hours. Which statement best aligns with using BIA outputs in risk management?",
+      options:[
+        "Use cost-of-downtime and tolerance thresholds to rank resilience work that lowers impact and meets recovery targets",
+        "Translate business impact findings into resilience priorities and recovery expectations rather than into unrelated technical settings",
+        "Apply downtime tolerance to continuity planning and control prioritization rather than to reduction of detection capability",
+        "Use the impact estimate to justify resilience investment and sequencing, not as a reason to leave outage exposure untreated"
+      ],
+      answer:"Use cost-of-downtime and tolerance thresholds to rank resilience work that lowers impact and meets recovery targets",
+      why:"BIA outputs drive prioritization and continuity targets.",
+      explain:"BIA informs RTO/RPO priorities and helps justify controls/resilience investments to meet business tolerance and reduce impact."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"A team wants to detect unauthorized changes to configuration files while also ensuring only approved automation can update them. Which solution BEST meets both objectives?",
+      options:[
+        "Use a keyed hash (HMAC) so authorized automation can generate the tag and verifiers can detect tampering",
+        "Use a checksum so random errors are detected quickly without requiring key management overhead",
+        "Use symmetric encryption so files are unreadable and therefore cannot be modified by unauthorized users",
+        "Use compression so the file format changes with each update and reduces the chance of undetected edits"
+      ],
+      answer:"Use a keyed hash (HMAC) so authorized automation can generate the tag and verifiers can detect tampering",
+      why:"HMAC provides integrity + authenticity of the updater.",
+      explain:"HMAC validates content integrity and proves possession of the shared secret by the automation, meeting both tamper detection and authorized update goals."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A security team needs to ensure subordinate CAs cannot issue certificates for unauthorized namespaces. Which PKI control MOST directly restricts this capability?",
+      options:[
+        "Name constraints applied to an intermediate CA certificate to limit the permitted DNS/email namespaces it can issue for",
+        "Key usage bits set to digitalSignature so the intermediate can sign only data and not certificates",
+        "CRL distribution points removed so subordinate CAs cannot publish revocation data to external endpoints",
+        "Subject alternative name removed from end-entity certs so namespace validation no longer applies in clients"
+      ],
+      answer:"Name constraints applied to an intermediate CA certificate to limit the permitted DNS/email namespaces it can issue for",
+      why:"Name constraints restrict issuance scope for sub-CAs.",
+      explain:"Name constraints are designed to constrain subordinate CA issuance, preventing it from minting certs outside approved namespaces."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A remediation backlog is triaged using both CVSS and asset criticality. A medium-severity vulnerability exists on a system supporting regulated data with high business impact. What is the MOST appropriate treatment decision approach?",
+      options:[
+        "Prioritize remediation based on contextual risk by combining technical severity, exposure, and business impact rather than CVSS alone",
+        "Defer remediation because medium CVSS indicates the vulnerability is not urgent and likely has no practical exploitation path",
+        "Ignore asset criticality to ensure objective scoring and prevent business stakeholders from influencing security priorities",
+        "Treat the vulnerability as accepted risk because regulated systems already have compliance controls that negate exploitation"
+      ],
+      answer:"Prioritize remediation based on contextual risk by combining technical severity, exposure, and business impact rather than CVSS alone",
+      why:"Contextual risk beats raw CVSS for prioritization.",
+      explain:"CVSS is a starting point. Asset criticality, data sensitivity, exposure, and compensating controls inform the true risk and remediation priority."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"A SOC analyst suspects a downgrade and notices the server accepts 3DES in a fallback path. What is the BEST immediate hardening step?",
+      options:[
+        "Disable weak ciphers and fallback negotiation paths, then validate only modern suites with strong authenticated encryption",
+        "Increase certificate validity from 90 days to 2 years to reduce renegotiation frequency and stabilize handshakes",
+        "Switch to a larger RSA modulus so 3DES sessions inherit stronger cryptographic properties from the certificate",
+        "Enable plaintext HTTP on internal routes so clients do not need to negotiate cryptographic parameters at all"
+      ],
+      answer:"Disable weak ciphers and fallback negotiation paths, then validate only modern suites with strong authenticated encryption",
+      why:"Remove weak cipher and fallback path immediately.",
+      explain:"Hardening focuses on disabling weak suites and protocol downgrade paths; modern AEAD ciphers and current protocol versions are preferred."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A PKI admin wants to reduce the blast radius if an intermediate CA is compromised. Which architecture BEST supports this objective?",
+      options:[
+        "Use multiple intermediates segmented by environment and purpose, with constrained issuance policies and limited validity periods",
+        "Use a single enterprise intermediate for all use cases so revocation is centralized and easier to manage",
+        "Issue end-entity certificates directly from the root CA so chain length is shorter and validation is faster",
+        "Disable intermediate CA keys from signing certificates and use them only for signing application data"
+      ],
+      answer:"Use multiple intermediates segmented by environment and purpose, with constrained issuance policies and limited validity periods",
+      why:"Segmentation + constraints reduces compromise blast radius.",
+      explain:"Separating intermediates by function/environment limits impact; constraints and shorter validity help contain and recover from compromise."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A threat model identifies credential stuffing as a top threat for a customer login portal. Which control selection BEST reflects reducing likelihood while preserving user experience?",
+      options:[
+        "Implement adaptive rate limiting and bot detection with risk-based step-up authentication for anomalous login patterns",
+        "Require long complex passwords and mandatory rotation every 30 days to ensure unique credentials across all services",
+        "Disable password login entirely and require users to call the help desk for one-time access codes during business hours",
+        "Allow unlimited login attempts but increase monitoring so incidents are detected quickly and handled after compromise"
+      ],
+      answer:"Implement adaptive rate limiting and bot detection with risk-based step-up authentication for anomalous login patterns",
+      why:"Adaptive throttling + bot detection + step-up MFA is a practical balance.",
+      explain:"Credential stuffing is mitigated by throttling automation and adding step-up auth when risk signals trigger, reducing success while minimizing friction for legitimate users."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"A developer claims that using SHA-1 for digital signatures is acceptable because signatures are not used for password storage. What is the BEST rebuttal?",
+      options:[
+        "Weak collision resistance can enable signature forgery or substitution attacks, so deprecated hashes are risky beyond passwords",
+        "SHA-1 is only weak when used with symmetric encryption and is safe when paired with public key algorithms",
+        "Signature security depends only on key size, and the hash function choice does not affect verification integrity",
+        "SHA-1 is acceptable if the message is short because collisions become infeasible when data length is reduced"
+      ],
+      answer:"Weak collision resistance can enable signature forgery or substitution attacks, so deprecated hashes are risky beyond passwords",
+      why:"Collision attacks threaten signatures, not just password hashing.",
+      explain:"Digital signatures hash the message; collision weaknesses can allow crafted messages that share a hash, undermining signature trust."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A company uses client certs for VPN access. They want to immediately disable access for terminated users. Which factor MOST affects how quickly that takes effect?",
+      options:[
+        "How revocation status is checked and cached, including CRL/OCSP refresh intervals and client behavior",
+        "The signature algorithm on the certificate, because ECDSA revocations propagate faster than RSA revocations",
+        "The size of the public key, because larger keys allow revocation to be computed more quickly by clients",
+        "The certificate common name format, because structured naming accelerates revocation processing on endpoints"
+      ],
+      answer:"How revocation status is checked and cached, including CRL/OCSP refresh intervals and client behavior",
+      why:"Revocation propagation hinges on checking/caching behavior.",
+      explain:"Immediate disablement depends on revocation checking mechanics and caches. Short-lived certs, OCSP, and refresh intervals matter operationally."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"GRC",
+      q:"A policy requires encryption for data at rest. A database team claims they comply because storage is encrypted, but backups are copied to a third-party without encryption. Which assessment conclusion is MOST accurate?",
+      options:[
+        "The control objective is not fully met because encryption must apply across the data lifecycle, including backups and third-party storage",
+        "The requirement remains unmet when derivative copies outside the protected storage path are left without equivalent safeguards",
+        "Assess the full data lifecycle, including exported copies and hosted backups, rather than limiting scope to primary storage",
+        "Validate the control against all resting data locations, including third-party backup repositories and exported artifacts"
+      ],
+      answer:"The control objective is not fully met because encryption must apply across the data lifecycle, including backups and third-party storage",
+      why:"Backups are still data at rest; lifecycle scope matters.",
+      explain:"Encryption-at-rest requirements generally include backups, replicas, exports, and third-party storage locations unless explicitly scoped out."
+    },
+    {
+      domain:"Cryptography",
+      tag:"CRYPTO",
+      q:"A service uses AES-GCM but developers reuse nonces due to a bug. What is the MOST likely security impact?",
+      options:[
+        "Confidentiality and integrity can both fail because nonce reuse can enable tag forgery and plaintext recovery in GCM",
+        "Only availability is impacted because nonce reuse primarily causes decryption errors and forces session renegotiation",
+        "Only confidentiality fails while integrity remains intact because authentication tags are independent of nonce values",
+        "Nonces are optional metadata in GCM and reuse has no effect if the key is rotated on a monthly schedule"
+      ],
+      answer:"Confidentiality and integrity can both fail because nonce reuse can enable tag forgery and plaintext recovery in GCM",
+      why:"GCM nonce reuse is catastrophic for both secrecy and authenticity.",
+      explain:"GCM requires unique nonces per key; reuse can leak information and allow attackers to forge valid tags under certain conditions."
+    },
+    {
+      domain:"Public Key Infrastructure",
+      tag:"PKI",
+      q:"A company is migrating from an internal CA to a managed CA. They worry about trust continuity for endpoints that cannot be updated quickly. What is the BEST transitional strategy?",
+      options:[
+        "Cross-sign or chain through a trusted intermediate while planning staged trust store updates to preserve validation during migration",
+        "Disable certificate validation temporarily so endpoints remain connected while the migration completes in the background",
+        "Reuse the old private keys with the managed CA so the same certificates remain valid without endpoint changes",
+        "Issue self-signed certificates for all services so endpoints do not need to trust any external or internal CA"
+      ],
+      answer:"Cross-sign or chain through a trusted intermediate while planning staged trust store updates to preserve validation during migration",
+      why:"Cross-signing/compat chains maintain trust while endpoints update.",
+      explain:"Migration often uses cross-signed intermediates or dual chains to maintain compatibility until trust stores can be updated everywhere."
+    },
+    {
+      domain:"Managing Risk",
+      tag:"RISK",
+      q:"A team measures the effectiveness of a new control and finds it reduces alert volume but does not reduce confirmed incident count. What is the BEST interpretation?",
+      options:[
+        "The control may be reducing noise rather than risk, so effectiveness testing should focus on likelihood/impact metrics tied to incidents",
+        "The control is fully effective because fewer alerts always indicates fewer attacks and therefore fewer incidents overall",
+        "The control is ineffective because reducing alert volume indicates the SOC is blind to attacks and cannot detect incidents",
+        "The control proves risk is transferred because operational workload decreased and responsibility is now externalized"
+      ],
+      answer:"The control may be reducing noise rather than risk, so effectiveness testing should focus on likelihood/impact metrics tied to incidents",
+      why:"Less noise is good, but risk reduction must be validated by incident outcomes.",
+      explain:"Control effectiveness should be measured against risk outcomes (incidents, impact) not only operational metrics (alert volume)."
+    }
+  ];
+
+  questions.forEach((q) => {
+    q.options = q.options.map(ensurePeriod);
+    q.answer = ensurePeriod(q.answer);
+    q.why = ensurePeriod(q.why);
+    q.explain = ensurePeriod(q.explain);
+  });
+
+
+  // --- DOM ---
+  const qNumEl = document.getElementById("qNum");
+  const qTextEl = document.getElementById("qText");
+  const qTagEl = document.getElementById("qTag");
+  const choicesEl = document.getElementById("choices");
+  const feedbackEl = document.getElementById("feedback");
+  const statusDot = document.getElementById("statusDot");
+  const statusText = document.getElementById("statusText");
+  const whyText = document.getElementById("whyText");
+  const explainText = document.getElementById("explainText");
+  const progressFill = document.getElementById("progressFill");
+  const scoreEl = document.getElementById("score");
+  const answeredEl = document.getElementById("answered");
+  const qCountEl = document.getElementById("qCount");
+  const nextBtn = document.getElementById("nextBtn");
+  const nextBtnBottom = document.getElementById("nextBtnBottom");
+  const restartBtn = document.getElementById("restartBtn");
+  const revealBtn = document.getElementById("revealBtn");
+  const finishEl = document.getElementById("finish");
+  const finalLine = document.getElementById("finalLine");
+  const finalMeta = document.getElementById("finalMeta");
+
+  // --- State ---
+  let order = [];                 // shuffled question indices
+  let idx = 0;                    // current position in order
+  let score = 0;
+  let answered = 0;
+  let locked = false;
+  let currentChoices = [];        // choices after shuffle for current question
+  let correctIndex = -1;          // index in currentChoices
+  let selectedIndex = -1;
+
+  // Persist per-load shuffle (simple)
+  const buildQuiz = () => {
+    order = shuffle([...Array(questions.length).keys()]);
+    idx = 0;
+    score = 0;
+    answered = 0;
+    locked = false;
+    currentChoices = [];
+    correctIndex = -1;
+    selectedIndex = -1;
+
+    scoreEl.textContent = String(score);
+    answeredEl.textContent = String(answered);
+    finishEl.classList.remove("show");
+    feedbackEl.classList.remove("show");
+    nextBtn.disabled = true;
+    nextBtnBottom.disabled = true;
+    revealBtn.disabled = true;
+
+    render();
+  };
+
+  const setProgress = () => {
+    const pct = Math.round(((idx) / questions.length) * 100);
+    progressFill.style.width = pct + "%";
+    qCountEl.textContent = `Q ${Math.min(idx+1, questions.length)}`;
+    answeredEl.textContent = String(answered);
+    scoreEl.textContent = String(score);
+  };
+
+  const render = () => {
+    setProgress();
+
+    if (idx >= questions.length){
+      // finish
+      choicesEl.innerHTML = "";
+      feedbackEl.classList.remove("show");
+      finishEl.classList.add("show");
+      progressFill.style.width = "100%";
+      nextBtn.disabled = true;
+      nextBtnBottom.disabled = true;
+      revealBtn.disabled = true;
+
+      const pct = Math.round((score / questions.length) * 100);
+      finalLine.textContent = `Final score: ${score} / ${questions.length} (${pct}%).`;
+      finalMeta.textContent = `Domains: Managing Risk • Cryptography • PKI | Mode: Hard | Shuffled per load`;
+      qNumEl.textContent = "DONE";
+      qTextEl.textContent = "Quiz complete. Use Restart to reshuffle and try again.";
+      qTagEl.textContent = "RESULTS";
+      return;
+    }
+
+    locked = false;
+    selectedIndex = -1;
+
+    const q = questions[order[idx]];
+    qNumEl.textContent = `Q${String(idx+1).padStart(2,"0")}`;
+    qTextEl.textContent = q.q;
+    qTagEl.textContent = q.tag;
+
+    // shuffle answer choices
+    currentChoices = shuffle(q.options.map((t) => t));
+    correctIndex = currentChoices.findIndex((x) => x === q.answer);
+
+    // render choices
+    choicesEl.innerHTML = "";
+    const targetLen = Math.max(...currentChoices.map((t) => visualLen(ensurePeriod(t))));
+    currentChoices.forEach((text, i) => {
+      const label = document.createElement("label");
+      label.className = "choice";
+      label.setAttribute("data-i", String(i));
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "q";
+      input.value = String(i);
+
+      const letter = document.createElement("div");
+      letter.className = "letter";
+      letter.textContent = letters[i];
+
+      const ctext = document.createElement("div");
+      ctext.className = "ctext";
+      ctext.textContent = padChoiceText(text, targetLen);
+
+      label.appendChild(input);
+      label.appendChild(letter);
+      label.appendChild(ctext);
+
+      label.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (locked) return;
+        select(i);
+      });
+
+      choicesEl.appendChild(label);
+    });
+
+    // reset feedback + buttons
+    feedbackEl.classList.remove("show");
+    statusDot.className = "dot";
+    statusText.textContent = "—";
+    whyText.textContent = "—";
+    explainText.textContent = "—";
+    nextBtn.disabled = true;
+    nextBtnBottom.disabled = true;
+    revealBtn.disabled = true;
+  };
+
+  const select = (i) => {
+    if (locked) return;
+    locked = true;
+    selectedIndex = i;
+
+    const q = questions[order[idx]];
+    answered += 1;
+
+    // mark choices
+    const nodes = [...choicesEl.querySelectorAll(".choice")];
+    nodes.forEach((n, j) => {
+      n.classList.remove("correct","incorrect");
+      if (j === correctIndex) n.classList.add("correct");
+      if (j === selectedIndex && selectedIndex !== correctIndex) n.classList.add("incorrect");
+    });
+
+    const correct = (selectedIndex === correctIndex);
+    if (correct) score += 1;
+
+    // feedback
+    feedbackEl.classList.add("show");
+    statusDot.classList.remove("good","bad");
+    statusDot.classList.add(correct ? "good" : "bad");
+    statusText.textContent = correct ? "Correct" : "Incorrect";
+    whyText.textContent = q.why;
+    explainText.textContent = q.explain;
+
+    // buttons
+    nextBtn.disabled = false;
+    nextBtnBottom.disabled = false;
+    revealBtn.disabled = false;
+
+    setProgress();
+  };
+
+  const reveal = () => {
+    if (!locked) return;
+    const nodes = [...choicesEl.querySelectorAll(".choice")];
+    nodes.forEach((n, j) => {
+      n.classList.remove("correct","incorrect");
+      if (j === correctIndex) n.classList.add("correct");
+      if (j === selectedIndex && selectedIndex !== correctIndex) n.classList.add("incorrect");
+    });
+    feedbackEl.classList.add("show");
+  };
+
+  const next = () => {
+    if (idx >= questions.length) return;
+    if (!locked) return;
+    idx += 1;
+    render();
+  };
+
+  // --- Events ---
+  nextBtn.addEventListener("click", next);
+  nextBtnBottom.addEventListener("click", next);
+  restartBtn.addEventListener("click", buildQuiz);
+  revealBtn.addEventListener("click", reveal);
+
+  // init
+  buildQuiz();
+})();
+</script>
+</body>
+</html>
