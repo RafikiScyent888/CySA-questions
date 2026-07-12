@@ -59,7 +59,7 @@
       const answered = userAns !== null && userAns !== undefined;
 
       let html = '<div class="question-card">';
-      html += '<span class="question-meta">' + escapeHtml(q.objective) + ' &middot; ' + escapeHtml(q.objectiveName) + '</span>';
+      html += '<span class="question-meta">' + escapeHtml(q.sub) + ' &middot; ' + escapeHtml(q.subLabel) + '</span>';
       html += '<p class="question-text">' + escapeHtml(q.q) + '</p>';
       html += '<div class="options">';
       q.options.forEach((opt, i) => {
@@ -145,7 +145,7 @@
         html += '<div class="review-item">';
         html += '<div class="tagrow">' +
           '<span class="status-pill ' + (gotItRight ? 'ok' : 'no') + '">' + (gotItRight ? 'Correct' : 'Incorrect') + '</span>' +
-          '<span class="question-meta">' + escapeHtml(q.objective) + ' &middot; ' + escapeHtml(q.objectiveName) + '</span>' +
+          '<span class="question-meta">' + escapeHtml(q.sub) + ' &middot; ' + escapeHtml(q.subLabel) + '</span>' +
           '</div>';
         html += '<div class="rq">' + (i + 1) + '. ' + escapeHtml(q.q) + '</div>';
         html += '<div class="options">';
