@@ -23,7 +23,11 @@
 
       <div class="field">
         <label>Objectives to include</label>
-        <div class="checkbox-grid" id="objectiveGrid"></div>
+        <div class="row" style="margin-bottom:10px; display:flex; gap:10px;">
+          <button class="btn btn-ghost" id="selectAllBtn" type="button">Select All</button>
+          <button class="btn btn-ghost" id="selectNoneBtn" type="button">Deselect All</button>
+        </div>
+        <div id="objectiveGroups"></div>
         <div class="hint">Leave all checked to pull from every CySA+ objective.</div>
       </div>
 
@@ -42,36 +46,46 @@
   <script src="assets/data.js"></script>
   <script src="assets/app.js"></script>
   <script>
-    const objectiveGrid = document.getElementById('objectiveGrid');
+    const objectiveGroups = document.getElementById('objectiveGroups');
     const countRange = document.getElementById('countRange');
     const countLabel = document.getElementById('countLabel');
     const poolWarning = document.getElementById('poolWarning');
     const startBtn = document.getElementById('startBtn');
 
-    const codes = Object.keys(CYSA_OBJECTIVES);
+    const domainCodes = Object.keys(CYSA_OBJECTIVES);
+    const codes = domainCodes.flatMap(d => CYSA_SUB_OBJECTIVES[d].map(s => s.id));
     const poolCounts = {};
     codes.forEach(code => {
-      poolCounts[code] = CYSA_QUESTIONS.filter(q => q.objective === code).length;
+      poolCounts[code] = CYSA_QUESTIONS.filter(q => q.sub === code).length;
     });
 
-    codes.forEach(code => {
-      const item = document.createElement('label');
-      item.className = 'checkbox-item';
-      item.innerHTML =
-        '<input type="checkbox" value="' + code + '" checked />' +
-        '<span>' + code + ' ' + CYSA_OBJECTIVES[code] + '</span>' +
-        '<span class="obj-count">' + poolCounts[code] + ' Qs</span>';
-      objectiveGrid.appendChild(item);
+    domainCodes.forEach(domainCode => {
+      const subs = CYSA_SUB_OBJECTIVES[domainCode].filter(s => poolCounts[s.id] > 0);
+      if (subs.length === 0) return;
+      const group = document.createElement('div');
+      group.className = 'obj-group';
+      group.innerHTML = '<h3>' + domainCode + ' ' + CYSA_OBJECTIVES[domainCode] + '</h3><div class="checkbox-grid"></div>';
+      const grid = group.querySelector('.checkbox-grid');
+      subs.forEach(s => {
+        const item = document.createElement('label');
+        item.className = 'checkbox-item';
+        item.innerHTML =
+          '<input type="checkbox" value="' + s.id + '" checked />' +
+          '<span>' + s.id + ' ' + s.label + '</span>' +
+          '<span class="obj-count">' + poolCounts[s.id] + ' Qs</span>';
+        grid.appendChild(item);
+      });
+      objectiveGroups.appendChild(group);
     });
 
     function selectedObjectives() {
-      return [...objectiveGrid.querySelectorAll('input:checked')].map(el => el.value);
+      return [...objectiveGroups.querySelectorAll('input:checked')].map(el => el.value);
     }
 
     function currentPoolSize() {
       const sel = selectedObjectives();
       if (sel.length === 0) return 0;
-      return CYSA_QUESTIONS.filter(q => sel.includes(q.objective)).length;
+      return CYSA_QUESTIONS.filter(q => sel.includes(q.sub)).length;
     }
 
     function refreshWarning() {
@@ -93,7 +107,15 @@
     }
 
     countRange.addEventListener('input', refreshWarning);
-    objectiveGrid.addEventListener('change', refreshWarning);
+    objectiveGroups.addEventListener('change', refreshWarning);
+    document.getElementById('selectAllBtn').addEventListener('click', () => {
+      objectiveGroups.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = true);
+      refreshWarning();
+    });
+    document.getElementById('selectNoneBtn').addEventListener('click', () => {
+      objectiveGroups.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+      refreshWarning();
+    });
     refreshWarning();
 
     startBtn.addEventListener('click', () => {
@@ -110,7 +132,7 @@
         mode: 'custom',
         count,
         objectives: sel,
-        label: 'Custom Quiz — ' + count + ' Questions' + (allSelected ? '' : ' (' + sel.join(', ') + ')'),
+        label: 'Custom Quiz — ' + count + ' Questions' + (allSelected ? '' : ' (' + sel.length + ' objectives)'),
         theme: 'green'
       });
       saveSession(session);
