@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+<title>Quiz — CySA+ Practice Hub</title>
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="quiz-topbar" id="quizTopbar">
+    <button class="btn btn-secondary" id="pauseBtn">⏸ Pause</button>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="qcounter" id="qCounter"></div>
+  </div>
+
+  <div class="wrap">
+    <div id="quizArea"></div>
+    <div id="resultsArea" style="display:none;"></div>
+
+    <footer class="site-footer">
+      This site is an independent, unofficial study aid created for educational purposes only.
+      It is not affiliated with, endorsed by, or sponsored by CompTIA. CySA+ and CompTIA are trademarks of CompTIA, Inc.
+    </footer>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    let session = loadSession();
+    if (!session || !session.questions || session.questions.length === 0) {
+      window.location.href = 'index.html';
+    }
+
+    const quizArea = document.getElementById('quizArea');
+    const resultsArea = document.getElementById('resultsArea');
+    const quizTopbar = document.getElementById('quizTopbar');
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str == null ? '' : String(str);
+      return div.innerHTML;
+    }
+
+    function updateTopbar(idx) {
+      const total = session.questions.length;
+      document.getElementById('qCounter').textContent = (idx + 1) + ' / ' + total;
+      const answeredCount = session.userAnswers.filter(a => a !== null && a !== undefined).length;
+      document.getElementById('progressFill').style.width = Math.round((answeredCount / total) * 100) + '%';
+    }
+
+    function renderQuestion(idx) {
+      session.currentIndex = idx;
+      saveSession(session);
+      updateTopbar(idx);
+
+      const total = session.questions.length;
+      const q = session.questions[idx];
+      const userAns = session.userAnswers[idx];
+      const answered = userAns !== null && userAns !== undefined;
+
+      let html = '<div class="question-card">';
+      html += '<span class="question-meta">' + escapeHtml(q.objective) + ' &middot; ' + escapeHtml(q.objectiveName) + '</span>';
+      html += '<p class="question-text">' + escapeHtml(q.q) + '</p>';
+      html += '<div class="options">';
+      q.options.forEach((opt, i) => {
+        let cls = 'option';
+        let explainHtml = '';
+        if (answered) {
+          if (opt.correct) cls += ' correct';
+          else if (i === userAns) cls += ' wrong-picked';
+          else cls += ' wrong-unpicked';
+          explainHtml = '<span class="opt-explain">' + (opt.correct ? '&#9989; ' : '&#10060; ') + escapeHtml(opt.why) + '</span>';
+        }
+        html += '<button type="button" class="' + cls + '" data-idx="' + i + '" ' + (answered ? 'disabled' : '') + '>' +
+          escapeHtml(opt.text) + explainHtml + '</button>';
+      });
+      html += '</div></div>';
+
+      html += '<div class="quiz-actions">';
+      html += '<button class="btn btn-secondary" id="prevBtn" ' + (idx === 0 ? 'disabled' : '') + '>Previous</button>';
+      if (idx === total - 1 && answered) {
+        html += '<button class="btn btn-primary" id="finishBtn">Finish Quiz</button>';
+      } else {
+        html += '<button class="btn btn-primary" id="nextBtn" ' + (answered ? '' : 'disabled') + '>Next</button>';
+      }
+      html += '</div>';
+
+      quizArea.innerHTML = html;
+
+      if (!answered) {
+        quizArea.querySelectorAll('.option').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const i = parseInt(btn.dataset.idx, 10);
+            session.userAnswers[idx] = i;
+            saveSession(session);
+            renderQuestion(idx);
+          });
+        });
+      }
+      const prevBtn = document.getElementById('prevBtn');
+      if (prevBtn) prevBtn.addEventListener('click', () => renderQuestion(idx - 1));
+      const nextBtn = document.getElementById('nextBtn');
+      if (nextBtn) nextBtn.addEventListener('click', () => renderQuestion(idx + 1));
+      const finishBtn = document.getElementById('finishBtn');
+      if (finishBtn) finishBtn.addEventListener('click', finishQuiz);
+    }
+
+    function finishQuiz() {
+      session.finished = true;
+      const { scoreOutOf100 } = computeScore(session);
+      session.score = scoreOutOf100;
+      saveSession(session);
+      renderResults();
+    }
+
+    function renderResults() {
+      quizTopbar.style.display = 'none';
+      quizArea.style.display = 'none';
+      resultsArea.style.display = 'block';
+
+      const { correct, total, scoreOutOf100 } = computeScore(session);
+      const breakdown = objectiveBreakdown(session);
+
+      let html = '<div class="card score-hero">';
+      html += '<div class="score-number">' + scoreOutOf100 + '/100</div>';
+      html += '<div class="score-sub">' + correct + ' of ' + total + ' correct &mdash; ' + escapeHtml(session.label) + '</div>';
+      html += '</div>';
+
+      html += '<div class="card"><h3 style="margin-top:0;">Breakdown by objective</h3><div class="breakdown-grid">';
+      Object.keys(breakdown).sort().forEach(code => {
+        const b = breakdown[code];
+        const pct = b.total ? Math.round((b.correct / b.total) * 100) : 0;
+        html += '<div class="breakdown-item">' +
+          '<div class="name">' + escapeHtml(code) + ' ' + escapeHtml(b.name) + '</div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<div class="pct">' + b.correct + ' / ' + b.total + ' (' + pct + '%)</div>' +
+          '</div>';
+      });
+      html += '</div></div>';
+
+      html += '<div class="card"><h3 style="margin-top:0;">Review every question</h3><div class="review-list">';
+      session.questions.forEach((q, i) => {
+        const userAns = session.userAnswers[i];
+        const gotItRight = userAns !== null && userAns !== undefined && q.options[userAns] && q.options[userAns].correct;
+        html += '<div class="review-item">';
+        html += '<div class="tagrow">' +
+          '<span class="status-pill ' + (gotItRight ? 'ok' : 'no') + '">' + (gotItRight ? 'Correct' : 'Incorrect') + '</span>' +
+          '<span class="question-meta">' + escapeHtml(q.objective) + ' &middot; ' + escapeHtml(q.objectiveName) + '</span>' +
+          '</div>';
+        html += '<div class="rq">' + (i + 1) + '. ' + escapeHtml(q.q) + '</div>';
+        html += '<div class="options">';
+        q.options.forEach((opt, oi) => {
+          let cls = 'option';
+          if (opt.correct) cls += ' correct';
+          else if (oi === userAns) cls += ' wrong-picked';
+          else cls += ' wrong-unpicked';
+          html += '<div class="' + cls + '">' + escapeHtml(opt.text) +
+            '<span class="opt-explain">' + (opt.correct ? '&#9989; ' : '&#10060; ') + escapeHtml(opt.why) + '</span></div>';
+        });
+        html += '</div></div>';
+      });
+      html += '</div></div>';
+
+      html += '<div class="quiz-actions">' +
+        '<button class="btn btn-secondary" id="dashboardBtn">Return to Dashboard</button>' +
+        '<button class="btn btn-primary" id="retakeBtn">Retake (new random set)</button>' +
+        '</div>';
+
+      resultsArea.innerHTML = html;
+
+      document.getElementById('dashboardBtn').addEventListener('click', () => {
+        clearSession();
+        window.location.href = 'index.html';
+      });
+      document.getElementById('retakeBtn').addEventListener('click', () => {
+        const fresh = buildSession({
+          mode: session.mode,
+          count: session.requestedCount,
+          objectives: session.objectives,
+          label: session.label,
+          theme: session.theme
+        });
+        saveSession(fresh);
+        window.location.href = 'quiz.html';
+      });
+    }
+
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      saveSession(session);
+      window.location.href = 'index.html';
+    });
+
+    if (session && session.questions && session.questions.length > 0) {
+      if (session.finished) {
+        renderResults();
+      } else {
+        renderQuestion(session.currentIndex || 0);
+      }
+    }
+  </script>
+</body>
+</html>

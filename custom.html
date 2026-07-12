@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+<title>Custom Quiz — CySA+ Practice Hub</title>
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <h1>🌿 Custom Quiz</h1>
+      <p>Choose which objectives to study and how many questions (45–245).</p>
+    </header>
+
+    <div class="card">
+      <div class="field">
+        <label for="countRange">Number of questions: <span class="count-display" id="countLabel">45</span></label>
+        <input type="range" id="countRange" min="45" max="245" step="5" value="45" />
+        <div class="hint">Drag to choose between 45 and 245 questions.</div>
+        <div class="pool-warning" id="poolWarning"></div>
+      </div>
+
+      <div class="field">
+        <label>Objectives to include</label>
+        <div class="checkbox-grid" id="objectiveGrid"></div>
+        <div class="hint">Leave all checked to pull from every CySA+ objective.</div>
+      </div>
+
+      <div class="quiz-actions">
+        <a class="btn btn-ghost" href="index.html">Back to dashboard</a>
+        <button class="btn btn-primary" id="startBtn">Start Quiz</button>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      This site is an independent, unofficial study aid created for educational purposes only.
+      It is not affiliated with, endorsed by, or sponsored by CompTIA. CySA+ and CompTIA are trademarks of CompTIA, Inc.
+    </footer>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    const objectiveGrid = document.getElementById('objectiveGrid');
+    const countRange = document.getElementById('countRange');
+    const countLabel = document.getElementById('countLabel');
+    const poolWarning = document.getElementById('poolWarning');
+    const startBtn = document.getElementById('startBtn');
+
+    const codes = Object.keys(CYSA_OBJECTIVES);
+    const poolCounts = {};
+    codes.forEach(code => {
+      poolCounts[code] = CYSA_QUESTIONS.filter(q => q.objective === code).length;
+    });
+
+    codes.forEach(code => {
+      const item = document.createElement('label');
+      item.className = 'checkbox-item';
+      item.innerHTML =
+        '<input type="checkbox" value="' + code + '" checked />' +
+        '<span>' + code + ' ' + CYSA_OBJECTIVES[code] + '</span>' +
+        '<span class="obj-count">' + poolCounts[code] + ' Qs</span>';
+      objectiveGrid.appendChild(item);
+    });
+
+    function selectedObjectives() {
+      return [...objectiveGrid.querySelectorAll('input:checked')].map(el => el.value);
+    }
+
+    function currentPoolSize() {
+      const sel = selectedObjectives();
+      if (sel.length === 0) return 0;
+      return CYSA_QUESTIONS.filter(q => sel.includes(q.objective)).length;
+    }
+
+    function refreshWarning() {
+      const pool = currentPoolSize();
+      const requested = parseInt(countRange.value, 10);
+      countLabel.textContent = requested;
+      if (pool === 0) {
+        poolWarning.textContent = 'Select at least one objective.';
+        poolWarning.classList.add('show');
+        startBtn.disabled = true;
+      } else if (requested > pool) {
+        poolWarning.textContent = 'Only ' + pool + ' questions are available for the selected objectives — the quiz will use all ' + pool + '.';
+        poolWarning.classList.add('show');
+        startBtn.disabled = false;
+      } else {
+        poolWarning.classList.remove('show');
+        startBtn.disabled = false;
+      }
+    }
+
+    countRange.addEventListener('input', refreshWarning);
+    objectiveGrid.addEventListener('change', refreshWarning);
+    refreshWarning();
+
+    startBtn.addEventListener('click', () => {
+      if (hasResumableSession()) {
+        const ok = confirm('You have a paused quiz in progress. Starting a new quiz will discard it. Continue?');
+        if (!ok) return;
+      }
+      const sel = selectedObjectives();
+      const requested = parseInt(countRange.value, 10);
+      const pool = currentPoolSize();
+      const count = Math.min(requested, pool);
+      const allSelected = sel.length === codes.length;
+      const session = buildSession({
+        mode: 'custom',
+        count,
+        objectives: sel,
+        label: 'Custom Quiz — ' + count + ' Questions' + (allSelected ? '' : ' (' + sel.join(', ') + ')'),
+        theme: 'green'
+      });
+      saveSession(session);
+      window.location.href = 'quiz.html';
+    });
+  </script>
+</body>
+</html>

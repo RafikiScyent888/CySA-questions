@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+<title>CySA+ Practice Hub</title>
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <h1>CySA+ Practice Hub</h1>
+      <p>Pick a quick quiz or build a custom set across every CySA+ objective.</p>
+    </header>
+
+    <div id="resumeBanner" class="resume-banner" style="display:none;">
+      <div class="info">
+        Paused quiz in progress: <strong id="resumeLabel"></strong> — question <strong id="resumeProgress"></strong>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="resumeBtn">Resume</button>
+        <button class="btn btn-ghost" id="discardBtn">Discard</button>
+      </div>
+    </div>
+
+    <main>
+      <div class="tile-grid" id="tileGrid">
+        <button class="tile tile-lightning" data-mode="quick" data-count="10">
+          <span class="icon">⚡</span>
+          <span class="count">10</span>
+          <span class="tile-title">Quick Quiz</span>
+          <span class="tile-sub">10 random questions, all objectives</span>
+        </button>
+
+        <button class="tile tile-fire" data-mode="quick" data-count="15">
+          <span class="icon">🔥</span>
+          <span class="count">15</span>
+          <span class="tile-title">Quick Quiz</span>
+          <span class="tile-sub">15 random questions, all objectives</span>
+        </button>
+
+        <button class="tile tile-storm" data-mode="quick" data-count="20">
+          <span class="icon">⛈️</span>
+          <span class="count">20</span>
+          <span class="tile-title">Quick Quiz</span>
+          <span class="tile-sub">20 random questions, all objectives</span>
+        </button>
+
+        <button class="tile tile-sun" data-mode="quick" data-count="25">
+          <span class="icon">☀️</span>
+          <span class="count">25</span>
+          <span class="tile-title">Quick Quiz</span>
+          <span class="tile-sub">25 random questions, all objectives</span>
+        </button>
+
+        <a class="tile tile-green" href="custom.html">
+          <span class="icon">🌿</span>
+          <span class="count">45–245</span>
+          <span class="tile-title">Custom Quiz</span>
+          <span class="tile-sub">Choose objectives &amp; question count</span>
+        </a>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      This site is an independent, unofficial study aid created for educational purposes only.
+      It is not affiliated with, endorsed by, or sponsored by CompTIA. CySA+ and CompTIA are trademarks of CompTIA, Inc.
+    </footer>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    function refreshResumeBanner() {
+      const banner = document.getElementById('resumeBanner');
+      if (hasResumableSession()) {
+        const s = loadSession();
+        document.getElementById('resumeLabel').textContent = s.label;
+        document.getElementById('resumeProgress').textContent =
+          (s.currentIndex + 1) + ' of ' + s.questions.length;
+        banner.style.display = 'flex';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    document.getElementById('resumeBtn').addEventListener('click', () => {
+      window.location.href = 'quiz.html?resume=1';
+    });
+
+    document.getElementById('discardBtn').addEventListener('click', () => {
+      clearSession();
+      refreshResumeBanner();
+    });
+
+    document.querySelectorAll('.tile[data-mode="quick"]').forEach(tile => {
+      tile.addEventListener('click', () => {
+        if (hasResumableSession()) {
+          const ok = confirm('You have a paused quiz in progress. Starting a new quiz will discard it. Continue?');
+          if (!ok) return;
+        }
+        const count = parseInt(tile.dataset.count, 10);
+        const themeClass = [...tile.classList].find(c => c.startsWith('tile-')).replace('tile-', '');
+        const session = buildSession({
+          mode: 'quick',
+          count,
+          objectives: [],
+          label: 'Quick Quiz — ' + count + ' Questions',
+          theme: themeClass
+        });
+        saveSession(session);
+        window.location.href = 'quiz.html';
+      });
+    });
+
+    refreshResumeBanner();
+  </script>
+</body>
+</html>
