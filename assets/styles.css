@@ -181,6 +181,9 @@ input[type="number"] {
   font-size: 15px;
 }
 
+.obj-group { margin-bottom: 16px; }
+.obj-group h3 { font-size: 14px; margin: 0 0 8px; color: var(--accent, #0369a1); border-bottom: 1px solid var(--card-border); padding-bottom: 6px; }
+
 .checkbox-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
