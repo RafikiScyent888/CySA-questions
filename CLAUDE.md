@@ -14,6 +14,42 @@ Security+ quiz sites, so their fixes don't port directly.
 - The session is kept in localStorage under `cysa_quiz_session_v1`.
 - GitHub Pages serves `main`.
 
+**Never run `tools/tag-subobjectives.mjs`.** It rewrites every question's
+topic back to the old 19 home-made labels.
+
+## Topics (30 September 2026)
+
+- **Source:** the 15 topics come from the owner's "All updated Objectives" doc
+  (CySA+ V4), in its order and wording.
+  - The owner's CS0-004 score report confirms 13 of the numbers match
+    CompTIA's: 1.1–1.4, 2.1–2.4, 3.1–3.3, 4.1–4.2.
+  - 1.5 and 1.6 are unconfirmed.
+- **Filing:** all 500 questions were read and filed one by one. The owner saw
+  the preview first and approved it: "I like CySA, push it."
+- **Where old topics with no match in the doc went:**
+  - Encryption, identity and cloud concepts went to 1.1, and their attacks
+    to 1.2.
+  - Weak-crypto and hardening fixes went to 2.3.
+  - Pen testing: rules of engagement and scope went to 2.4, techniques to
+    2.1, validation to 2.2, reports to 4.1.
+  - Secure coding: naming the flaw went to 2.2, fixing it to 2.3.
+  - Forensics went to 3.3 ("evidence handling").
+  - Business continuity and disaster recovery:
+    - Running a recovery went to 3.2.
+    - BIA, RTO/RPO and supplier risk went to 2.4.
+    - Crisis communication went to 4.2.
+  - Risk, compliance and governance went to 2.4 ("controls, policies, and
+    compliance practices"), which is why 2.4 is large.
+- **The floor:** each short topic is topped up to 25.
+  - Topics still short are listed in `PENDING` in `verify/objectives.mjs`.
+  - Take a topic off that list in the same commit that fills it.
+- **New questions:**
+  - Ids continue from q501.
+  - The `source` field begins "written 30 Sept 2026 for doc topic".
+  - Exactly one option is correct, and every option has a "why".
+  - Wrong options are near misses.
+  - Lengths are balanced, so the right answer isn't usually the longest.
+
 ## Retake (30 September 2026)
 
 "Retake the N I missed" on the results screen:
