@@ -66,10 +66,22 @@ topic back to the old 19 home-made labels.
 - The button is `#0b3a82`, because white on the site's standard `#0d6efd`
   button is only 4.5:1.
 
+## Contrast (fixed 30 September 2026)
+
+Every student-facing screen meets AAA on painted pixels. The owner approved
+the before/after preview: "I like all of the changes in all of the quizzes".
+- The approved colours are in a block marked "AAA contrast" (at the end of `assets/styles.css`).
+- Colour changes stay in the royal palette, with no new hues.
+- Disabled buttons are no longer faded out. They're solid silver with a dashed
+  border and readable text.
+- `node verify/contrast.mjs` drives every screen (dashboard, setup, question
+  before and after answering, results, paused-quiz banner) and fails on
+  anything under 7:1 (4.5:1 for large text). `--plant` puts back the old
+  sky-blue buttons and must fail.
+
+Run it after any colour or layout change.
+
 ## Known, not yet fixed
 
-- **Contrast:** the standard `#0d6efd` buttons measure about 4.5:1, under the
-  AAA floor for body text. The fix is a colour change, so it needs a preview
-  for the owner first.
 - **Footer:** it isn't the program's standard wording yet. It is waiting for
   the owner's go-ahead.

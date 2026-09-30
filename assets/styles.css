@@ -397,3 +397,14 @@ input[type="number"] {
 }
 .retake-banner.all-right { border-color: #14683a; margin-top: 20px; }
 .retake-note { color: var(--ink); background: #fff; border-radius: var(--radius-sm); padding: 10px 14px; max-width: 70ch; margin: 12px auto 0; text-align: center; font-size: 15px; }
+
+/* AAA contrast (approved by the owner 30 Sept 2026) — CySA+ */
+:root { --ink-soft: #0c2233; --accent: #0c4a6e; }
+.btn-primary { background: #0b3a82; box-shadow: 0 6px 16px rgba(11,58,130,.35); }
+.btn:disabled { opacity: 1; background: #e2e8f0; color: #334155; border: 2px dashed #64748b; box-shadow: none; }
+.question-meta, .score-number, .count-display { color: #0b3a82; }
+.tile .tile-sub { opacity: 1; }
+.tile-green { background: linear-gradient(155deg, #06331e 0%, #0f5a32 55%, #178a4c 100%); }
+.option .opt-explain { opacity: 1; }
+.option.correct .opt-explain, .status-pill.ok { color: #0f4d2b; }
+.site-footer { color: #0c2233; opacity: 1; }
