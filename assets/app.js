@@ -58,8 +58,47 @@ function buildSession({ mode, count, objectives, label, theme }) {
     currentIndex: 0,
     userAnswers: new Array(questions.length).fill(null),
     finished: false,
-    score: null
+    score: null,
+    round: 1
   };
+}
+
+/** A retake round: only the questions missed last round, reshuffled, with fresh option order. */
+function buildRetakeSession(prev, missedIds) {
+  const byId = new Map(CYSA_QUESTIONS.map(q => [q.id, q]));
+  const picked = shuffle(missedIds.map(id => byId.get(id)).filter(Boolean));
+  const questions = picked.map(q => ({
+    id: q.id,
+    q: q.q,
+    objective: q.objective,
+    objectiveName: q.objectiveName,
+    sub: q.sub,
+    subLabel: subObjectiveLabel(q.sub),
+    options: shuffle(q.options)
+  }));
+  return {
+    sessionId: 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+    createdAt: Date.now(),
+    mode: prev.mode,
+    label: prev.label,
+    theme: prev.theme,
+    objectives: prev.objectives,
+    requestedCount: prev.requestedCount,
+    questions,
+    currentIndex: 0,
+    userAnswers: new Array(questions.length).fill(null),
+    finished: false,
+    score: null,
+    round: (prev.round || 1) + 1
+  };
+}
+
+/** Ids of the questions answered wrong or left unanswered. */
+function missedQuestionIds(session) {
+  return session.questions.filter((q, i) => {
+    const a = session.userAnswers[i];
+    return !(a !== null && a !== undefined && q.options[a] && q.options[a].correct);
+  }).map(q => q.id);
 }
 
 function loadSession() {

@@ -58,7 +58,11 @@
       const userAns = session.userAnswers[idx];
       const answered = userAns !== null && userAns !== undefined;
 
-      let html = '<div class="question-card">';
+      let html = '';
+      if ((session.round || 1) > 1) {
+        html += '<div class="retake-banner">Retake round ' + session.round + ' &mdash; only the questions you missed last time</div>';
+      }
+      html += '<div class="question-card">';
       html += '<span class="question-meta">' + escapeHtml(q.sub) + ' &middot; ' + escapeHtml(q.subLabel) + '</span>';
       html += '<p class="question-text">' + escapeHtml(q.q) + '</p>';
       html += '<div class="options">';
@@ -121,10 +125,15 @@
       const { correct, total, scoreOutOf100 } = computeScore(session);
       const breakdown = objectiveBreakdown(session);
 
+      const round = session.round || 1;
+      const missed = missedQuestionIds(session);
       let html = '<div class="card score-hero">';
       html += '<div class="score-number">' + scoreOutOf100 + '/100</div>';
-      html += '<div class="score-sub">' + correct + ' of ' + total + ' correct &mdash; ' + escapeHtml(session.label) + '</div>';
+      html += '<div class="score-sub">' + correct + ' of ' + total + ' correct &mdash; ' + escapeHtml(session.label) + (round > 1 ? ' &mdash; retake round ' + round : '') + '</div>';
       html += '</div>';
+      if (round > 1 && missed.length === 0) {
+        html += '<div class="retake-banner all-right">Every one right. You worked through every question you missed.</div>';
+      }
 
       html += '<div class="card"><h3 style="margin-top:0;">Breakdown by objective</h3><div class="breakdown-grid">';
       Object.keys(breakdown).sort().forEach(code => {
@@ -163,14 +172,23 @@
 
       html += '<div class="quiz-actions">' +
         '<button class="btn btn-secondary" id="dashboardBtn">Return to Dashboard</button>' +
+        (missed.length ? '<button class="btn btn-retake-missed" id="retakeMissedBtn">Retake the ' + missed.length + ' I missed</button>' : '') +
         '<button class="btn btn-primary" id="retakeBtn">Retake (new random set)</button>' +
         '</div>';
+      if (missed.length) {
+        html += '<p class="retake-note">&ldquo;Retake the ' + missed.length + ' I missed&rdquo; gives you only the questions you got wrong, in a new order with the answers reshuffled. You can keep retaking until you&rsquo;ve got every one right.</p>';
+      }
 
       resultsArea.innerHTML = html;
 
       document.getElementById('dashboardBtn').addEventListener('click', () => {
         clearSession();
         window.location.href = 'index.html';
+      });
+      const retakeMissedBtn = document.getElementById('retakeMissedBtn');
+      if (retakeMissedBtn) retakeMissedBtn.addEventListener('click', () => {
+        saveSession(buildRetakeSession(session, missed));
+        window.location.href = 'quiz.html';
       });
       document.getElementById('retakeBtn').addEventListener('click', () => {
         const fresh = buildSession({
