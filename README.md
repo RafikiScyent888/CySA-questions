@@ -15,8 +15,8 @@ CS0-004 score report confirms that 13 of these numbers match CompTIA's own
 verbatim copy of the list is in `verify/objectives-cysa-2026-09-30.md`.
 
 Every question was read and filed under the topic it actually tests
-(30 September 2026). The goal is at least 20 questions per topic; topics
-still short are being filled.
+(30 September 2026). Every topic has at least 20 questions; each topic that was short was topped up
+to 25.
 
 ## What's here
 
@@ -26,7 +26,7 @@ still short are being filled.
 - `quiz.html` — the quiz runner and results screen (score out of 100,
   per-topic breakdown, every question reviewed with a "why" for each option,
   and "Retake the ones I missed").
-- `assets/data.js` — the question bank (`CYSA_QUESTIONS`, 550 questions) and
+- `assets/data.js` — the question bank (`CYSA_QUESTIONS`, 596 questions) and
   topic lists (`CYSA_OBJECTIVES`, `CYSA_SUB_OBJECTIVES`). Edit it directly.
   **Do not run `tools/tag-subobjectives.mjs`**: it re-tags every question
   with the old home-made topics and would undo the filing.

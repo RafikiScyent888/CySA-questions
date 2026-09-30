@@ -33,7 +33,7 @@ const KEY = 'cysa_quiz_session_v1';
 const MIN = 20;
 // Topics still short of 20 while new questions are written for them (30 Sept 2026).
 // Remove a topic from this list in the same commit that fills it.
-const PENDING = ['2.2', '4.1', '4.2'];
+const PENDING = [];
 
 // ---- the doc: domains in order, each with its topics in order ----
 const DOC = [];

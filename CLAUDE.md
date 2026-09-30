@@ -43,6 +43,11 @@ topic back to the old 19 home-made labels.
 - **The floor:** each short topic is topped up to 25.
   - Topics still short are listed in `PENDING` in `verify/objectives.mjs`.
   - Take a topic off that list in the same commit that fills it.
+  - 30 Sept 2026: 96 new questions:
+    - q501–q550: 3.1 Attack frameworks +25, 1.6 AI +25
+    - q551–q596: 4.1 VM reporting +21, 4.2 SecOps/IR reporting +15,
+      2.2 Analyze output +10
+  - Every topic now has 20+ (596 questions), and `PENDING` is empty.
 - **New questions:**
   - Ids continue from q501.
   - The `source` field begins "written 30 Sept 2026 for doc topic".
