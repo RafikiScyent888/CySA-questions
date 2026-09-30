@@ -26,7 +26,7 @@ still short are being filled.
 - `quiz.html` — the quiz runner and results screen (score out of 100,
   per-topic breakdown, every question reviewed with a "why" for each option,
   and "Retake the ones I missed").
-- `assets/data.js` — the question bank (`CYSA_QUESTIONS`, 500 questions) and
+- `assets/data.js` — the question bank (`CYSA_QUESTIONS`, 550 questions) and
   topic lists (`CYSA_OBJECTIVES`, `CYSA_SUB_OBJECTIVES`). Edit it directly.
   **Do not run `tools/tag-subobjectives.mjs`**: it re-tags every question
   with the old home-made topics and would undo the filing.
