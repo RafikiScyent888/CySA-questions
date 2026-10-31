@@ -67,13 +67,16 @@ topic back to the old 19 home-made labels.
   button is only 4.5:1.
 - Since 31 October it follows Shuffle order (below).
 
-## Score card, question map and filters (31 October 2026, preview)
+## Score card, question map and filters (31 October 2026)
 
 Built to the owner's decisions in the doc "Test banks: score card, question
 map and filters (plan)" (https://claude.ai/artifact/6vcGwyvSsrwfHBWaKp6rq5):
 the features the owner approved on Core 1, Core 2, Network+ and Security+,
-adapted from Network+ to this engine. On the preview branch, waiting for the
-owner's go-ahead. Still open: the CertMaster Learn address students use.
+adapted from Network+ to this engine. The owner saw the preview (the 15
+colours, a quiz, the filters, Reset, results, the dashboard, the Custom Quiz
+page, Easier reading, a phone) and approved it: "I like CySA, push it." Live
+on `main` the same day. Still open: the CertMaster Learn address students
+use.
 - **`assets/testbank.js`** holds it all (colours, Missed list, Easier reading,
   the confirm dialog, score card, "Study these first", parts bar, chips, map).
   It needs `data.js` and `app.js` first. `quiz.html` uses it on the quiz and
