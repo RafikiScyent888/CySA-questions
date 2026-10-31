@@ -33,19 +33,36 @@ function questionPool(objectiveCodes) {
   return CYSA_QUESTIONS.filter(q => set.has(q.sub));
 }
 
-/** Build a brand-new randomized quiz session (fresh questions + shuffled option order). */
-function buildSession({ mode, count, objectives, label, theme }) {
-  const pool = shuffle(questionPool(objectives));
-  const picked = pool.slice(0, Math.min(count, pool.length));
-  const questions = picked.map(q => ({
+/* Shuffle order (31 October 2026): on (the default), the questions and each
+   question's answers are shuffled; off, the questions come in the bank's order
+   and the answers as written. Remembered in this browser. */
+const SHUFFLE_KEY = 'cysa_shuffle_v1';
+function shuffleOrderOn() { try { return localStorage.getItem(SHUFFLE_KEY) !== '0'; } catch (e) { return true; } }
+function setShuffleOrder(on) { try { localStorage.setItem(SHUFFLE_KEY, on ? '1' : '0'); } catch (e) { /* storage off */ } }
+const BANK_POS = new Map(CYSA_QUESTIONS.map((q, i) => [q.id, i]));
+function inOrder(list, mix) { return mix ? list : list.slice().sort((a, b) => BANK_POS.get(a.id) - BANK_POS.get(b.id)); }
+
+/** One question as the quiz holds it; `order` keeps each answer's place in the bank's question. */
+function sessionQuestion(q, mix) {
+  const order = mix ? shuffle(q.options.map((_, i) => i)) : q.options.map((_, i) => i);
+  return {
     id: q.id,
     q: q.q,
     objective: q.objective,
     objectiveName: q.objectiveName,
     sub: q.sub,
     subLabel: subObjectiveLabel(q.sub),
-    options: shuffle(q.options)
-  }));
+    options: order.map(i => q.options[i]),
+    order
+  };
+}
+
+/** Build a brand-new quiz session (fresh questions; shuffled when Shuffle order is on). */
+function buildSession({ mode, count, objectives, label, theme }) {
+  const mix = shuffleOrderOn();
+  const pool = shuffle(questionPool(objectives));
+  const picked = inOrder(pool.slice(0, Math.min(count, pool.length)), mix);
+  const questions = picked.map(q => sessionQuestion(q, mix));
   return {
     sessionId: 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
     createdAt: Date.now(),
@@ -66,16 +83,9 @@ function buildSession({ mode, count, objectives, label, theme }) {
 /** A retake round: only the questions missed last round, reshuffled, with fresh option order. */
 function buildRetakeSession(prev, missedIds) {
   const byId = new Map(CYSA_QUESTIONS.map(q => [q.id, q]));
-  const picked = shuffle(missedIds.map(id => byId.get(id)).filter(Boolean));
-  const questions = picked.map(q => ({
-    id: q.id,
-    q: q.q,
-    objective: q.objective,
-    objectiveName: q.objectiveName,
-    sub: q.sub,
-    subLabel: subObjectiveLabel(q.sub),
-    options: shuffle(q.options)
-  }));
+  const mix = shuffleOrderOn();
+  const picked = inOrder(shuffle(missedIds.map(id => byId.get(id)).filter(Boolean)), mix);
+  const questions = picked.map(q => sessionQuestion(q, mix));
   return {
     sessionId: 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
     createdAt: Date.now(),
@@ -91,6 +101,44 @@ function buildRetakeSession(prev, missedIds) {
     score: null,
     round: (prev.round || 1) + 1
   };
+}
+
+/** A quiz of exactly these questions: the whole Missed list, or "Practise this topic". */
+function buildSessionFromIds({ ids, mode, label, theme, objectives }) {
+  const byId = new Map(CYSA_QUESTIONS.map(q => [q.id, q]));
+  const mix = shuffleOrderOn();
+  let picked = ids.map(id => byId.get(id)).filter(Boolean);
+  picked = mix ? shuffle(picked) : inOrder(picked, false);
+  const questions = picked.map(q => sessionQuestion(q, mix));
+  return {
+    sessionId: 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+    createdAt: Date.now(),
+    mode, label, theme,
+    objectives: objectives || [],
+    requestedCount: questions.length,
+    questions,
+    currentIndex: 0,
+    userAnswers: new Array(questions.length).fill(null),
+    finished: false,
+    score: null,
+    round: 1
+  };
+}
+
+/** Turning Shuffle order on or off part-way keeps every answer and stays on the same question. */
+function reorderSession(session, mix) {
+  const byId = new Map(CYSA_QUESTIONS.map(q => [q.id, q]));
+  const curId = session.questions[session.currentIndex].id;
+  const chosen = new Map(session.questions.map((q, i) => {
+    const a = session.userAnswers[i];
+    if (a === null || a === undefined) return [q.id, null];
+    const bank = byId.get(q.id);
+    return [q.id, q.order ? q.order[a] : bank.options.findIndex(o => o.text === q.options[a].text)];
+  }));
+  const picked = inOrder(mix ? shuffle(session.questions.map(q => byId.get(q.id))) : session.questions.map(q => byId.get(q.id)), mix);
+  session.questions = picked.map(q => sessionQuestion(q, mix));
+  session.userAnswers = session.questions.map(q => { const o = chosen.get(q.id); return o === null ? null : q.order.indexOf(o); });
+  session.currentIndex = session.questions.findIndex(q => q.id === curId);
 }
 
 /** Ids of the questions answered wrong or left unanswered. */

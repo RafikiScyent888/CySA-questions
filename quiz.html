@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
 <title>Quiz — CySA+ Practice Hub</title>
 <link rel="stylesheet" href="assets/styles.css" />
+<script>
+  /* Easier reading: on stays on, across pages, visits and the program's test banks. Set before the page paints, so it never flickers. */
+  try { if (localStorage.getItem("cwp-easier-reading") === "1") document.documentElement.classList.add("easier"); } catch (e) {}
+</script>
 </head>
 <body>
   <div class="quiz-topbar" id="quizTopbar">
@@ -14,6 +18,7 @@
   </div>
 
   <div class="wrap">
+    <div class="topline"><button type="button" class="btn btn-ghost" id="easierBtn" aria-pressed="false">Easier reading: off</button></div>
     <div id="quizArea"></div>
     <div id="resultsArea" style="display:none;"></div>
 
@@ -25,11 +30,13 @@
 
   <script src="assets/data.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/testbank.js"></script>
   <script>
     let session = loadSession();
     if (!session || !session.questions || session.questions.length === 0) {
       window.location.href = 'index.html';
     }
+    if (session && !session.filter) session.filter = 'all';
 
     const quizArea = document.getElementById('quizArea');
     const resultsArea = document.getElementById('resultsArea');
@@ -48,68 +55,190 @@
       document.getElementById('progressFill').style.width = Math.round((answeredCount / total) * 100) + '%';
     }
 
-    function renderQuestion(idx) {
+    // Score card, question map and filters (31 October 2026): what each
+    // question's state is, and the quiz as the shared panels see it.
+    const items = () => session.questions.map(q => ({ id: q.id, sub: q.sub }));
+    function states() {
+      return session.questions.map((q, i) => {
+        const a = session.userAnswers[i];
+        if (a === null || a === undefined) return 'none';
+        return q.options[a] && q.options[a].correct ? 'right' : 'wrong';
+      });
+    }
+    function banner() {
+      if ((session.round || 1) > 1) return '<div class="retake-banner">Retake round ' + session.round + ' &mdash; only the questions you missed last time</div>';
+      if (session.mode === 'missed') return '<div class="retake-banner"><strong>Your Missed list</strong> &mdash; every question you have answered wrong and not yet answered right. Each one you get right comes off the list.</div>';
+      if (session.mode === 'topic') return '<div class="retake-banner"><strong>Practising ' + TB.topicText(session.topic) + '</strong> &mdash; every question you have missed on this topic is included.</div>';
+      return '';
+    }
+    function quizUnderway() {
+      return !session.finished && session.userAnswers.some(a => a !== null && a !== undefined) && session.userAnswers.some(a => a === null || a === undefined);
+    }
+    async function leaveThenStart(start) {
+      if (quizUnderway()) {
+        const n = session.userAnswers.filter(a => a !== null && a !== undefined).length;
+        const ok = await TB.askConfirm({
+          title: 'Leave the quiz you are on?',
+          body: 'You have answered ' + n + ' of ' + session.questions.length + ' questions. Starting something new ends this quiz here. Every answer you gave is already counted in your Missed list.',
+          yes: 'Leave and start', no: 'Stay on this quiz'
+        });
+        if (!ok) return;
+      }
+      start();
+    }
+    async function resetQuiz() {
+      const n = session.questions.length;
+      const ok = await TB.askConfirm({
+        title: 'Reset this quiz?',
+        body: 'Your answers to these ' + n + ' questions are cleared and you start again at question 1' + (shuffleOrderOn() ? ', in a new order' : '') + '. Your Missed list stays as it is.',
+        yes: 'Reset this quiz', no: 'Keep my answers'
+      });
+      if (!ok) return;
+      const byId = new Map(CYSA_QUESTIONS.map(q => [q.id, q]));
+      const mix = shuffleOrderOn();
+      const bank = session.questions.map(q => byId.get(q.id));
+      session.questions = inOrder(mix ? shuffle(bank) : bank, mix).map(q => sessionQuestion(q, mix));
+      session.userAnswers = session.questions.map(() => null);
+      session.currentIndex = 0;
+      session.finished = false;
+      session.score = null;
+      session.filter = 'all';
+      saveSession(session);
+      renderQuestion(0, 'q');
+    }
+    function wireMapAndChips(root) {
+      root.querySelectorAll('[data-filter]').forEach(b => b.addEventListener('click', () => {
+        const f = b.dataset.filter;
+        session.filter = (session.filter === f && f !== 'all') ? 'all' : f;  // pressing a chosen chip again shows all
+        const v = TB.visibleIn(items(), states(), session.filter);
+        const at = v.indexOf(session.currentIndex) < 0 ? v[0] : session.currentIndex;
+        renderQuestion(at, (b.classList.contains('seg') ? '.seg' : '.chip') + '[data-filter="' + f + '"]');
+      }));
+      root.querySelectorAll('.qtile').forEach(b => b.addEventListener('click', () => renderQuestion(parseInt(b.dataset.pos, 10), 'q')));
+      const det = document.getElementById('qmap');
+      if (det) det.addEventListener('toggle', () => { if (session.mapOpen !== det.open) { session.mapOpen = det.open; saveSession(session); } });
+    }
+
+    function renderQuestion(idx, focus) {
+      const review = !!session.finished;
+      const st = states(), its = items();
+      let vis = TB.visibleIn(its, st, session.filter);
+      if (!vis.length) { session.filter = 'all'; vis = TB.visibleIn(its, st, 'all'); }
+      if (vis.indexOf(idx) < 0) idx = vis[0];
       session.currentIndex = idx;
       saveSession(session);
       updateTopbar(idx);
+      quizTopbar.style.display = review ? 'none' : '';
+      quizArea.style.display = '';
+      resultsArea.style.display = 'none';
+      resultsArea.innerHTML = '';  // one screen at a time: no hidden copies of the panels or their buttons
 
       const total = session.questions.length;
       const q = session.questions[idx];
       const userAns = session.userAnswers[idx];
       const answered = userAns !== null && userAns !== undefined;
+      const k = vis.indexOf(idx), prevPos = vis[k - 1], nextPos = vis[k + 1];
+      const nTopics = TB.topicsIn(its).length;
+      const nNew = its.filter(x => TB.isNew(TB.question(x.id))).length;
 
-      let html = '';
-      if ((session.round || 1) > 1) {
-        html += '<div class="retake-banner">Retake round ' + session.round + ' &mdash; only the questions you missed last time</div>';
-      }
+      let html = banner();
+      html += '<div class="quiz-grid"><div class="main-col">';
+      html += '<div class="card tb-head"><p class="intro">' + total + ' question' + (total === 1 ? '' : 's') + ' in ' + nTopics + ' colour-coded topic' + (nTopics === 1 ? '' : 's') +
+        (nNew ? ', ' + nNew + ' of them new for the updated objectives' : '') + '. ' +
+        (review ? 'Choose a question to see your answer and why.' : 'Choose an answer to see whether you&rsquo;re right and why.') + '</p>' +
+        TB.partsHtml(its, st, session.filter) +
+        '<div class="chips-row">' + TB.chipsHtml(its, st, session.filter) + (review ? '' : TB.shuffleBox('shuffleQuiz', false)) + '</div></div>';
+      html += TB.mapHtml(its, st, vis, idx, review, session.mapOpen);
       html += '<div class="question-card">';
       html += '<span class="question-meta">' + escapeHtml(q.sub) + ' &middot; ' + escapeHtml(q.subLabel) + '</span>';
-      html += '<p class="question-text">' + escapeHtml(q.q) + '</p>';
+      html += '<p class="question-text" id="qtext" tabindex="-1">' + escapeHtml(q.q) + '</p>';
+      if (review && !answered) html += '<p class="not-answered"><strong>Not answered.</strong> This quiz was finished before this question was answered.</p>';
       html += '<div class="options">';
       q.options.forEach((opt, i) => {
         let cls = 'option';
         let explainHtml = '';
-        if (answered) {
+        if (answered || review) {
           if (opt.correct) cls += ' correct';
           else if (i === userAns) cls += ' wrong-picked';
           else cls += ' wrong-unpicked';
           explainHtml = '<span class="opt-explain">' + (opt.correct ? '&#9989; ' : '&#10060; ') + escapeHtml(opt.why) + '</span>';
         }
-        html += '<button type="button" class="' + cls + '" data-idx="' + i + '" ' + (answered ? 'disabled' : '') + '>' +
+        html += '<button type="button" class="' + cls + '" data-idx="' + i + '" ' + (answered || review ? 'disabled' : '') + '>' +
           escapeHtml(opt.text) + explainHtml + '</button>';
       });
       html += '</div></div>';
 
       html += '<div class="quiz-actions">';
-      html += '<button class="btn btn-secondary" id="prevBtn" ' + (idx === 0 ? 'disabled' : '') + '>Previous</button>';
-      if (idx === total - 1 && answered) {
+      if (review) html += '<button class="btn btn-secondary" id="backBtn">Back to results</button>';
+      html += '<button class="btn btn-secondary" id="prevBtn" ' + (prevPos === undefined ? 'disabled' : '') + '>Previous</button>';
+      if (review) {
+        html += '<button class="btn btn-primary" id="nextBtn">' + (nextPos !== undefined ? 'Next' : session.filter !== 'all' ? 'Show all questions' : 'Back to results') + '</button>';
+      } else if (nextPos === undefined && session.filter === 'all' && answered) {
         html += '<button class="btn btn-primary" id="finishBtn">Finish Quiz</button>';
       } else {
-        html += '<button class="btn btn-primary" id="nextBtn" ' + (answered ? '' : 'disabled') + '>Next</button>';
+        html += '<button class="btn btn-primary" id="nextBtn" ' + (answered ? '' : 'disabled') + '>' + (nextPos !== undefined ? 'Next' : 'Show all questions') + '</button>';
       }
       html += '</div>';
+      html += '</div><aside class="side-col" aria-label="Your score and what to study">' + TB.scorePanel(its, st) + TB.studyPanel() + TB.panelButtons(true) + '</aside></div>';
 
       quizArea.innerHTML = html;
 
-      if (!answered) {
+      if (!answered && !review) {
         quizArea.querySelectorAll('.option').forEach(btn => {
           btn.addEventListener('click', () => {
             const i = parseInt(btn.dataset.idx, 10);
             session.userAnswers[idx] = i;
+            TB.recordAnswer(q.id, !!q.options[i].correct);
             saveSession(session);
-            renderQuestion(idx);
+            renderQuestion(idx, '#nextBtn, #finishBtn');
           });
         });
       }
+      const go = pos => renderQuestion(pos, 'q');
       const prevBtn = document.getElementById('prevBtn');
-      if (prevBtn) prevBtn.addEventListener('click', () => renderQuestion(idx - 1));
+      if (prevBtn) prevBtn.addEventListener('click', () => { if (prevPos !== undefined) go(prevPos); });
       const nextBtn = document.getElementById('nextBtn');
-      if (nextBtn) nextBtn.addEventListener('click', () => renderQuestion(idx + 1));
+      if (nextBtn) nextBtn.addEventListener('click', () => {
+        if (nextPos !== undefined) { go(nextPos); return; }
+        if (session.filter !== 'all') {
+          session.filter = 'all';
+          const firstOpen = states().indexOf('none');
+          go(review || firstOpen < 0 ? idx : firstOpen);
+          return;
+        }
+        if (review) renderResults();
+      });
       const finishBtn = document.getElementById('finishBtn');
       if (finishBtn) finishBtn.addEventListener('click', finishQuiz);
+      const backBtn = document.getElementById('backBtn');
+      if (backBtn) backBtn.addEventListener('click', renderResults);
+      TB.wireShuffle('shuffleQuiz', on => { reorderSession(session, on); saveSession(session); renderQuestion(session.currentIndex, '#shuffleQuiz'); });
+      wireMapAndChips(quizArea);
+      TB.wirePanel(quizArea, leaveThenStart, resetQuiz);
+      TB.fitParts();
+
+      if (focus === 'q') {
+        const t = document.getElementById('qtext');
+        t.focus({ preventScroll: true });
+        const r = t.closest('.question-card').getBoundingClientRect();
+        if (r.top < 0 || r.top > window.innerHeight - 140) t.closest('.question-card').scrollIntoView({ block: 'start' });
+      } else if (focus) {
+        const el = quizArea.querySelector(focus);
+        if (el) el.focus({ preventScroll: true });
+      }
     }
 
-    function finishQuiz() {
+    async function finishQuiz() {
+      const st = states();
+      const left = st.filter(x => x === 'none').length;
+      if (left) {
+        const ok = await TB.askConfirm({
+          title: 'Finish with ' + left + ' unanswered?',
+          body: left + ' question' + (left === 1 ? ' is' : 's are') + ' not answered yet. Unanswered questions count as wrong in your score and are offered again in "Retake the ones I missed", but they are not added to your Missed list.',
+          yes: 'Finish anyway', no: 'Go to the first unanswered'
+        });
+        if (!ok) { session.filter = 'all'; renderQuestion(st.indexOf('none'), 'q'); return; }
+      }
       session.finished = true;
       const { scoreOutOf100 } = computeScore(session);
       session.score = scoreOutOf100;
@@ -120,32 +249,37 @@
     function renderResults() {
       quizTopbar.style.display = 'none';
       quizArea.style.display = 'none';
+      quizArea.innerHTML = '';  // one screen at a time: no hidden copies of the panels or their buttons
       resultsArea.style.display = 'block';
 
       const { correct, total, scoreOutOf100 } = computeScore(session);
-      const breakdown = objectiveBreakdown(session);
 
       const round = session.round || 1;
       const missed = missedQuestionIds(session);
-      let html = '<div class="card score-hero">';
+      session.filter = 'all';
+      const st = states(), its = items();
+      let html = '<div class="quiz-grid"><div class="main-col">';
+      html += '<div class="card score-hero">';
       html += '<div class="score-number">' + scoreOutOf100 + '/100</div>';
       html += '<div class="score-sub">' + correct + ' of ' + total + ' correct &mdash; ' + escapeHtml(session.label) + (round > 1 ? ' &mdash; retake round ' + round : '') + '</div>';
       html += '</div>';
       if (round > 1 && missed.length === 0) {
         html += '<div class="retake-banner all-right">Every one right. You worked through every question you missed.</div>';
       }
+      if (round === 1 && session.mode === 'missed' && missed.length === 0 && TB.missedList().length === 0) {
+        html += '<div class="retake-banner all-right">Every one right. Your Missed list is empty.</div>';
+      }
 
-      html += '<div class="card"><h3 style="margin-top:0;">Breakdown by objective</h3><div class="breakdown-grid">';
-      Object.keys(breakdown).sort().forEach(code => {
-        const b = breakdown[code];
-        const pct = b.total ? Math.round((b.correct / b.total) * 100) : 0;
-        html += '<div class="breakdown-item">' +
-          '<div class="name">' + escapeHtml(code) + ' ' + escapeHtml(b.name) + '</div>' +
-          '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
-          '<div class="pct">' + b.correct + ' / ' + b.total + ' (' + pct + '%)</div>' +
-          '</div>';
-      });
-      html += '</div></div>';
+      html += '<div class="quiz-actions">' +
+        '<button class="btn btn-secondary" id="dashboardBtn">Return to Dashboard</button>' +
+        (missed.length ? '<button class="btn btn-retake-missed" id="retakeMissedBtn">Retake the ' + missed.length + ' I missed</button>' : '') +
+        '<button class="btn btn-primary" id="retakeBtn">Retake (new random set)</button>' +
+        '</div>';
+      if (missed.length) {
+        html += '<p class="retake-note">&ldquo;Retake the ' + missed.length + ' I missed&rdquo; gives you only the questions you got wrong' + (shuffleOrderOn() ? ', in a new order with the answers reshuffled' : '') + '. You can keep retaking until you&rsquo;ve got every one right.</p>';
+      }
+
+      html += TB.mapHtml(its, st, its.map((_, i) => i), -1, true, session.mapOpen);
 
       html += '<div class="card"><h3 style="margin-top:0;">Review every question</h3><div class="review-list">';
       session.questions.forEach((q, i) => {
@@ -169,15 +303,7 @@
         html += '</div></div>';
       });
       html += '</div></div>';
-
-      html += '<div class="quiz-actions">' +
-        '<button class="btn btn-secondary" id="dashboardBtn">Return to Dashboard</button>' +
-        (missed.length ? '<button class="btn btn-retake-missed" id="retakeMissedBtn">Retake the ' + missed.length + ' I missed</button>' : '') +
-        '<button class="btn btn-primary" id="retakeBtn">Retake (new random set)</button>' +
-        '</div>';
-      if (missed.length) {
-        html += '<p class="retake-note">&ldquo;Retake the ' + missed.length + ' I missed&rdquo; gives you only the questions you got wrong, in a new order with the answers reshuffled. You can keep retaking until you&rsquo;ve got every one right.</p>';
-      }
+      html += '</div><aside class="side-col" aria-label="Your score and what to study">' + TB.scorePanel(its, st) + TB.studyPanel() + TB.panelButtons(true) + '</aside></div>';
 
       resultsArea.innerHTML = html;
 
@@ -191,6 +317,8 @@
         window.location.href = 'quiz.html';
       });
       document.getElementById('retakeBtn').addEventListener('click', () => {
+        if (session.mode === 'missed') { TB.startMissedAll(); return; }
+        if (session.mode === 'topic') { TB.startTopic(session.topic); return; }
         const fresh = buildSession({
           mode: session.mode,
           count: session.requestedCount,
@@ -201,6 +329,10 @@
         saveSession(fresh);
         window.location.href = 'quiz.html';
       });
+      resultsArea.querySelectorAll('.qtile').forEach(b => b.addEventListener('click', () => renderQuestion(parseInt(b.dataset.pos, 10), 'q')));
+      const det = document.getElementById('qmap');
+      if (det) det.addEventListener('toggle', () => { if (session.mapOpen !== det.open) { session.mapOpen = det.open; saveSession(session); } });
+      TB.wirePanel(resultsArea, fn => fn(), resetQuiz);
     }
 
     document.getElementById('pauseBtn').addEventListener('click', () => {
@@ -208,6 +340,8 @@
       window.location.href = 'index.html';
     });
 
+    TB.ensureDialog();
+    TB.initEasier();
     if (session && session.questions && session.questions.length > 0) {
       if (session.finished) {
         renderResults();

@@ -130,12 +130,12 @@ async function run(dir) {
 if (process.argv.includes('--plant')) {
   const PLANTS = {
     'retake uses the whole quiz': ['assets/app.js', "return !(a !== null && a !== undefined && q.options[a] && q.options[a].correct);", 'return true;'],
-    'retake drops one missed question': ['assets/app.js', 'const picked = shuffle(missedIds.map(id => byId.get(id)).filter(Boolean));', 'const picked = shuffle(missedIds.slice(1).map(id => byId.get(id)).filter(Boolean));'],
+    'retake drops one missed question': ['assets/app.js', 'const picked = inOrder(shuffle(missedIds.map(id => byId.get(id)).filter(Boolean)), mix);', 'const picked = inOrder(shuffle(missedIds.slice(1).map(id => byId.get(id)).filter(Boolean)), mix);'],
     'round not counted': ['assets/app.js', 'round: (prev.round || 1) + 1', 'round: 1'],
     'no retake button': ['quiz.html', "(missed.length ? '<button class=\"btn btn-retake-missed\"", "(false ? '<button class=\"btn btn-retake-missed\""],
     'finish message too early': ['quiz.html', 'if (round > 1 && missed.length === 0) {', 'if (round > 1 && missed.length <= 1) {'],
     'button in the standard blue': ['assets/styles.css', '.btn-retake-missed { background: #0b3a82;', '.btn-retake-missed { background: #0d6efd;'],
-    'answers not reshuffled on retake': ['assets/app.js', "    subLabel: subObjectiveLabel(q.sub),\n    options: shuffle(q.options)\n  }));\n  return {\n    sessionId: 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),\n    createdAt: Date.now(),\n    mode: prev.mode,", "    subLabel: subObjectiveLabel(q.sub),\n    options: q.options\n  }));\n  return {\n    sessionId: 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),\n    createdAt: Date.now(),\n    mode: prev.mode,"],
+    'answers not reshuffled on retake': ['assets/app.js', "  const order = mix ? shuffle(q.options.map((_, i) => i)) : q.options.map((_, i) => i);", "  const order = q.options.map((_, i) => i);"],
     'pause loses the round': ['quiz.html', "document.getElementById('pauseBtn').addEventListener('click', () => {\n      saveSession(session);", "document.getElementById('pauseBtn').addEventListener('click', () => {\n      session.round = 1; saveSession(session);"],
   };
   let missed = 0;

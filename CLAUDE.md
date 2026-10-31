@@ -65,6 +65,58 @@ topic back to the old 19 home-made labels.
 - A retake round survives Pause and Resume.
 - The button is `#0b3a82`, because white on the site's standard `#0d6efd`
   button is only 4.5:1.
+- Since 31 October it follows Shuffle order (below).
+
+## Score card, question map and filters (31 October 2026, preview)
+
+Built to the owner's decisions in the doc "Test banks: score card, question
+map and filters (plan)" (https://claude.ai/artifact/6vcGwyvSsrwfHBWaKp6rq5):
+the features the owner approved on Core 1, Core 2, Network+ and Security+,
+adapted from Network+ to this engine. On the preview branch, waiting for the
+owner's go-ahead. Still open: the CertMaster Learn address students use.
+- **`assets/testbank.js`** holds it all (colours, Missed list, Easier reading,
+  the confirm dialog, score card, "Study these first", parts bar, chips, map).
+  It needs `data.js` and `app.js` first. `quiz.html` uses it on the quiz and
+  results; `index.html` and `custom.html` use it too.
+- **Topic colours:** `TOPIC_COLOR`, 15 deep shades around the rainbow in topic
+  order, white lettering over 7:1 on each; a colour always goes with its
+  topic's number. Parts don't brighten on hover; a white inner ring shows the
+  pointer.
+- **Dashboard:** "Study these first" and "Retake all missed" when the Missed
+  list has anything on it; Shuffle order under the tiles. The Custom Quiz page
+  has its own Shuffle order box (the same setting) and a dot beside each topic.
+- **Quiz and results:** the parts bar, chips (All, each topic by number, "New
+  for the updated objectives" for the 96 questions whose `source` begins
+  "written 30 Sept 2026", Missed), the "Jump to any question" map, the score
+  card, "Study these first", "Retake all missed" and "Reset this quiz". A
+  square on the results map opens that question for review. Answering is
+  unchanged: one click answers and shows every option's why.
+- **One screen at a time:** the quiz and the results each clear the other's
+  area, so no button or heading is on the page twice.
+- **Session modes:** `missed` (the whole Missed list) and `topic` ("Practise
+  this topic", up to 25, its missed ones included, `session.topic`) beside
+  `quick` and `custom`. `app.js`: `sessionQuestion(q, mix)` records each
+  answer's `order`; `buildSessionFromIds`, `reorderSession` (Shuffle order
+  switched part-way keeps every answer; a quiz paused before this release has
+  no `order`, so its answers are found by their text).
+- **Keys:** `cysa_missed_v1` (`{id: {n, at}}`, ids like "q1"),
+  `cysa_shuffle_v1`, and `cwp-easier-reading`, shared with the other test
+  banks. The session stays `cysa_quiz_session_v1`, now with `filter`,
+  `mapOpen` and, for practice, `topic`.
+- **CertMaster Learn:** `CERTMASTER_URL` is CompTIA's sign-in page
+  (learn.comptia.org/login) until the owner confirms the address students use.
+
+## Checks: `verify/` (need Playwright; not needed to run the site)
+
+- `node verify/objectives.mjs` checks the bank against the doc copy, drives
+  the Custom Quiz and a quiz, and checks the results' score bars paint.
+  `--plant` runs 18 plants.
+- `node verify/scorecard.mjs` drives the score card, map, chips, parts bar,
+  Missed list, Reset, the prompts, Shuffle order (also on a quiz paused before
+  this release), review, one screen at a time and Easier reading.
+  `--plant` runs 24 plants (`--only=<name>` runs one).
+- `node verify/retake.mjs` drives "Retake the ones I missed". `--plant` runs
+  8 plants.
 
 ## Contrast (fixed 30 September 2026)
 
@@ -75,9 +127,12 @@ the before/after preview: "I like all of the changes in all of the quizzes".
 - Disabled buttons are no longer faded out. They're solid silver with a dashed
   border and readable text.
 - `node verify/contrast.mjs` drives every screen (dashboard, setup, question
-  before and after answering, results, paused-quiz banner) and fails on
+  before and after answering, results, paused-quiz banner; since 31 October
+  also a chip and a part chosen, every part hovered, the confirm dialog,
+  Easier reading on every page, and a phone) and fails on
   anything under 7:1 (4.5:1 for large text). `--plant` puts back the old
-  sky-blue buttons and must fail.
+  sky-blue buttons and must fail. The quiz bar is sticky, so each full-page
+  sweep starts from the top.
 
 Run it after any colour or layout change.
 

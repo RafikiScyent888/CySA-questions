@@ -108,7 +108,7 @@ async function run(dir, pending = PENDING) {
     // the page lists every topic that has questions, with its true count, under its domain
     const shown = await page.$$eval('.obj-group', gs => gs.flatMap(g => [...g.querySelectorAll('.checkbox-item')].map(r => ({
       domain: g.querySelector('h3').textContent.trim(), id: r.querySelector('input').value,
-      text: r.querySelector('span').textContent.trim(), n: r.querySelector('.obj-count').textContent.trim() }))));
+      text: r.querySelector('span:not(.dot)').textContent.trim(), n: r.querySelector('.obj-count').textContent.trim() }))));
     const listed = Object.keys(topic).filter(id => count[id]);
     ok(shown.length === listed.length, `the custom quiz lists ${shown.length} topics, ${listed.length} have questions`);
     for (const s of shown) {
@@ -148,7 +148,7 @@ async function run(dir, pending = PENDING) {
     }
     if (newest.length) ok(played >= 3, `only ${played} of 24 questions on the newest topics were new ones`);  // random draw: well above 3 expected
     ok(/^100\/100$/.test(await page.$eval('.score-number', e => e.textContent.trim())), 'all right answers did not score 100');
-    const bars = await page.$$eval('.bar-track', bs => bs.map(b => [b.getBoundingClientRect().width, b.querySelector('.bar-fill').getBoundingClientRect().width]));
+    const bars = await page.$$eval('.sc-bar', bs => bs.map(b => [b.getBoundingClientRect().width, b.querySelector('.sc-fill').getBoundingClientRect().width]));  // the score card's bars, since 31 October 2026
     ok(bars.length && bars.every(([w, f]) => w > 0 && f >= w - 1), `score bars don't fill: ${JSON.stringify(bars.map(([w, f]) => `${Math.round(f)}/${Math.round(w)}px`))}`);
   } catch (e) { fails.push('could not drive the page — ' + String(e.message).split('\n')[0]); }
   ok(!errors.length, 'script errors: ' + errors.join(' | '));
@@ -160,6 +160,7 @@ if (process.argv.includes('--plant')) {
   const orig = read(ROOT);
   const custom = fs.readFileSync(path.join(ROOT, 'custom.html'), 'utf8');
   const quiz = fs.readFileSync(path.join(ROOT, 'quiz.html'), 'utf8');
+  const css = fs.readFileSync(path.join(ROOT, 'assets', 'styles.css'), 'utf8');
   const data = f => { const d = JSON.parse(JSON.stringify(orig)); f(d); return { data: d }; };
   const PLANTS = {
     'topic renamed': data(d => { d.S['2.0'][2].label = 'Prioritize vulnerabilities'; }),
@@ -180,14 +181,14 @@ if (process.argv.includes('--plant')) {
     'page hides a topic': { custom: ["const subs = CYSA_SUB_OBJECTIVES[domainCode].filter(s => poolCounts[s.id] > 0);", "const subs = CYSA_SUB_OBJECTIVES[domainCode].filter(s => poolCounts[s.id] > 0 && s.id !== '3.2');"] },
     'one-topic quiz ignores the choice': { custom: ["const sel = selectedObjectives();\n      const requested", "const sel = codes.slice();\n      const requested"] },
     'right answer painted as wrong': { quiz: ["if (opt.correct) cls += ' correct';\n          else if (i === userAns)", "if (false) cls += ' correct';\n          else if (i === userAns)"] },
-    'score bars left unpainted': { quiz: ["'<div class=\"bar-track\"><div class=\"bar-fill\" style=\"width:' + pct + '%\">", "'<div class=\"bar-track\"><div class=\"bar-fill\" style=\"width:0%\">"] },
+    'score bars left unpainted': { css: ['.sc-fill { display: block; height', '.sc-fill { height'] },
   };
   let missed = 0;
   for (const [name, p] of Object.entries(PLANTS)) {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cq-obj-'));
     fs.cpSync(ROOT, tmp, { recursive: true, filter: s => !s.includes(`${path.sep}.git`) });
     let stale = false;
-    for (const [key, file, src] of [['custom', 'custom.html', custom], ['quiz', 'quiz.html', quiz]]) if (p[key]) {
+    for (const [key, file, src] of [['custom', 'custom.html', custom], ['quiz', 'quiz.html', quiz], ['css', 'assets/styles.css', css]]) if (p[key]) {
       if (!src.includes(p[key][0])) stale = true; else fs.writeFileSync(path.join(tmp, file), src.replace(p[key][0], p[key][1]));
     }
     if (stale) { console.log(`STALE  ${name}: the plant changed nothing`); missed++; fs.rmSync(tmp, { recursive: true, force: true }); continue; }

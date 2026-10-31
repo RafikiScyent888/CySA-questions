@@ -5,9 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
 <title>Custom Quiz — CySA+ Practice Hub</title>
 <link rel="stylesheet" href="assets/styles.css" />
+<script>
+  /* Easier reading: on stays on, across pages, visits and the program's test banks. Set before the page paints, so it never flickers. */
+  try { if (localStorage.getItem("cwp-easier-reading") === "1") document.documentElement.classList.add("easier"); } catch (e) {}
+</script>
 </head>
 <body>
   <div class="wrap">
+    <div class="topline"><button type="button" class="btn btn-ghost" id="easierBtn" aria-pressed="false">Easier reading: off</button></div>
     <header class="site-header">
       <h1>🌿 Custom Quiz</h1>
       <p>Choose which objectives to study and how many questions (45–245).</p>
@@ -19,6 +24,7 @@
         <input type="range" id="countRange" min="45" max="245" step="5" value="45" />
         <div class="hint">Drag to choose between 45 and 245 questions.</div>
         <div class="pool-warning" id="poolWarning"></div>
+        <div id="shuffleSlot"></div>
       </div>
 
       <div class="field">
@@ -45,6 +51,7 @@
 
   <script src="assets/data.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/testbank.js"></script>
   <script>
     const objectiveGroups = document.getElementById('objectiveGroups');
     const countRange = document.getElementById('countRange');
@@ -71,7 +78,7 @@
         item.className = 'checkbox-item';
         item.innerHTML =
           '<input type="checkbox" value="' + s.id + '" checked />' +
-          '<span>' + s.id + ' ' + s.label + '</span>' +
+          TB.dot(s.id) + '<span>' + s.id + ' ' + s.label + '</span>' +
           '<span class="obj-count">' + poolCounts[s.id] + ' Qs</span>';
         grid.appendChild(item);
       });
@@ -117,6 +124,9 @@
       refreshWarning();
     });
     refreshWarning();
+    document.getElementById('shuffleSlot').innerHTML = TB.shuffleBox('shuffleSetup', true);
+    TB.wireShuffle('shuffleSetup');
+    TB.initEasier();
 
     startBtn.addEventListener('click', () => {
       if (hasResumableSession()) {

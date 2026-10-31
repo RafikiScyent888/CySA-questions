@@ -5,9 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
 <title>CySA+ Practice Hub</title>
 <link rel="stylesheet" href="assets/styles.css" />
+<script>
+  /* Easier reading: on stays on, across pages, visits and the program's test banks. Set before the page paints, so it never flickers. */
+  try { if (localStorage.getItem("cwp-easier-reading") === "1") document.documentElement.classList.add("easier"); } catch (e) {}
+</script>
 </head>
 <body>
   <div class="wrap">
+    <div class="topline"><button type="button" class="btn btn-ghost" id="easierBtn" aria-pressed="false">Easier reading: off</button></div>
     <header class="site-header">
       <h1>CySA+ Practice Hub</h1>
       <p>Pick a quick quiz or build a custom set across every CySA+ objective.</p>
@@ -22,6 +27,8 @@
         <button class="btn btn-ghost" id="discardBtn">Discard</button>
       </div>
     </div>
+
+    <div id="missedSlot"></div>
 
     <main>
       <div class="tile-grid" id="tileGrid">
@@ -60,6 +67,7 @@
           <span class="tile-sub">Choose objectives &amp; question count</span>
         </a>
       </div>
+      <div class="card shuffle-card" id="shuffleSlot"></div>
     </main>
 
     <footer class="site-footer">
@@ -70,6 +78,7 @@
 
   <script src="assets/data.js"></script>
   <script src="assets/app.js"></script>
+  <script src="assets/testbank.js"></script>
   <script>
     function refreshResumeBanner() {
       const banner = document.getElementById('resumeBanner');
@@ -114,6 +123,11 @@
     });
 
     refreshResumeBanner();
+    TB.renderMissedCard("missedSlot");
+    document.getElementById("shuffleSlot").innerHTML = TB.shuffleBox("shuffleChk", true);
+    TB.wireShuffle("shuffleChk");
+    TB.ensureDialog();
+    TB.initEasier();
   </script>
 </body>
 </html>
