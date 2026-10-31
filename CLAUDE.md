@@ -109,6 +109,40 @@ use.
 - **CertMaster Learn:** `CERTMASTER_URL` is CompTIA's sign-in page
   (learn.comptia.org/login) until the owner confirms the address students use.
 
+## Light or dark (31 October 2026)
+
+The owner asked for a dark/light switch on every test bank ("we need to keep
+things easy for my students to read"). Core 1 was previewed first; the owner
+approved it and said of the other four: "Push it and do the rest". Decided by
+the owner before building:
+- **One choice for the whole program:** the key is `cwp:theme` ("light" or
+  "dark"), the same key the acronym sites use. Nothing is saved until the
+  student presses the button.
+- **Until the student chooses, the page follows the device**, live; once
+  chosen, the choice wins over the device. (Only Core 1 starts dark.)
+
+How it works:
+- Each page's head stamps `data-theme` on `<html>` before it paints.
+- `#themeBtn` beside Easier reading, wired by `TB.initTheme()` on all three
+  pages. It names where it goes ("Dark mode" on the light page), with a moon
+  or sun; its label says both.
+- **Dark mode** is the block at the end of `assets/styles.css`, every rule
+  under `:root[data-theme="dark"]`: the program's dark look, as on Core 1
+  (light lettering on deep navy, cyan buttons with dark lettering, a yellow
+  focus ring, a dark quiz bar).
+- **Topic colours in dark mode:** `TB.TOPIC_BRIGHT`, a bright shade of each
+  of the 15 hues, dark lettering over 7:1, neighbours alternating in
+  lightness. `tc(id)` carries both (`--tc`, `--tcb`).
+
+## AAA on gradients (fixed 31 October 2026)
+
+The contrast check only took a background colour that covered 8% of a text's
+box, so on a gradient it found none and passed the text unmeasured. Fixed in
+`verify/contrast.mjs`. It found white on the orange tile's light end at
+3.4:1, the green tile's at 6.3:1, and the yellow tile's dark title at 5.5:1
+on its deeper end. Same hues: the orange and green ends deeper, the yellow
+tile lighter; over 7:1 in both modes.
+
 ## Checks: `verify/` (need Playwright; not needed to run the site)
 
 - `node verify/objectives.mjs` checks the bank against the doc copy, drives
@@ -116,8 +150,14 @@ use.
   `--plant` runs 18 plants.
 - `node verify/scorecard.mjs` drives the score card, map, chips, parts bar,
   Missed list, Reset, the prompts, Shuffle order (also on a quiz paused before
-  this release), review, one screen at a time and Easier reading.
-  `--plant` runs 24 plants (`--only=<name>` runs one).
+  this release), review, one screen at a time, Easier reading and light or
+  dark (the device followed, live, until chosen; nothing saved until then;
+  the button's words; `cwp:theme` on every page; a choice from another site;
+  the choice beats the device; the bright shades).
+  `--plant` runs 34 plants (`--only=<name>` runs one).
+  Fixed 31 Oct: the "finish with questions left" step could land, after a
+  reshuffle, on the question already answered (about one run in ten); it now
+  answers it only if still open. A failed drive reports its lines.
 - `node verify/retake.mjs` drives "Retake the ones I missed". `--plant` runs
   8 plants.
 
@@ -136,6 +176,11 @@ the before/after preview: "I like all of the changes in all of the quizzes".
   anything under 7:1 (4.5:1 for large text). `--plant` puts back the old
   sky-blue buttons and must fail. The quiz bar is sticky, so each full-page
   sweep starts from the top.
+- Since 31 October it drives every screen twice, dark then light, each in a
+  fresh browser, fails if a sweep finds the page in the other theme, and
+  measures text on gradients (above). `--theme=dark` runs one. Calibrated
+  with plants: faint dark-only text, the old orange tile put back, the dark
+  quiz bar removed, the theme setting ignored; all caught.
 
 Run it after any colour or layout change.
 

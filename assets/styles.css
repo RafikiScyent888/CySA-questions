@@ -502,3 +502,77 @@ html.easier .option .opt-explain { font-size: 15px; line-height: 1.7; }
 html.easier .intro, html.easier .note, html.easier .retake-note, html.easier .hint, html.easier .sc-row, html.easier .st-head, html.easier .review-item { font-size: 15px; }
 html.easier .site-footer { font-size: 14px; text-align: left; }
 html.easier button.qtile, html.easier button.seg { letter-spacing: 0; word-spacing: 0; }
+
+/* AAA on gradients (fixed 31 October 2026). The contrast check never measured
+   text on a gradient, so these passed unmeasured: white on the orange tile's
+   light end was 3.4:1, the green tile's 6.3:1, and the yellow tile's dark title
+   5.5:1 on its deeper end. Same hues: the orange and green ends deeper, the
+   yellow tile lighter; over 7:1 in both modes. */
+.tile-fire { background: linear-gradient(155deg, #5c1408 0%, #7c2d12 45%, #973400 100%); }
+.tile-green { background: linear-gradient(155deg, #06331e 0%, #0f5a32 55%, #026329 100%); }
+.tile-storm { background: linear-gradient(155deg, #182028 0%, #35434f 45%, #475569 100%); }
+.tile-sun { background: linear-gradient(155deg, #f0a92e 0%, #fbc54a 45%, #ffe27a 100%); color: #2a1600; }
+.tile-sun .tile-title, .tile-sun .tile-sub { color: #2a1600; }
+.tile .tile-title { opacity: 1; }
+
+/* Light or dark (31 October 2026): the button beside Easier reading. */
+.topline { flex-wrap: wrap; gap: 10px; }
+#themeBtn { display: inline-flex; align-items: center; gap: 8px; }
+#themeBtn svg { width: 18px; height: 18px; flex: none; }
+
+/* Dark mode (31 October 2026): the student's choice, kept for the whole program.
+   The program's dark look, as on Core 1: light lettering on deep navy, cyan
+   buttons with dark lettering, a yellow focus ring; each topic in a bright shade
+   of its own hue (TOPIC_BRIGHT, --tcb) with dark lettering. Light mode is unchanged. */
+:root[data-theme="dark"] { --ink: #e6eef6; --ink-soft: #cbd5e1; --card-bg: #0b1426; --card-border: rgba(255, 255, 255, 0.14); --shadow-soft: 0 10px 30px rgba(2, 6, 23, 0.6); --good: #4ade80; --bad: #fca5a5; --accent: #bae6fd; color-scheme: dark; }
+:root[data-theme="dark"] body { background: linear-gradient(180deg, #04111a 0%, #071021 100%); background-attachment: fixed; }
+:root[data-theme="dark"] .site-header h1 { color: #e6eef6; text-shadow: none; }
+:root[data-theme="dark"] .site-footer { color: #cbd5e1; }
+:root[data-theme="dark"] .btn-primary { background: #06b6d4; color: #011417; box-shadow: 0 6px 16px rgba(2, 6, 23, 0.5); }
+:root[data-theme="dark"] .btn-secondary { background: #1e293b; color: var(--ink); border: 1px solid #64748b; }
+:root[data-theme="dark"] .btn-ghost, :root[data-theme="dark"] .topline .btn { background: transparent; color: var(--ink); border: 2px solid #cbd5e1; }
+:root[data-theme="dark"] .btn-danger { background: rgba(239, 68, 68, 0.16); color: #fecaca; border-color: rgba(252, 165, 165, 0.5); }
+:root[data-theme="dark"] .btn-retake-missed { background: #7dd3fc; color: #011417; }
+:root[data-theme="dark"] .btn:disabled { background: #1e293b; color: #cbd5e1; border: 2px dashed #64748b; }
+:root[data-theme="dark"] input[type="number"] { background: #071022; color: var(--ink); border-color: #64748b; }
+:root[data-theme="dark"] .checkbox-item, :root[data-theme="dark"] .breakdown-item, :root[data-theme="dark"] .option { background: #071022; }
+:root[data-theme="dark"] .count-display, :root[data-theme="dark"] .score-number, :root[data-theme="dark"] .sc-big { color: #7dd3fc; }
+:root[data-theme="dark"] .pool-warning { background: rgba(245, 158, 11, 0.12); color: #fcd34d; border-color: rgba(245, 158, 11, 0.4); }
+:root[data-theme="dark"] .quiz-topbar { background: rgba(11, 20, 38, 0.94); }
+:root[data-theme="dark"] .progress-track, :root[data-theme="dark"] .breakdown-item .bar-track { background: #1e293b; }
+:root[data-theme="dark"] .question-meta { color: #bae6fd; background: rgba(56, 189, 248, 0.16); }
+:root[data-theme="dark"] .option.correct { background: rgba(22, 163, 74, 0.16); }
+:root[data-theme="dark"] .option.correct .opt-explain, :root[data-theme="dark"] .status-pill.ok { color: #86efac; }
+:root[data-theme="dark"] .option.wrong-picked { background: rgba(239, 68, 68, 0.14); }
+:root[data-theme="dark"] .option.wrong-picked .opt-explain, :root[data-theme="dark"] .status-pill.no { color: #fecaca; }
+:root[data-theme="dark"] .status-pill.ok { background: rgba(22, 163, 74, 0.2); }
+:root[data-theme="dark"] .status-pill.no { background: rgba(239, 68, 68, 0.2); }
+:root[data-theme="dark"] .retake-banner, :root[data-theme="dark"] .retake-note { background: #0b1426; }
+:root[data-theme="dark"] .retake-banner { border-color: #38bdf8; }
+:root[data-theme="dark"] .retake-banner.all-right { border-color: #4ade80; }
+:root[data-theme="dark"] .not-answered { color: #fca5a5; }
+:root[data-theme="dark"] :focus-visible { outline-color: #fde047; }
+:root[data-theme="dark"] .side-col, :root[data-theme="dark"] .qmap { background: #0b1426; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 8px 32px rgba(2, 6, 23, 0.6); }
+:root[data-theme="dark"] .panel-sec + .panel-sec, :root[data-theme="dark"] .panel-foot { border-top-color: rgba(255, 255, 255, 0.12); }
+:root[data-theme="dark"] .dot { background: var(--tcb); box-shadow: 0 0 0 2px #0b1426, 0 0 0 3px rgba(255, 255, 255, 0.35); }
+:root[data-theme="dark"] .sc-bar { background: #1e293b; background: color-mix(in srgb, var(--tcb) 28%, #0b1426); box-shadow: inset 0 0 0 1px var(--tcb); }
+:root[data-theme="dark"] .sc-fill { background: var(--tcb); }
+:root[data-theme="dark"] button.linkish, :root[data-theme="dark"] a.linkish { color: #bae6fd; background: none; }
+:root[data-theme="dark"] button.linkish:hover, :root[data-theme="dark"] a.linkish:hover { color: #fff; }
+:root[data-theme="dark"] button.seg { background: var(--tcb); color: #071021; }
+:root[data-theme="dark"] button.seg[aria-pressed="true"] { outline-color: #fff; }
+:root[data-theme="dark"] button.seg:hover { box-shadow: inset 0 0 0 2px #071021; }
+:root[data-theme="dark"] button.chip { background: #071022; color: var(--ink); border-color: #64748b; }
+:root[data-theme="dark"] button.chip.on { background: #e6eef6; color: #071021; border-color: #fff; }
+:root[data-theme="dark"] .shuf input, :root[data-theme="dark"] .check input { accent-color: #7dd3fc; }
+:root[data-theme="dark"] button.qtile { background: #071022; color: var(--ink); border-color: var(--tcb); }
+:root[data-theme="dark"] button.qtile.st-right { background: #14532d; color: #fff; }
+:root[data-theme="dark"] button.qtile.st-wrong { background: #5b1a1a; color: #fff; }
+:root[data-theme="dark"] button.qtile.cur { outline-color: #fff; }
+:root[data-theme="dark"] button.qtile.cur:focus-visible { outline-color: #fde047; }
+:root[data-theme="dark"] .kbox { background: #071022; color: #fff; border-color: #cbd5e1; }
+:root[data-theme="dark"] .kbox.k-right { background: #14532d; }
+:root[data-theme="dark"] .kbox.k-wrong { background: #5b1a1a; }
+:root[data-theme="dark"] .kbox.k-cur { outline-color: #fff; }
+:root[data-theme="dark"] dialog.confirm { background: #0b1220; color: var(--ink); border-color: #cbd5e1; }
+:root[data-theme="dark"] dialog.confirm::backdrop { background: rgba(2, 6, 23, 0.8); }
