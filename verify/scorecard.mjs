@@ -1,5 +1,5 @@
 // Drives the score card, question map, filters, Shuffle order, the lasting
-// Missed list ("Study these first", "Retake all missed", "Practise this
+// Missed list ("Study these first", "Retake all missed", "Practice this
 // topic"), Reset and Easier reading (31 October 2026) in Chromium, across the
 // dashboard, the Custom Quiz page and the quiz, and checks:
 //   - the topic colours: one each, all different, white lettering over 7:1 on
@@ -13,7 +13,7 @@
 //     quiz; each topic's "n/t right" and its bar
 //   - the Missed list: a wrong answer goes on, a right answer comes off;
 //     "Study these first" lists its topics, most missed first; "Retake all
-//     missed" is exactly the list; "Practise this topic" draws only from that
+//     missed" is exactly the list; "Practice this topic" draws only from that
 //     topic and includes its missed questions
 //   - Reset asks first, clears this quiz only and keeps the Missed list
 //   - leaving a quiz part-way and finishing with questions left ask first
@@ -121,7 +121,10 @@ async function run(dir) {
     ok(study.join(' | ') === '3.3 2 missed | 1.1 1 missed', `"Study these first" reads [${study.join(' | ')}], expected 3.3 (2) before 1.1 (1)`);
     ok((await text('#missedAllBtn')) === 'Retake all missed (3)', `the dashboard's retake button reads "${await text('#missedAllBtn')}"`);
     const link = await page.$eval('.st-item a.linkish', a => [a.href, a.target]).catch(() => []);
-    ok(/^https:\/\/learn\.comptia\.org\//.test(link[0] || '') && link[1] === '_blank', `"Review in CertMaster Learn" goes to ${link[0]}`);
+    ok(link[0] === 'https://www.comptia.org/en-us/resources/certmaster-training/learn/' && link[1] === '_blank', `"Review in CertMaster Learn" goes to ${link[0]}`);
+    const ptext = await page.$eval('.st-item [data-practise]', b => b.childNodes[0].textContent.trim()).catch(() => '');
+    ok(ptext === 'Practice this topic', `the topic's link reads "${ptext}"`);
+    ok(!/Practis/i.test(await page.evaluate(() => document.body.innerText)), 'no British "Practise" anywhere on the page');
     await page.evaluate(k => localStorage.removeItem(k), MISSED);
 
     // ---- a quiz paused before this release: no answer order, no filter ----
@@ -277,7 +280,7 @@ async function run(dir) {
     ok(Object.keys(await missed()).length === 0, 'answering right did not take questions off the Missed list');
     ok(((await text('.retake-banner.all-right')) || '').startsWith('Every one right. Your Missed list is empty.'), `finish reads "${await text('.retake-banner.all-right')}"`);
 
-    // leaving part-way asks; practise a topic
+    // leaving part-way asks; practice a topic
     await page.goto(`${U}/index.html`); await page.click('.tile[data-count="10"]'); await page.waitForURL(/quiz\.html/);
     const wrongId = await answer(false), wsub = await sub(wrongId); await page.click('#nextBtn');
     const started = (await S()).sessionId;
@@ -289,9 +292,10 @@ async function run(dir) {
     await page.waitForFunction(k => { const s = JSON.parse(localStorage.getItem(k) || 'null'); return s && s.mode === 'topic' && document.querySelector('.qtile'); }, SESSION).catch(() => {});
     const tp = await S(), tsubs = tp.questions.map(q => q.sub);
     const nTopic = await page.evaluate(s => CYSA_QUESTIONS.filter(q => q.sub === s).length, wsub);
-    ok(tp.mode === 'topic' && tp.topic === wsub && tsubs.every(s => s === wsub), `"Practise this topic" (${wsub}) drew [${[...new Set(tsubs)]}]`);
-    ok(tp.questions.length === Math.min(25, nTopic) && tp.questions.some(q => q.id === wrongId), `"Practise this topic" has ${tp.questions.length} questions${tp.questions.some(q => q.id === wrongId) ? '' : ', without the missed one'}`);
-    ok(((await text('.retake-banner')) || '').startsWith(`Practising ${wsub}`), `its banner reads "${await text('.retake-banner')}"`);
+    ok(tp.mode === 'topic' && tp.topic === wsub && tsubs.every(s => s === wsub), `"Practice this topic" (${wsub}) drew [${[...new Set(tsubs)]}]`);
+    ok(tp.questions.length === Math.min(25, nTopic) && tp.questions.some(q => q.id === wrongId), `"Practice this topic" has ${tp.questions.length} questions${tp.questions.some(q => q.id === wrongId) ? '' : ', without the missed one'}`);
+    ok(((await text('.retake-banner')) || '').startsWith(`Practicing ${wsub}`), `its banner reads "${await text('.retake-banner')}"`);
+    ok(!/Practis/i.test(await page.evaluate(() => document.body.innerText)), 'no British "Practising" on the topic quiz');
 
     // shuffle off from the dashboard, remembered
     await page.goto(`${U}/index.html`);
@@ -372,6 +376,9 @@ async function run(dir) {
 
 if (process.argv.includes('--plant')) {
   const PLANTS = {
+    'British spelling back on the link': ['assets/testbank.js', '">Practice this topic<span', '">Practise this topic<span'],
+    'British spelling back on the banner': ['quiz.html', '<strong>Practicing ', '<strong>Practising '],
+    'the old CertMaster address': ['assets/testbank.js', 'const CERTMASTER_URL = "https://www.comptia.org/en-us/resources/certmaster-training/learn/";', 'const CERTMASTER_URL = "https://learn.comptia.org/login";'],
     'wrong answer not saved': ['assets/testbank.js', 'else m[id] = { n: ((m[id] && m[id].n) || 0) + 1, at: new Date().toISOString() };', 'else {}'],
     'right answer left on the list': ['assets/testbank.js', 'if (right) delete m[id];', 'if (right) {}'],
     'wrong square has no cross': ['assets/testbank.js', `s === "wrong" ? '<span class="mk" aria-hidden="true">&#10007;</span>'`, `s === "wrong" ? ''`],
@@ -392,7 +399,7 @@ if (process.argv.includes('--plant')) {
     'shuffle part-way loses answers': ['assets/app.js', 'session.userAnswers = session.questions.map(q => { const o = chosen.get(q.id); return o === null ? null : q.order.indexOf(o); });', 'session.userAnswers = session.questions.map(() => null);'],
     'old paused quiz breaks on shuffle': ['assets/app.js', 'return [q.id, q.order ? q.order[a] : bank.options.findIndex(o => o.text === q.options[a].text)];', 'return [q.id, q.order[a]];'],
     'retake all uses the whole bank': ['assets/testbank.js', 'const ids = missedList();\n    if (!ids.length) return;', 'const ids = CYSA_QUESTIONS.slice(0, 10).map((q) => q.id);\n    if (!ids.length) return;'],
-    'practise draws from every topic': ['assets/testbank.js', 'const all = CYSA_QUESTIONS.filter((q) => q.sub === sub).map((q) => q.id);', 'const all = CYSA_QUESTIONS.map((q) => q.id);'],
+    'practice draws from every topic': ['assets/testbank.js', 'const all = CYSA_QUESTIONS.filter((q) => q.sub === sub).map((q) => q.id);', 'const all = CYSA_QUESTIONS.map((q) => q.id);'],
     'results map rings a question': ['quiz.html', 'TB.mapHtml(its, st, its.map((_, i) => i), -1, true, session.mapOpen)', 'TB.mapHtml(its, st, its.map((_, i) => i), 0, true, session.mapOpen)'],
     'hidden results kept in review': ['quiz.html', "      resultsArea.innerHTML = '';  // one screen at a time", '      // one screen at a time'],
     'easier reading forgotten': ['assets/testbank.js', 'try { localStorage.setItem(KEYS.easier, on ? "1" : "0"); } catch (e) { /* storage off */ }', ''],
@@ -430,5 +437,5 @@ if (process.argv.includes('--plant')) {
 } else {
   const fails = await run(ROOT);
   if (fails.length) { console.log('FAIL ' + fails.length); fails.forEach(f => console.log('  - ' + f)); process.exit(1); }
-  console.log('PASS — topic colours, parts bar, chips, map, score card, Missed list (Study these first, Retake all missed, Practise this topic), Reset, leave and finish prompts, Shuffle order (also on a quiz paused before this release), review, one screen at a time, Easier reading across pages, light or dark (follows the device until chosen, the choice kept on every page and for the program), no script errors');
+  console.log('PASS — topic colours, parts bar, chips, map, score card, Missed list (Study these first, Retake all missed, Practice this topic), Reset, leave and finish prompts, Shuffle order (also on a quiz paused before this release), review, one screen at a time, Easier reading across pages, light or dark (follows the device until chosen, the choice kept on every page and for the program), no script errors');
 }

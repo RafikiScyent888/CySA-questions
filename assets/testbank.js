@@ -15,8 +15,8 @@
   // "Review in CertMaster Learn" opens CompTIA's CertMaster Learn sign-in until
   // the owner confirms the address their students use. No lesson numbers: the
   // CS0-004 lesson list is not public, so none are guessed.
-  const CERTMASTER_URL = "https://learn.comptia.org/login";
-  const TOPIC_Q = 25;   // questions in a "Practise this topic" quiz
+  const CERTMASTER_URL = "https://www.comptia.org/en-us/resources/certmaster-training/learn/";
+  const TOPIC_Q = 25;   // questions in a "Practice this topic" quiz
   // Each topic's own colour: the rainbow, in topic order, chosen by the owner on
   // 31 October 2026, in deep shades for this light page. White lettering on
   // every one is over 7:1, and a colour always goes with its topic's number.
@@ -85,7 +85,7 @@
     return ALL.filter((id) => c[id]).map((id) => ({ id, n: c[id] }))
       .sort((a, b) => b.n - a.n || ALL.indexOf(a.id) - ALL.indexOf(b.id));
   }
-  // "Practise this topic": up to 25 of its questions, every missed one among them.
+  // "Practice this topic": up to 25 of its questions, every missed one among them.
   function topicPick(sub) {
     const missed = new Set(missedList().map(String));
     const all = CYSA_QUESTIONS.filter((q) => q.sub === sub).map((q) => q.id);
@@ -102,7 +102,7 @@
     window.location.href = "quiz.html";
   }
   function startTopic(sub) {
-    const s = buildSessionFromIds({ ids: topicPick(sub), mode: "topic", theme: "green", objectives: [sub], label: `Practise ${sub} ${LABEL[sub] || ""}` });
+    const s = buildSessionFromIds({ ids: topicPick(sub), mode: "topic", theme: "green", objectives: [sub], label: `Practice ${sub} ${LABEL[sub] || ""}` });
     s.topic = sub;
     saveSession(s);
     window.location.href = "quiz.html";
@@ -216,7 +216,7 @@
     const items = list.map((t) => `<li class="st-item" style="${tc(t.id)}">
         <div class="st-head">${dot(t.id)}<span class="st-name">${topicText(t.id)}</span><span class="st-n">${t.n} missed</span></div>
         <div class="st-links">
-          <button type="button" class="linkish" data-practise="${t.id}">Practise this topic<span class="sr"> (${topicText(t.id)})</span></button>
+          <button type="button" class="linkish" data-practise="${t.id}">Practice this topic<span class="sr"> (${topicText(t.id)})</span></button>
           <a class="linkish" href="${CERTMASTER_URL}" target="_blank" rel="noopener">Review in CertMaster Learn<span class="sr"> (${topicText(t.id)}; opens in a new tab)</span><span aria-hidden="true">&nbsp;&#8599;</span></a>
         </div>
       </li>`).join("");

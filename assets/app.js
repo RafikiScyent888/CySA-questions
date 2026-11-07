@@ -103,7 +103,7 @@ function buildRetakeSession(prev, missedIds) {
   };
 }
 
-/** A quiz of exactly these questions: the whole Missed list, or "Practise this topic". */
+/** A quiz of exactly these questions: the whole Missed list, or "Practice this topic". */
 function buildSessionFromIds({ ids, mode, label, theme, objectives }) {
   const byId = new Map(CYSA_QUESTIONS.map(q => [q.id, q]));
   const mix = shuffleOrderOn();

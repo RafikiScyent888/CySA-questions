@@ -75,8 +75,8 @@ the features the owner approved on Core 1, Core 2, Network+ and Security+,
 adapted from Network+ to this engine. The owner saw the preview (the 15
 colours, a quiz, the filters, Reset, results, the dashboard, the Custom Quiz
 page, Easier reading, a phone) and approved it: "I like CySA, push it." Live
-on `main` the same day. Still open: the CertMaster Learn address students
-use.
+on `main` the same day. (The CertMaster Learn address, the one thing left
+open, was settled 7 November 2026.)
 - **`assets/testbank.js`** holds it all (colours, Missed list, Easier reading,
   the confirm dialog, score card, "Study these first", parts bar, chips, map).
   It needs `data.js` and `app.js` first. `quiz.html` uses it on the quiz and
@@ -96,7 +96,7 @@ use.
   unchanged: one click answers and shows every option's why.
 - **One screen at a time:** the quiz and the results each clear the other's
   area, so no button or heading is on the page twice.
-- **Session modes:** `missed` (the whole Missed list) and `topic` ("Practise
+- **Session modes:** `missed` (the whole Missed list) and `topic` ("Practice
   this topic", up to 25, its missed ones included, `session.topic`) beside
   `quick` and `custom`. `app.js`: `sessionQuestion(q, mix)` records each
   answer's `order`; `buildSessionFromIds`, `reorderSession` (Shuffle order
@@ -106,8 +106,14 @@ use.
   `cysa_shuffle_v1`, and `cwp-easier-reading`, shared with the other test
   banks. The session stays `cysa_quiz_session_v1`, now with `filter`,
   `mapOpen` and, for practice, `topic`.
-- **CertMaster Learn:** `CERTMASTER_URL` is CompTIA's sign-in page
-  (learn.comptia.org/login) until the owner confirms the address students use.
+- **CertMaster Learn:** `CERTMASTER_URL` is the address the owner gave on 7 November 2026,
+  https://www.comptia.org/en-us/resources/certmaster-training/learn/ (the owner: "needs to be the
+  hyperlink for Review in CertMaster Learn across all of the quizzes"). It replaced CompTIA's sign-in
+  page; `verify/scorecard.mjs` checks the link is exactly this address.
+- **"Practice this topic" (7 November 2026):** the owner: "Please fix the to 'Practice this topic' across
+  all of the quizzes." The link, the topic quiz's banner ("Practicing ...") and its title use the American
+  spelling; `verify/scorecard.mjs` checks the link's words and that no "Practis" is left on the page. The
+  internal attribute `data-practise` keeps its name: students never see it.
 
 ## Light or dark (31 October 2026)
 

@@ -74,7 +74,7 @@
     function banner() {
       if ((session.round || 1) > 1) return '<div class="retake-banner">Retake round ' + session.round + ' &mdash; only the questions you missed last time</div>';
       if (session.mode === 'missed') return '<div class="retake-banner"><strong>Your Missed list</strong> &mdash; every question you have answered wrong and not yet answered right. Each one you get right comes off the list.</div>';
-      if (session.mode === 'topic') return '<div class="retake-banner"><strong>Practising ' + TB.topicText(session.topic) + '</strong> &mdash; every question you have missed on this topic is included.</div>';
+      if (session.mode === 'topic') return '<div class="retake-banner"><strong>Practicing ' + TB.topicText(session.topic) + '</strong> &mdash; every question you have missed on this topic is included.</div>';
       return '';
     }
     function quizUnderway() {
